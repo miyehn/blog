@@ -1,0 +1,76 @@
+---
+title: 我好像发现了什么不得了的铺色方式
+date: 2018-01-07 02:22
+tags: [绘画]
+
+---
+
+Huevember一个特别容易偷懒的地方就在于任何东西都没有固定的固有色，基本上啥颜色好看都能往上糊。但是画其它固有色固定的东西的时候这套颜色直觉就不管用了，上次画安特库时就因为要顾及固有色而整张图颜色画得跟shi一样..... 然后这次这张BNHA的固有色更丰富了，于是摸索了一会想出了这么一套办法，用起来感觉还ok？来记录一下。
+
+总之这么画的意义在于把几项对最终颜色有影响的要考虑的因素分开来考虑，每次只考虑一个因素的话比较好掌控。这些因素包括固有色，素描关系，还有光源和环境光导致的色相变化。不过这么画也只能在草稿阶段有帮助，只能给个大的调子，细节的颜色还是要细化的时候慢慢抠。
+
+---
+
+<img 
+src="https://s26.postimg.org/cax7o4ort/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+嗯首先这是草稿，定下构图和大致要画的元素。
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+<img 
+src="https://s26.postimg.org/ocsliadft/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+新开一层把大致素描关系画下，在这一步不考虑固有色。理论上如果完全不考虑固有色的话，固有色无论深浅，在同样受光下的明暗都该是一样的。（其实这步小蛙吹的头发不该画这么深的.....
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+<img 
+src="https://s26.postimg.org/45f5pz88p/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+新开一层把固有色涂了，在这一步不考虑任何光源或者素描关系，比如白色的东西就100%留成白色这样。这步和上一步可以反过来。
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+<img 
+src="https://s26.postimg.org/es8yvf3jd/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+固有色层在下，模式普通，素描关系层在上，模式叠加。喔，素描关系叠上去了！不过明显还不能看。
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+<img 
+src="https://s26.postimg.org/x7tfstpdl/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+对着素描层duang！这里我好像是先用色阶把亮部提亮，明暗对比拉开，然后打开曲线分别调整三个通道直到冷暖看起来差不多，然后整张图的色调就有个样子了！素描层调到现在单看长这样：
+<img 
+src="https://s26.postimg.org/p2bdunlp5/04.5.png" 
+style="
+	float: left;
+	max-width:200px;
+	max-height:320px;
+"/>
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+<img 
+src="https://s26.postimg.org/vsrv43w09/image.png" 
+style="
+	float: left;
+	max-width:400px;
+	max-height:400px;
+"/>
+这步算是调整，把图层机械地叠在一起造成的违和感修一下（比如小蛙吹的头发orz），然后查缺补漏修修光源冷暖拉拉曲线（x 然后大概就差不多可以分层然后细化去了？？我还挺期待这张的完成图的。
+<div style="clear:left;height:0;margin:0;padding:0;"></div>
+
+话说我还发现自己从各处杂学来的画场景套路用来画生活情境，效果就很迷....？套路有它的效果也有它的限制，比如画虚构大场景总是可以用强光做视觉引导顺便zhuangbi，但是真正的生活情境里哪来的那么多来历不明的强光源，以及随之而来的宏大感哦....... 唉，要学要想的东西多了去了。还不知道这张的最终效果会如何，先画着吧。画完再来写总结。
