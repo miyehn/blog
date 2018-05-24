@@ -8,6 +8,10 @@ import shutil
 tmp = ''
 rawData = []
 
+paths = glob.glob('../posts/*')
+for path in paths:
+    os.remove(path)
+
 paths = glob.glob('../drafts/*.md')
 for path in paths:
     shutil.copy(path, '../posts')
@@ -58,14 +62,14 @@ for path in paths:
     #jsonify
     data = {
         'title': title,
-        'path': path[9:-3],
+        'path': path[9:-3]+'.bin',
         'tags': tagarr,
         'publicity': publicity,
         'date': date
     }
     rawData.append(data)
     file.close()
-    os.rename(path, path[:-3])
+    os.rename(path, path[:-3]+'.bin')
 
 with open('summary.txt', 'w+') as outfile:
     json.dump(rawData, outfile, indent=4, ensure_ascii=False)
