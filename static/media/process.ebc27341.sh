@@ -8,11 +8,13 @@ import shutil
 tmp = ''
 rawData = []
 
+#remove old files in posts/
 paths = glob.glob('../posts/*')
 for path in paths:
     os.remove(path)
 
-paths = glob.glob('../drafts/*.md')
+#copy over files from drafts/ to posts
+paths = glob.glob('../../drafts/*.md')
 for path in paths:
     shutil.copy(path, '../posts')
 

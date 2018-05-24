@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-filename=~/Documents/github/Hexo/source/_posts/$(date +%s).md
+filename=~/Documents/github/blog-page/drafts/$(date +%s).md
 DD=$(date +%d)
 MM=$(date +%m)
 YYYY=$(date +%Y)
@@ -12,6 +12,7 @@ echo "---" >> $filename
 echo "title: " >> $filename
 echo "date: $YYYY-$MM-$DD $HH:$mm" >> $filename
 echo "tags: []" >> $filename
+echo "public: " >> $filename
 echo "" >> $filename
 echo "---" >> $filename
 
