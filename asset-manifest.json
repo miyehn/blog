@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.b14608f4.css",
   "main.css.map": "static/css/main.b14608f4.css.map",
-  "main.js": "static/js/main.8d12c6e0.js",
-  "main.js.map": "static/js/main.8d12c6e0.js.map",
+  "main.js": "static/js/main.5f40fd2e.js",
+  "main.js.map": "static/js/main.5f40fd2e.js.map",
   "static/media/1514313114": "static/media/1514313114.3586f8fc.bin",
   "static/media/1514315110": "static/media/1514315110.3a71eaaf.bin",
   "static/media/1514340897": "static/media/1514340897.f7958019.bin",
@@ -39,6 +39,9 @@
   "static/media/1526616011": "static/media/1526616011.209bbeaa.bin",
   "static/media/1526835210": "static/media/1526835210.1962e9b5.bin",
   "static/media/1527150534": "static/media/1527150534.0bacbd25.bin",
+  "static/media/1527309661": "static/media/1527309661.e62a4fae.bin",
+  "static/media/1527314583": "static/media/1527314583.57903c59.bin",
+  "static/media/1527413898": "static/media/1527413898.b8185fcf.bin",
   "static/media/about": "static/media/about.6adcd03e.bin",
   "static/media/avatar.png": "static/media/avatar.84f01079.png",
   "static/media/babble01": "static/media/babble01.f10455db.bin",
@@ -77,6 +80,6 @@
   "static/media/playlist": "static/media/playlist.4533c57c.bin",
   "static/media/process.sh": "static/media/process.ebc27341.sh",
   "static/media/shuying": "static/media/shuying.0195af48.bin",
-  "static/media/summary.txt": "static/media/summary.e95b379f.txt",
+  "static/media/summary.txt": "static/media/summary.59d797b3.txt",
   "static/media/text-demo": "static/media/text-demo.e4c217f5.bin"
 }
