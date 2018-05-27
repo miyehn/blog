@@ -1,8 +1,8 @@
 {
   "main.css": "static/css/main.b14608f4.css",
   "main.css.map": "static/css/main.b14608f4.css.map",
-  "main.js": "static/js/main.5f40fd2e.js",
-  "main.js.map": "static/js/main.5f40fd2e.js.map",
+  "main.js": "static/js/main.98bf566d.js",
+  "main.js.map": "static/js/main.98bf566d.js.map",
   "static/media/1514313114": "static/media/1514313114.3586f8fc.bin",
   "static/media/1514315110": "static/media/1514315110.3a71eaaf.bin",
   "static/media/1514340897": "static/media/1514340897.f7958019.bin",
@@ -80,6 +80,6 @@
   "static/media/playlist": "static/media/playlist.4533c57c.bin",
   "static/media/process.sh": "static/media/process.ebc27341.sh",
   "static/media/shuying": "static/media/shuying.0195af48.bin",
-  "static/media/summary.txt": "static/media/summary.59d797b3.txt",
+  "static/media/summary.txt": "static/media/summary.d7517139.txt",
   "static/media/text-demo": "static/media/text-demo.e4c217f5.bin"
 }
