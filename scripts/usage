@@ -1,0 +1,9 @@
+---- Welcome to mrblog! ----
+
+  Usage: mrblog <command>
+
+Available commands:
+    new         : create a new post
+    publish     : publish posts
+    pic <path>  : post a new picture
+    
