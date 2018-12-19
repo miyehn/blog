@@ -2,7 +2,13 @@
   "name": "mrblog",
   "version": "0.1.0",
   "private": false,
-  "homepage": "http://miyehn.github.io/mrblog-sample",
+
+  //---- basic settings ----
+  "homepage": "",
+  "scripts_dir": "",
+  "content_dir": "",
+  //------------------------
+
   "dependencies": {
     "jquery": "^3.3.1",
     "moment": "^2.23.0",
