@@ -27,16 +27,17 @@ file.write('# -------- end of setup --------\n')
 
 file.close()
 
-os.system('source ' + filepath)
+print('environment variables set')
 
 # create empty content folder in content repo
 
 os.system('mkdir '+content_dir)
-os.system('mkdir '+content_dir+'/mrblog-content')
-os.system('mkdir '+content_dir+'/mrblog-content/blogposts')
-os.system('mkdir '+content_dir+'/mrblog-content/drafts')
-os.system('mkdir '+content_dir+'/mrblog-content/pics')
-os.system('mkdir '+content_dir+'/mrblog-content/tracks')
+os.system('mkdir '+content_dir+'/blogposts')
+os.system('mkdir '+content_dir+'/drafts')
+os.system('mkdir '+content_dir+'/pics')
+os.system('mkdir '+content_dir+'/tracks')
+
+print('content folder created')
 
 # edit .gitignore for content repo
 
@@ -44,3 +45,7 @@ filepath = content_dir + '/../.gitignore'
 with open (filepath, 'a+') as gitignore:
     gitignore.write('mrblog-content/drafts\n')
     gitignore.write('mrblog-content/localSummary\n')
+
+print('edited .gitignore')
+
+print('done!')
