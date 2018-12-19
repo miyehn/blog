@@ -3,11 +3,9 @@
   "version": "0.1.0",
   "private": false,
 
-  //---- basic settings ----
   "homepage": "",
   "scripts_dir": "",
   "content_dir": "",
-  //------------------------
 
   "dependencies": {
     "jquery": "^3.3.1",
