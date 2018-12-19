@@ -18,4 +18,6 @@ elif sys.argv[1]=='pic':
     if argc>=3:
         os.system(scripts_dir + '/post_pic.sh ' + sys.argv[2])
     else:
-        print('give another argument (image path)!')
+        print('give another argument (image path)')
+elif sys.argv[1]=='setenv':
+    os.system('./setenv.sh')
