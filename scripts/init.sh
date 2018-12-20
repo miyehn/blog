@@ -5,6 +5,7 @@ import os
 import json
 
 # set environment variables
+print('setting environment variables..')
 
 filepath = os.environ['HOME'] + '/.bash_profile'
 
@@ -29,9 +30,8 @@ file.write('#_end_mrblog_setup\n')
 
 file.close()
 
-print('set environment variables')
-
 # create empty content folder in content repo
+print('creating content folder..')
 
 os.system('mkdir '+content_dir)
 os.system('mkdir '+content_dir+'/blogposts')
@@ -39,30 +39,29 @@ os.system('mkdir '+content_dir+'/drafts')
 os.system('mkdir '+content_dir+'/pics')
 os.system('mkdir '+content_dir+'/tracks')
 
-print('created content folder')
-
 # edit .gitignore for content repo
+print('edited .gitignore..')
 
 filepath = content_dir + '/../.gitignore'
 with open (filepath, 'a+') as gitignore:
     gitignore.write('mrblog-content/drafts\n')
     gitignore.write('mrblog-content/localSummary\n')
 
-print('edited .gitignore')
-
 # install packages
 # amplitudejs had to be installed this way 
 # bc its code from website has some weird bug
+print('installing packages..')
 
 os.system('npm install')
 os.system('mv amplitudejs node_modules')
-print('installed packages')
+
 
 # detach this repo from mine and link to yours instead
+print('re-linking repo..')
 
 os.system('rm -rf .git')
+os.system('git init')
 repo = 'https://github.com/' + username + '/' + site_repo + '.git'
 os.system('git remote add origin ' + repo)
-print('re-linked repo')
 
 print('done!')

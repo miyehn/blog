@@ -7,6 +7,8 @@ argc = len(sys.argv)
 scripts_dir = os.environ['MRBLOG_SCRIPTS']
 
 if argc==1:
+    print('-------- Welcome to mrblog! --------')
+    print('Currently configured for domain: '+os.environ['MRBLOG_DOMAIN'])
     with open(scripts_dir + '/usage', 'r') as file:
         print file.read()
 
