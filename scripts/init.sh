@@ -39,18 +39,13 @@ os.system('mkdir '+content_dir+'/drafts')
 os.system('mkdir '+content_dir+'/pics')
 os.system('mkdir '+content_dir+'/tracks')
 
-# edit .gitignore for both repos
+# edit .gitignore for content repo
 print('edited .gitignore..')
 
 filepath = content_dir + '/../.gitignore'
 with open (filepath, 'a+') as gitignore:
     gitignore.write('mrblog-content/drafts\n')
     gitignore.write('mrblog-content/localSummary\n')
-
-filepath = scripts_dir + '/../.gitignore'
-with open (filepath, 'a+') as gitignore:
-    gitignore.write('*\n')
-    gitignore.write('!build')
 
 # install packages
 # amplitudejs had to be installed this way 
