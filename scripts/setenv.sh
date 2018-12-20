@@ -48,4 +48,6 @@ with open (filepath, 'a+') as gitignore:
 
 print('edited .gitignore')
 
+os.system('npm install')
+
 print('done!')
