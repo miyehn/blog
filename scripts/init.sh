@@ -49,7 +49,7 @@ with open (filepath, 'a+') as gitignore:
 
 filepath = scripts_dir + '/../.gitignore'
 with open (filepath, 'a+') as gitignore:
-    gitignore.write('*')
+    gitignore.write('*\n')
     gitignore.write('!build')
 
 # install packages
