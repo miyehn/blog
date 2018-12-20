@@ -47,6 +47,11 @@ with open (filepath, 'a+') as gitignore:
     gitignore.write('mrblog-content/drafts\n')
     gitignore.write('mrblog-content/localSummary\n')
 
+filepath = scripts_dir + '/../.gitignore'
+with open (filepath, 'a+') as gitignore:
+    gitignore.write('*\n')
+    gitignore.write('build')
+
 # install packages
 # amplitudejs had to be installed this way 
 # bc its code from website has some weird bug
