@@ -1,0 +1,71 @@
+#!/usr/local/bin/python
+
+import os
+import json
+
+bash = os.environ['HOME'] + '/.bash_profile'
+with open (bash) as f:
+    lines = f.readlines()
+
+if '#_begin_mrblog_setup\n' in lines: 
+    print ('seems like there\'s aldready a blog setup. Try delete it first.')
+else: 
+    # set environment variables
+    print('setting environment variables..')
+
+    filepath = bash
+
+    file = open(filepath,'a+')
+
+    with open ('package.json') as f:
+        data = json.load(f)
+
+    username = data['github_username']
+    domain = os.path.dirname(data['homepage'])
+    site_repo = os.path.basename(data['homepage'])
+    content_dir = data['content_dir']
+    scripts_dir = data['scripts_dir']
+
+    file.write('\n#_begin_mrblog_setup\n')
+    file.write('export MRBLOG_DOMAIN="'+domain+'"\n')
+    file.write('export MRBLOG_CONTENT="'+content_dir+'"\n')
+    file.write('export MRBLOG_SCRIPTS="'+scripts_dir+'"\n')
+    file.write('alias mrblog="$MRBLOG_SCRIPTS/mrblog"\n')
+    file.write('#_end_mrblog_setup\n')
+
+    file.close()
+
+    # create empty content folder in content repo
+    print('creating content folder..')
+
+    os.system('mkdir '+content_dir)
+    os.system('mkdir '+content_dir+'/blogposts')
+    os.system('mkdir '+content_dir+'/drafts')
+    os.system('mkdir '+content_dir+'/pics')
+    os.system('mkdir '+content_dir+'/tracks')
+
+    # edit .gitignore for content repo
+    print('editing .gitignore..')
+
+    need_gitignore = True
+
+    filepath = content_dir + '/../.gitignore'
+
+    if os.path.isdir(filepath):
+        with open (filepath, 'r') as gitignore:
+            lines = gitignore.readlines()
+            for line in lines:
+                if line=='mrblog-content/drafts\n':
+                    need_gitignore = False
+
+    with open (filepath, 'a+') as gitignore:
+        if need_gitignore:
+            gitignore.write('\nmrblog-content/drafts\nmrblog-content/localSummary')
+
+    # edit .gitignore for this repo
+    filepath = scripts_dir + '/../.gitignore'
+    with open (filepath, 'w') as gitignore:
+        gitignore.write('*')
+
+    print('done with local setup!')
+    print('next run "source ~/.bash_profile" to apply the changes')

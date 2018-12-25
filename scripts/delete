@@ -1,0 +1,36 @@
+#!/usr/local/bin/python
+
+import os
+
+# reset bash profile
+with open(os.environ['HOME'] + '/.bash_profile', 'r') as f:
+    lines = f.readlines()
+
+with open(os.environ['HOME'] + '/.bash_profile', 'w') as f:
+    in_progress = False
+    onemore = False
+    for line in lines:
+        if onemore:
+            onemore = False
+            in_progress = False
+        if line=='#_begin_mrblog_setup\n':
+            in_progress = True
+        if line=='#_end_mrblog_setup\n':
+            onemore = True
+        
+        if not in_progress:
+            f.write(line)
+
+# remove content folder
+if 'MRBLOG_CONTENT' in os.environ:
+    path = os.environ['MRBLOG_CONTENT']
+    if os.path.isdir(path):
+        os.system('zip '+path+'/../mrblog-archive.zip -q -r '+path)
+        os.system('rm -rf ' + path)
+
+if 'MRBLOG_SCRIPTS' in os.environ:
+    path = os.environ['MRBLOG_SCRIPTS'] + '/../build'
+    if os.path.isdir(path):
+        os.system('rm -rf ' + path)
+
+print('deleted blog. Old blog content is saved in mrblog-archive.zip')
