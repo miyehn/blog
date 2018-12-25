@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 cd $MRBLOG_CONTENT
-$MRBLOG_SCRIPTS/process.sh
-$MRBLOG_SCRIPTS/process_pics.sh
+$MRBLOG_SCRIPTS/process
+$MRBLOG_SCRIPTS/process_pics
 
 DD=$(date +%d)
 MM=$(date +%m)
