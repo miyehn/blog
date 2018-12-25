@@ -1,6 +1,0 @@
-#!/usr/local/bin/python
-
-import os
-
-os.system('scripts/install')
-os.system('scripts/setup')
