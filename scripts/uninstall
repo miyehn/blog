@@ -1,8 +1,8 @@
-#!/usr/local/bin/python2
+#!/usr/local/bin/python
 
 import sys
 import os
 
-if os.path.isdir('../node_modules/amplitudejs'):
-    os.system('../node_modules/amplitudejs')
-os.system('rm -rf ../node_modules')
+if os.path.isdir('node_modules/amplitudejs'):
+    os.system('mv node_modules/amplitudejs .')
+os.system('rm -rf node_modules')
