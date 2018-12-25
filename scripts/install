@@ -19,6 +19,7 @@ with open ('package.json') as f:
 username = data['github_username']
 site_repo = os.path.basename(data['homepage'])
 repo = 'https://github.com/' + username + '/' + site_repo + '.git'
-os.system('git remote set-url --push origin ' + repo)
+os.system('git remote set-url origin ' + repo)
+os.system('git remote add upstream https://github.com/miyehn/mrblog.git')
 
 print('done installing')
