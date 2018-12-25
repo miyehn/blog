@@ -1,0 +1,8 @@
+#!/usr/local/bin/python2
+
+import sys
+import os
+
+if os.path.isdir('../node_modules/amplitudejs'):
+    os.system('../node_modules/amplitudejs')
+os.system('rm -rf ../node_modules')

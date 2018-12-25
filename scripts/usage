@@ -1,8 +1,12 @@
 
   Usage: mrblog <command>
+     or: <blog action>
 
-Available commands:
+Commands (can be called anywhere):
     new         : create a new post
     publish     : publish posts
     pic <path>  : post a new picture
-    
+
+Blog actions (need to be at blog site's directory):
+    scripts/setup       : make local setups for blog
+    scripts/delete      : delete the entire blog

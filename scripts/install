@@ -1,0 +1,23 @@
+#!/usr/local/bin/python
+
+import os
+
+# install packages
+# amplitudejs had to be installed this way 
+# bc its code from website has some weird bug
+print('installing packages..')
+
+os.system('npm install')
+os.system('mv amplitudejs node_modules')
+
+
+# detach this repo from mine and link to yours instead
+print('re-linking repo..')
+
+# os.system('rm -rf .git')
+# os.system('git init')
+repo = 'https://github.com/' + username + '/' + site_repo + '.git'
+# os.system('git remote add origin ' + repo)
+os.system('git remote set-url --push origin ' + repo)
+
+print('done!')

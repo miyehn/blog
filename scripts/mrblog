@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2
+#!/usr/local/bin/python
 
 import sys
 import os
@@ -13,13 +13,11 @@ if argc==1:
         print file.read()
 
 elif sys.argv[1]=='new':
-    os.system(scripts_dir + '/new.sh')
+    os.system(scripts_dir + '/new')
 elif sys.argv[1]=='publish':
-    os.system(scripts_dir + '/publish.sh')
+    os.system(scripts_dir + '/publish')
 elif sys.argv[1]=='pic':
     if argc>=3:
-        os.system(scripts_dir + '/post_pic.sh ' + sys.argv[2])
+        os.system(scripts_dir + '/post_pic ' + sys.argv[2])
     else:
         print('give another argument (image path)')
-elif sys.argv[1]=='setenv':
-    os.system('./setenv.sh')
