@@ -51,11 +51,12 @@ else:
 
     filepath = content_dir + '/../.gitignore'
 
-    with open (filepath, 'r') as gitignore:
-        lines = gitignore.readlines()
-        for line in lines:
-            if line=='mrblog-content/drafts\n':
-                need_gitignore = False
+    if os.path.isdir(filepath):
+        with open (filepath, 'r') as gitignore:
+            lines = gitignore.readlines()
+            for line in lines:
+                if line=='mrblog-content/drafts\n':
+                    need_gitignore = False
 
     with open (filepath, 'a+') as gitignore:
         if need_gitignore:
