@@ -25,7 +25,7 @@ with open(os.environ['HOME'] + '/.bash_profile', 'w') as f:
 if 'MRBLOG_CONTENT' in os.environ:
     path = os.environ['MRBLOG_CONTENT']
     if os.path.isdir(path):
-        os.system('zip -q -r '+path+'/../mrblog-archive.zip '+path)
+        os.system('cd '+path+'; zip -q -r '+path+'/../mrblog-archive.zip .')
         os.system('rm -rf ' + path)
 
 if 'MRBLOG_SCRIPTS' in os.environ:
