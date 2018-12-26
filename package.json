@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": false,
 
-  "github_username": "miyehn",
-  "homepage": "https://miyehn.me/blog",
-  "scripts_dir": "/Users/duwei/Documents/github/mrblog/scripts",
-  "content_dir": "/Users/duwei/Documents/github/miyehn.github.io/mrblog-content",
+  "github_username": "",
+  "homepage": "",
+  "scripts_dir": "",
+  "content_dir": "",
 
   "dependencies": {
     "jquery": "^3.3.1",
