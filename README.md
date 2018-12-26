@@ -1,5 +1,5 @@
 # mrblog
-一个终于解决了由于activation energy太高导致我总是懒得发东西的博客23333。
+一个终于解决了由于activation energy太高导致我总是懒得发东西的问题的博客23333。
 
 下面说明里搭的那个样本博客在[这里](https://miyehniar.github.io/blog/)。
 
