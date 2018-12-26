@@ -43,6 +43,8 @@ else:
     os.system('mkdir '+content_dir+'/drafts')
     os.system('mkdir '+content_dir+'/pics')
     os.system('mkdir '+content_dir+'/tracks')
+    os.system('touch '+content_dir+'/tracklist')
+    os.system('echo "[]" >> '+content_dir+'/tracklist')
 
     # edit .gitignore for content repo
     print('editing .gitignore..')
