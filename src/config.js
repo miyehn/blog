@@ -2,52 +2,51 @@ import React from 'react';
 
 
 // ---- social handles & links ----
-export var email = "random@email.com"
+export var email = "rainduym@gmail.com"
 export var socialHandles = [
     {
         "platform": "lofter",
         "url": ""
     },{
         "platform": "instagram",
-        "url": "https://www.instagram.com/"
+        "url": ""
     },{
         "platform": "tumblr",
-        "url": "https://www.tumblr.com/"
-    },{
-        "platform": "weibo",
         "url": ""
     },{
         "platform": "twitter",
-        "url": ""
+        "url": "https://twitter.com/rain_dd"
+    },{
+        "platform": "weibo",
+        "url": "https://www.weibo.com/rainduym"
     },{
         "platform": "github",
-        "url": "https://github.com/"
+        "url": "https://github.com/miyehn"
     }
 ]
 
 // ---- blog settings ----
-export var title = "Sample blog"
+export var title = "槽"
 export var PostsPerPage = 6;
 
 export var Intro = function(){return (
 	<div className="intro">
-		<p>This is a dummy blog.</p>
-		<p>Find me elsewhere :)))</p>
+		<p>我是miyehn，可以叫我小雨，是个坐标美东，喜欢画画，也喜欢胡思乱想并对着（未来的）自己唠嗑的人。</p>
+		<p>博客名 “槽” 是吐槽的那个槽，内容我也知道没营养... 可是建博客的初衷就是吐槽啊=A=。</p>
 	</div>
 )}
 
 export var Friends = function() {return(
     <div className="friends">
-        <p>friends list↓</p>
-        <a className="light" href="https://www.dictionary.com/browse/nowhere">none</a><br/>
+        <p>朋友们的博客：</p>
+        <a className="light" href="https://handsomemango.github.io/blog">芒果</a>
+        <a className="light" href="https://sumygg.com/">SumyBlog</a>
+        <a className="light" href="https://kashuukiyoko.github.io/">懒云休憩室</a>
+        <a className="light" href="https://nachtzug.xyz/">Nachtzug</a>
+        <a className="light" href="https://blog.dlzhang.com/">班班的碎碎念</a>
+        <a className="light" href="http://blog.fivest.one/">fivestone</a>
+        <a className="light" href="http://sevenskey.xyz/">Sevenskey</a>
     </div>
 )}
 
 export var password = "23333";
-
-export var playlist = [
-    {
-        "info": "Reclaim - Ólafur Arnalds",
-        "url": "https://miyehn.me/music/(06)Reclaim_olafur_arnalds.mp3"
-    }
-];

@@ -19,6 +19,7 @@ html{
 	margin-top: var(--space-s);
 	padding-top: var(--space-ms);
 	border-top: 1px solid var(--accent-color);
+	position: relative;
 }
 
 .sideColumn{
@@ -57,6 +58,15 @@ html{
 	padding-top: var(--space-s);
 }
 
+.friends>a{
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.friends>p{
+	margin-bottom: calc(var(--base-line-height) - 1em);
+}
+
 @media(min-width: 768px) {
 	.content-all {
 		width: 750px;
@@ -65,9 +75,6 @@ html{
 
 	.post{
 		padding-top: calc(var(--space-s) / 2);
-	}
-
-	.mainColumn{
 	}
 
 	.sideColumn{

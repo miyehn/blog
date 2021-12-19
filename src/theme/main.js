@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router';
-import {BrowserRouter as Router, Route, Link, Switch} from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router';
+import { Link } from 'react-router-dom';
 import { HashRouter } from 'react-router-dom';
 import jQuery from 'jquery';
-import request from 'request';
 import ReactMarkDown from 'react-markdown';
-import Amplitude from 'amplitudejs';
 import moment from 'moment';
 import './style/style.css';
 import { Intro, Friends, PostsPerPage, 
-  password, email, socialHandles, title} from './config.js';
+  password, email, socialHandles, title} from '../config.js';
 
 import {FaTumblrSquare as Tumblr} from 'react-icons/fa';
 import {FaWeibo as Weibo} from 'react-icons/fa';
@@ -42,6 +40,8 @@ jQuery.ajax({
   dataType: 'json',
   url: domainName + '/mrblog-content/blogSummary',
   success: (data)=>{
+		console.log(domainName + '/mrblog-content/blogSummary');
+		console.log(data);
     summary = data.map(obj=>{
       obj.date = (obj.date.trim().toLowerCase()==='pinned') ? future : moment(obj.date); 
       return obj;
@@ -88,9 +88,12 @@ export default class Main extends Component {
 }
 
 function MainColumn () {return (
-    <div className="mainColumn col-xs-12 col-md-8"><Switch>
+    <div className="mainColumn"><Switch>
       {/* Home page */}
       <Route exact path="/" component={()=><PostsManager tag={undefined} page={0} />} />
+      {/* single post */}
+      <Route exact path="/post/:permalink" render={({match})=>
+        <SinglePost permalink={match.params.permalink} />} />
       {/* page num */}
       <Route exact path="/page/:num" render={({match})=>
         <PostsManager tag={undefined} page={match.params.num} />} />
@@ -104,18 +107,52 @@ function MainColumn () {return (
     </Switch></div>
 )}
 
+class SinglePost extends Component {
+
+	constructor(props) {
+		super(props);
+		let initState = {
+			found: false,
+			postObject: {
+				content: "loading..."
+			}
+		};
+		this.state = initState;
+
+		// TODO: optimize; use a dictionary
+		for (var i = 0; i < summary.length; i++) {
+			let postObj = summary[i];
+			let path = postObj.path;
+			if (path==='/'+props.permalink) {
+				asyncFetchPost(path, (data)=>{
+					let newState = {
+						found: true,
+						postObject: postObj
+					};
+					newState.postObject.content = data;
+					this.setState(newState);
+				});
+				break;
+			}
+		}
+	}
+
+	render() {
+		return this.state.found ? <PostRenderer postObj={this.state.postObject} /> : <NotFound />
+	}
+}
+
 function SideColumn () {return (
-    <div className="sideColumn col-xs-12 col-md-4">
+    <div className="sideColumn">
       <Avatar />
       <Social />
       <Intro />
       <TagsSummary />
       <Friends />
-      <AmplitudePlayer />
     </div>
 )}
 
-function fetchPost(fullpath) {
+function fetchPost(fullpath, callback) {
   var content = 'loading...';
   jQuery.ajax({
     type: 'GET',
@@ -124,6 +161,15 @@ function fetchPost(fullpath) {
     async: false
   });
   return content;
+}
+
+function asyncFetchPost(fullpath, callback) {
+	jQuery.ajax({
+		type: 'GET',
+		url: domainName + '/mrblog-content/blogposts' + fullpath,
+		async: true,
+		success: (data)=>{callback(data);}
+	});
 }
 
 class PostsManager extends Component {
@@ -145,6 +191,9 @@ class PostsManager extends Component {
   }
 
   updateRenderPage(tag, page) {
+		
+		var newState = {};
+
     this.state.filterTag = tag;
     var postByTag = [];
     var grandList = auth ? summary : summaryPublic;
@@ -157,11 +206,14 @@ class PostsManager extends Component {
     for(var i=0; i<this.state.perPage; i++){
       var post = postByTag[i + this.state.currentPage*this.state.perPage];
       if(post!==undefined){
-        var content = (auth&&post.publicity===1) ? fetchPost(post.path+"-alt") : fetchPost(post.path);
+				var cb = ()=>{};
+        var content = (auth&&post.publicity===1) ?
+					fetchPost(post.path+"-alt", cb) : fetchPost(post.path, cb);
         post.content = content;
         this.state.renderPosts.push(post);
       }
     }
+		//this.setState(newState);
     this.forceUpdate();
   }
 
@@ -196,18 +248,21 @@ class PostsManager extends Component {
   }
 }
 
-function Date({date}) {return(
-  <div className="date">
+function Date({date, linkPath}) {return(
+  <div >
+		<Link to={linkPath}><span className="date">
     {date.unix()===future.unix() ? "Pinned" : date.format('MMM D YYYY　dddd h:mmA')}
+		</span></Link>
   </div>
 )}
 
 function PostRenderer ({postObj}){ return(
   <div>
-    <Date date={postObj.date} />
+    <Date date={postObj.date} linkPath={'/post'+postObj.path} />
     <div className="post">
       <div>
-        { postObj.title!=='' && <div className="title">{postObj.title}</div> }
+        { postObj.title!=='' && 
+          <Link to={'/post'+postObj.path} className="title">{postObj.title}</Link> }
         <ReactMarkDown className="markdown" escapeHtml={false} source={postObj.content} />
       </div>
       { postObj.tags.map(item=><Tag key={postObj.path+item} text={item} search={item} />) }
@@ -296,83 +351,16 @@ function Social() {
   </div>
 )}
 
-class AmplitudePlayer extends Component {
-
-  progressClickHandler( e ){
-    var offset = e.target.getBoundingClientRect();
-    var x = e.pageX - offset.left;
-    try{
-      Amplitude.setSongPlayedPercentage( ( 
-        parseFloat( x ) / parseFloat( e.target.offsetWidth) ) * 100 );
-    } catch (e) {}
-  }
-
-  render() { return (
-    <div className="musicplayer hidden-xs hidden-sm">
-      <span amplitude-song-info="info" amplitude-main-song-info="true"></span><br/>
-      <progress 
-        onClick={this.progressClickHandler}
-        id="song-played-progress" 
-        className="amplitude-song-played-progress" 
-        amplitude-main-song-played-progress="true">
-      </progress>
-      <span id="music-prev" className="amplitude-prev">
-        <Prev size={14}/>
-      </span>
-      <span className="amplitude-play-pause"><PlayPause /></span>
-      <span id="music-next" className="amplitude-next">
-        <Next size={14}/>
-      </span>
-    </div>
-  )}
-}
-
-class PlayPause extends Component {
-  constructor(props){
-    super(props);
-    this.state = {playing: false};
-    this.playPauseHandler = this.playPauseHandler.bind(this);
-    this.setToPlay = this.setToPlay.bind(this);
-  }
-  componentDidMount(){
-    Amplitude.init({
-      bindings: {
-        37: 'prev',
-        39: 'next',
-      },
-      songs: playlist,
-      volume: 75,
-      callbacks: {
-        song_change: this.setToPlay
-      }
-    });
-  }
-  playPauseHandler() {
-    this.state.playing = !(this.state.playing);
-    this.forceUpdate();
-  }
-  setToPlay(){
-    this.state.playing = true;
-    this.forceUpdate();
-  }
-  render(){
-    var play = <Play size={18} onClick={this.playPauseHandler}/>;
-    var pause = <Pause size={18} onClick={this.playPauseHandler}/>
-    var content = this.state.playing ? pause : play
-    return content;
-  }
-}
-
 class Avatar extends Component {
   constructor(props) {
     super(props);
     this.pic = '';
     this.showpic = true;
     try {
-      this.pic = require('./avatar.png');
+      this.pic = require('../avatar.png');
     } catch (e) {
       try {
-        this.pic = require('./avatar.jpg');
+        this.pic = require('../avatar.jpg');
       } catch (e) {
         this.showpic = false;
       }
@@ -426,3 +414,7 @@ class Footer extends Component {
       <div className="footer">{content}</div>
   )}
 }
+
+function NotFound() { return (
+  <div>Not found...</div>
+)}
