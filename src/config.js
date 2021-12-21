@@ -41,11 +41,11 @@ export var Friends = function() {return(
         <p>朋友们的博客：</p>
         <a className="light" href="https://handsomemango.github.io/blog">芒果</a>
         <a className="light" href="https://sumygg.com/">SumyBlog</a>
-        <a className="light" href="https://kashuukiyoko.github.io/">懒云休憩室</a>
+        <a className="light" href="https://mantyke.icu/">小球飞鱼</a>
         <a className="light" href="https://nachtzug.xyz/">Nachtzug</a>
         <a className="light" href="https://blog.dlzhang.com/">班班的碎碎念</a>
         <a className="light" href="http://blog.fivest.one/">fivestone</a>
-        <a className="light" href="http://sevenskey.xyz/">Sevenskey</a>
+        <a className="light" href="https://mengru.space">mengru</a>
     </div>
 )}
 

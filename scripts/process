@@ -5,17 +5,39 @@ import glob
 import json
 import os
 import shutil
-tmp = ''
+import time
+import datetime
+
 rawData = []
-rawLocal = []
 content_dir = os.environ['MRBLOG_CONTENT']
+magicword = open(content_dir + '/magicword', 'r').read().strip()
 
 #remove old files in posts/
 paths = glob.glob(content_dir + '/blogposts/*')
 for path in paths:
     os.remove(path)
 
+paths = glob.glob(content_dir + '/index/*')
+for path in paths:
+    os.remove(path)
+
 paths = glob.glob(content_dir + '/drafts/*.md')
+
+# get timestamp (parsed from date)
+def getTimeKey(obj):
+    datestr = obj['date']
+    timestamp = "unparsed"
+    try:
+        timestamp = time.mktime(datetime.datetime.strptime(datestr, "%Y-%m-%d %H:%M").timetuple())
+    except:
+        try:
+            timestamp = time.mktime(datetime.datetime.strptime(datestr, "%Y-%m-%d %H:%M:%S").timetuple())
+        except:
+            timestamp = 99999999999999999
+    return timestamp
+
+# maintain a set of tags for later
+listsPerTag = {}
 
 for path in paths:
     file = open(path, 'r')
@@ -64,69 +86,91 @@ for path in paths:
     tagarr0 = filter(None, tagarr0)
     tagarr = []
     for tag in tagarr0:
-        tagarr.append(tag.strip())
+        tagStripped = tag.strip()
+        tagarr.append(tagStripped)
+
     # publicity
     ind = header.find('public:')+7
     if ind<5:
-        publicity = 3
+        publicity = 0
     elif header[ind:].strip()[0:4].lower()=='true':
         if partial:
             publicity = 1
         else:
-            publicity = 0
-    elif header[ind:].strip()[0:6].lower()=='hidden':
-        publicity = 2
+            publicity = 2
     else:
-        publicity = 3
+        publicity = 0
+    if publicity==0 or publicity==1:
+        tagarr.append('hidden')
+
     # date
     ind = header.find('date:')+5
     if ind<5:
-        date = ''
+        datestr = ''
     else:
-        date = header[ind:]
-    date = date[0:date.find('\n')].strip()
+        datestr = header[ind:]
+    datestr = datestr[0:datestr.find('\n')].strip()
 
     # jsonify
-    # for online summary
     data = {
         'title': title,
-        'path': path[len(content_dir) + 7:-3],
+        'path': path[len(content_dir) + 8:-3],
         'tags': tagarr,
         'publicity': publicity,
-        'date': date
-    }
-    # for local summary
-    dataLocal = {
-        'title': title,
-        'path': path[len(content_dir) + 7:-3],
-        'tags': tagarr,
-        'publicity': 0,
-        'date': date
+        'date': datestr
     }
 
     # append to summary texts
-    rawLocal.append(dataLocal)
-    if publicity < 3:
-        rawData.append(data)
+    rawData.append(data)
 
-    # rewrite file content + alt
+    # append to tag lists
+    for tag in tagarr:
+        if not (tag in listsPerTag): listsPerTag[tag] = []
+        listsPerTag[tag].append(data)
+
+    # rewrite file content + magic
     path = content_dir + '/blogposts' + path[len(content_dir) + 7:]
-    if publicity==1:
-        with open(path[:-3]+'-alt', 'w+') as outfile:
-            outfile.write(textAlt.strip())
-    if publicity==2:
-        with open(path[:-3], 'w+') as outfile:
-            outfile.write(textAlt.strip())
-    else:
+    if publicity==2: # public
         with open(path[:-3], 'w+') as outfile:
             outfile.write(textOrig.strip())
+    if publicity==1: # partially public
+        with open(path[:-3]+'-'+magicword, 'w+') as outfile:
+            outfile.write(textAlt.strip())
+    else: # hidden
+        with open(path[:-3], 'w+') as outfile:
+            outfile.write(textAlt.strip())
 
     file.close()
 
-with open(content_dir + '/blogSummary', 'w+') as outfile:
-    json.dump(rawData, outfile, indent=4, ensure_ascii=False)
-with open(content_dir + '/localSummary', 'w+') as outfile:
-    json.dump(rawLocal, outfile, indent=4, ensure_ascii=False)
+# @data: list to output into chunks
+# @chunkSize: number of posts to output per chunk
+def writeLists(data, outPrefix, chunkSize):
+    data.sort(reverse=True, key=getTimeKey)
+    numChunks = int((len(data) + chunkSize - 1) / chunkSize)
+    for chunkIndex in range(0, numChunks):
+        # get sublist
+        lo = chunkIndex * chunkSize
+        hi = lo + chunkSize
+        if hi > len(data): hi = len(data)
+        sublist = data[lo:hi]
+        # process sublist
+        with open (outPrefix + str(chunkIndex), 'w+') as outfile:
+            json.dump(sublist, outfile, separators=(',',':'), ensure_ascii=False)
+            #json.dump(rawData, outfile, indent=2, ensure_ascii=False)
+
+
+# TODO: public linked list: no publicity info; other linked list: with publicity info
+publicData = list(filter(lambda obj: obj['publicity'] == 2, rawData))
+
+# all (as seen from blog home page)
+writeLists(rawData, content_dir + '/index/' + magicword + '_all_', 50)
+writeLists(publicData, content_dir + '/index/all_', 50)
+
+# tags.. (filter by each, output two respectively)
+for tag in listsPerTag:
+    publicTagData = list(filter(lambda obj: obj['publicity'] == 2, listsPerTag[tag]))
+    writeLists(listsPerTag[tag], content_dir + '/index/' + magicword + '_tag_' + tag + '_', 50)
+    writeLists(publicTagData, content_dir + '/index/tag_' + tag + '_', 50)
 
 print('summary generated')
 
