@@ -1,22 +1,12 @@
 # mrblog
+
 一个终于解决了由于activation energy太高导致我总是懒得发东西的问题的博客23333。
 
 下面说明里搭的那个样本博客在[这里](https://miyehniar.github.io/blog/)。
 
-如果已经装好了，需要从这里下载更新的话，命令行去到`<博客文件夹>` (如果装过就应该知道它指哪里)，然后
-```
-$ scripts/update
-$ npm run deploy
-```
-如果安装/使用过程出现问题，或者有改进的建议，欢迎去github issues发贴，或者邮件/私敲我。
+### 12/23/2021更新
 
-#### 接下来打算（按顺序）更新的东西：
-- 播放列表为空时隐藏bgm播放器
-- 单页显示单条博文
-- 修改/删除/重命名博文的脚本
-- 本地模式（查看非公开博文）
-- 题头图？背景图？背景p5？
-
+重新装修在做了在做了！这个三年前的玩意儿被我用到现在确实该升级了！以下信息已过时。
 
 ## 写在前面
 
@@ -47,12 +37,6 @@ $ npm run deploy
 
 
 ## 事先准备
-
-**注意：这个master branch里的是给mac的源码，这个文件是mac版的说明，win版的码和说明在win branch里**
-
-学一点基本的linux命令行操作，会从命令行去各个文件夹，会从命令行里执行命令，知道管理文件的基本术语，绝对路径，相对路径等。
-
-会用一点github，有一个免费的github账号
 
 安装这几个东西：
 - [brew](https://brew.sh/) (`/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`)
@@ -194,8 +178,6 @@ $ npm run deploy
 
 替换Friends下面的`friends list↓`为 "友链"，"朋友们" 或者别的什么表示友链的文字，替换`myself`为友链博客名，替换博客名前的地址为友链地址。
 * 其实一整个div里面的内容都换成别的什么react component也没问题...
-
-（现阶段无视那个password）
 
 准备一个长宽都不超过240px的博客logo，命名为avatar.png或者avatar.jpg，放在`<博客文件夹>/src`目录下替换掉那个avatar.png。(或者直接删掉那个avatar.png，这样logo的位置会显示博客名）
 
