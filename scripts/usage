@@ -10,8 +10,6 @@ Commands (can be called anywhere):
     pic                     : picture posting helper
 
 Blog actions (need to be at blog site's directory) 
-             (run "cd $MRBLOG_SCRIPTS/.." first):
+             (run "cd $MRBLOG_PATH" first):
     scripts/setup           : make local setups for blog
     npm run deploy          : deploy blog
-    scripts/update          : sync blog scripts from original repo
-    scripts/delete          : delete the entire blog

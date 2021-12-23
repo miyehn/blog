@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { /*Redirect,*/ Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 import { HashRouter } from 'react-router-dom';
 import jQuery from 'jquery';
 import ReactMarkDown from 'react-markdown';
-import moment from 'moment';
 import './style/style.css';
-import { Intro, Friends, PostsPerPage, 
-  password, email, socialHandles, title} from '../config.js';
+import { Intro, Friends, PostsPerPage, email, socialHandles, title} from '../config.js';
 
 import {FaTumblrSquare as Tumblr} from 'react-icons/fa';
 import {FaWeibo as Weibo} from 'react-icons/fa';
@@ -16,62 +14,33 @@ import {FaTwitterSquare as Twitter} from 'react-icons/fa';
 import {IoMdMail as Mail} from 'react-icons/io';
 import {GoMarkGithub as Github} from "react-icons/go";
 
-import {IoIosSkipBackward as Prev} from 'react-icons/io';
-import {IoIosSkipForward as Next} from 'react-icons/io';
-import {TiMediaPlay as Play} from 'react-icons/ti';
-import {TiMediaPause as Pause} from 'react-icons/ti';
+var fetchCache = new Map();
+function asyncFetch(url, callback, errorCallback)
+{
+	if (fetchCache.has(url))
+	{
+		callback(fetchCache.get(url));
+		return;
+	}
+  jQuery.ajax({
+    type: 'GET',
+    url: url,
+    success: (data)=>{
+			callback(data);
+			fetchCache.set(url, data);
+		},
+		error: errorCallback,
+    async: true
+  });
+}
+
+let chunkSize = 100;
+var magicword = '';
 
 var Lofter = require('./assets/lofter.png');
 var domainName = process.env.REACT_APP_DOMAIN;
 
-var auth = false;
-var summary = [];
-var summaryPublic = [];
-var playlist = [];
-var future = moment(1e15);
 document.title = title;
-
-var tagsUpdater = ()=>{}
-var tagsRefresher = ()=>{}
-var postManagerRefresher = ()=>{}
-
-jQuery.ajax({
-  type: 'GET',
-  dataType: 'json',
-  url: domainName + '/mrblog-content/blogSummary',
-  success: (data)=>{
-		console.log(domainName + '/mrblog-content/blogSummary');
-		console.log(data);
-    summary = data.map(obj=>{
-      obj.date = (obj.date.trim().toLowerCase()==='pinned') ? future : moment(obj.date); 
-      return obj;
-    });
-    summary = summary.sort((p1,p2)=>{
-      var t1 = p1.date.unix();
-      var t2 = p2.date.unix();
-      if(isNaN(t1)) t1 = -1;
-      if(isNaN(t2)) t2 = -1;
-      return t2-t1;
-    });
-    summaryPublic = summary.filter(post=>{return post.publicity <= 1});
-    tagsRefresher();
-    postManagerRefresher();
-  },
-  async: false
-});
-
-jQuery.ajax({
-  type: 'GET',
-  dataType: 'json',
-  url: domainName + '/mrblog-content/tracklist',
-  success: (data)=>{
-    playlist = data.map(obj=>{
-      obj.url = domainName + '/mrblog-content/tracks/' + obj.filename;
-      return obj;
-    });
-  },
-  async: false
-});
 
 export default class Main extends Component {
   render() {return(
@@ -87,7 +56,9 @@ export default class Main extends Component {
   )}
 }
 
-function MainColumn () {return (
+class MainColumn extends Component {
+	render() {
+		return (
     <div className="mainColumn"><Switch>
       {/* Home page */}
       <Route exact path="/" component={()=><PostsManager tag={undefined} page={0} />} />
@@ -105,36 +76,34 @@ function MainColumn () {return (
         <PostsManager tag={match.params.tag} page={0} />} />
       }
     </Switch></div>
-)}
+	)}
+}
 
 class SinglePost extends Component {
 
 	constructor(props) {
 		super(props);
-		let initState = {
+		this.state = {
 			found: false,
 			postObject: {
-				content: "loading..."
+				date: "unknown",
+				path: props.permalink,
+				tags: [],
+				content: "loading...",
 			}
 		};
-		this.state = initState;
+	}
 
-		// TODO: optimize; use a dictionary
-		for (var i = 0; i < summary.length; i++) {
-			let postObj = summary[i];
-			let path = postObj.path;
-			if (path==='/'+props.permalink) {
-				asyncFetchPost(path, (data)=>{
-					let newState = {
-						found: true,
-						postObject: postObj
-					};
-					newState.postObject.content = data;
-					this.setState(newState);
-				});
-				break;
-			}
-		}
+	componentDidMount() {
+		let permalink = this.state.postObject.path;
+		let url = domainName + '/mrblog-content/blogposts/' + permalink;
+		asyncFetch(url, (data)=>{
+			let newState = this.state;
+			newState.postObject = JSON.parse(data);
+			newState.postObject.path = permalink;
+			newState.found = true;
+			this.setState(newState);
+		});
 	}
 
 	render() {
@@ -142,83 +111,79 @@ class SinglePost extends Component {
 	}
 }
 
-function SideColumn () {return (
+class SideColumn extends Component {
+	render() {
+		return (
     <div className="sideColumn">
       <Avatar />
       <Social />
       <Intro />
-      <TagsSummary />
+      <TagsSummary magicword={magicword}/>
       <Friends />
     </div>
-)}
-
-function fetchPost(fullpath, callback) {
-  var content = 'loading...';
-  jQuery.ajax({
-    type: 'GET',
-    url: domainName + '/mrblog-content/blogposts' + fullpath,
-    success: (data)=>{content = data},
-    async: false
-  });
-  return content;
+	)}
 }
 
-function asyncFetchPost(fullpath, callback) {
-	jQuery.ajax({
-		type: 'GET',
-		url: domainName + '/mrblog-content/blogposts' + fullpath,
-		async: true,
-		success: (data)=>{callback(data);}
-	});
-}
-
+// props: (string)tag, (int)page
 class PostsManager extends Component {
   constructor(props){
     super(props);
     this.state = {
-      filterTag: this.props.tag,
+      filterTag: props.tag,
       renderPosts: [],
-      perPage: PostsPerPage,
-      currentPage: this.props.page,
+      currentPage: props.page,
       totalPage: 0
     };
-    this.posts = [];
   }
+
+	asyncFetchPosts(tag, pageNum)
+	{
+		var url = domainName + '/mrblog-content/index/' + magicword;
+		if (tag !== undefined && tag.length > 0) url += 'tag_' + tag + '_';
+		let firstPostIndex = pageNum * PostsPerPage;
+		let chunkIndex = Math.floor(firstPostIndex / chunkSize);
+		url += chunkIndex;
+		asyncFetch(url, (data)=>{
+			let parsedData = JSON.parse(data);
+			let indexInChunkStart = firstPostIndex - chunkIndex * chunkSize;
+			var newState = this.state;
+			newState.filterTag = tag;
+			newState.currentPage = parseInt(pageNum, 10);
+			newState.totalPage = Math.ceil(parsedData.count / PostsPerPage);
+			newState.renderPosts = [];
+			for (var i = 0; i < PostsPerPage; i++)
+			{
+				let indexInChunk = indexInChunkStart + i;
+				if (indexInChunk >= parsedData.content.length) break;
+
+				let p = parsedData.content[indexInChunk];
+				p.content = 'loading...';
+				newState.renderPosts.push(p);
+				let contentUrl = domainName + '/mrblog-content/blogposts/' + p.path;
+
+				let fetchWithCapture = (url, idx)=>{
+					asyncFetch(url, (postData)=>{
+						newState.renderPosts[idx].content = JSON.parse(postData).content;
+						this.setState(newState);
+					});
+				};
+				fetchWithCapture(contentUrl, i);
+			}
+			this.setState(newState);
+		// callback for not able to retrieve full index (likely due to wrong magicword)
+		}, (jqXHR, textStatus, errorThrown)=>{
+			if (jqXHR.status===404) {
+				magicword = '';
+			}
+		});
+	}
 
   componentDidMount() {
-    this.updateRenderPage(this.state.filterTag, this.state.currentPage);
-    postManagerRefresher = this.forceUpdate;
-  }
-
-  updateRenderPage(tag, page) {
-		
-		var newState = {};
-
-    this.state.filterTag = tag;
-    var postByTag = [];
-    var grandList = auth ? summary : summaryPublic;
-    grandList.map(obj=>{
-      if(tag===undefined || obj.tags.includes(tag)) postByTag.push(obj);
-    })
-    this.state.totalPage = Math.ceil(postByTag.length/this.state.perPage);
-    this.state.currentPage = parseInt(page);
-    this.state.renderPosts = [];
-    for(var i=0; i<this.state.perPage; i++){
-      var post = postByTag[i + this.state.currentPage*this.state.perPage];
-      if(post!==undefined){
-				var cb = ()=>{};
-        var content = (auth&&post.publicity===1) ?
-					fetchPost(post.path+"-alt", cb) : fetchPost(post.path, cb);
-        post.content = content;
-        this.state.renderPosts.push(post);
-      }
-    }
-		//this.setState(newState);
-    this.forceUpdate();
+    this.asyncFetchPosts(this.state.filterTag, this.state.currentPage);
   }
 
   componentWillReceiveProps(nextProp){
-    this.updateRenderPage(nextProp.tag, nextProp.page);
+    this.asyncFetchPosts(nextProp.tag, nextProp.page);
   }
 
   render() {
@@ -248,21 +213,22 @@ class PostsManager extends Component {
   }
 }
 
-function Date({date, linkPath}) {return(
+function DateString({date, linkPath}) {
+	return(
   <div >
 		<Link to={linkPath}><span className="date">
-    {date.unix()===future.unix() ? "Pinned" : date.format('MMM D YYYY　dddd h:mmA')}
+    {date}
 		</span></Link>
   </div>
 )}
 
-function PostRenderer ({postObj}){ return(
+function PostRenderer({postObj}){return(
   <div>
-    <Date date={postObj.date} linkPath={'/post'+postObj.path} />
+    <DateString date={postObj.date} linkPath={'/post/'+postObj.path} />
     <div className="post">
       <div>
         { postObj.title!=='' && 
-          <Link to={'/post'+postObj.path} className="title">{postObj.title}</Link> }
+          <Link to={'/post/'+postObj.path} className="title">{postObj.title}</Link> }
         <ReactMarkDown className="markdown" escapeHtml={false} source={postObj.content} />
       </div>
       { postObj.tags.map(item=><Tag key={postObj.path+item} text={item} search={item} />) }
@@ -271,42 +237,38 @@ function PostRenderer ({postObj}){ return(
 )}
 
 //can't reference this outside so had to wrap setState() this way
-var whyIHaveToDoThis = (x)=>{} 
 class TagsSummary extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
+		this.magicword = props.magicword
     this.state = {tagList: []};
   }
 
-  componentDidMount(){
-    tagsRefresher = this.forceUpdate();
-    tagsUpdater = this.updateMe;
-    whyIHaveToDoThis = (x)=>this.setState({tagList: x});
-    this.updateMe();
+  componentDidMount() {
+		this.update();
   }
 
-  updateMe(){
-    var tagNameList = [];
-    var tagList = [];
-    var grandList = auth ? summary : summaryPublic;
-    grandList.map(obj=>{
-      obj.tags.map(tag=>{
-        var ind = tagNameList.indexOf(tag);
-        if(ind<0) { tagList.push({tagName: tag, count:1}); tagNameList.push(tag);}
-        else {tagList[ind].count += 1;}
-      })
-    })
-    tagList.sort((a,b)=>{return b.count-a.count});
-    whyIHaveToDoThis(tagList);
-  }
+	update() {
+		asyncFetch(domainName + '/mrblog-content/index/'+this.magicword+'tags', (data)=>{
+			let newState = {
+				tagList: JSON.parse(data)
+			}
+			this.setState(newState);
+		});
+	}
+
+	componentWillReceiveProps(newProps) {
+		this.magicword = newProps.magicword;
+		this.update();
+	}
 
   render(){
     return (
     <div className="tagsAll">
       {this.state.tagList.map(tag=>
-        <Tag key={tag.tagName} 
-             text={tag.tagName+' '+tag.count}
-             search={tag.tagName} />)}
+        <Tag key={tag.tag} 
+             text={tag.tag+' '+tag.num}
+             search={tag.tag} />)}
     </div>
   )}
 }
@@ -325,7 +287,7 @@ function Social() {
     if (s==="instagram") {
       return <Ins id="instagram" className="social light" size={26} />
     } else if (s==="lofter") {
-      return <img src={Lofter} id="lofter" className="social light"/>
+      return <img src={Lofter} alt="lofter" id="lofter" className="social light"/>
     } else if (s==="weibo") {
       return <Weibo className="social light" size={22} />
     } else if (s==="tumblr") {
@@ -359,14 +321,10 @@ class Avatar extends Component {
     try {
       this.pic = require('../avatar.png');
     } catch (e) {
-      try {
-        this.pic = require('../avatar.jpg');
-      } catch (e) {
-        this.showpic = false;
-      }
+			this.showpic = false;
     }
     this.avatar = this.showpic ? 
-    <img className="avatar" src={this.pic}/> : <div className="avatar">{title}</div>
+    <img className="avatar" src={this.pic} alt="avatar"/> : <div className="avatar">{title}</div>
   }
 
   render() { return(
@@ -385,11 +343,8 @@ class Footer extends Component {
   }
 
   handleSubmit (event) {
-    if(this.state.value.toLowerCase()===password){
-      auth = true;
-      this.setState({redirect: true});
-      tagsUpdater();
-    }
+		magicword = this.state.value;
+    this.setState({redirect: true});
     event.preventDefault();
   }
 
@@ -398,18 +353,13 @@ class Footer extends Component {
   }
 
   render(){ 
-    var content;
-    if(this.state.redirect) {
-      this.state.redirect = false;
-      content = <Redirect to="/" />
-    } else {content =
+    var content =
       <form onSubmit={this.handleSubmit}>
         <span>Powered by </span>
         <input className="footerInput" size="5" type="text" 
             value={this.state.value} onChange={this.handleChange} />
         <input type="submit" value="" />
       </form>
-    }
     return (
       <div className="footer">{content}</div>
   )}

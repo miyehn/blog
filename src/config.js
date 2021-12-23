@@ -31,7 +31,7 @@ export var PostsPerPage = 6;
 
 export var Intro = function(){return (
 	<div className="intro">
-		<p>我是miyehn，可以叫我小雨，是个坐标美东，喜欢画画，也喜欢胡思乱想并对着（未来的）自己唠嗑的人。</p>
+		<p>我是miyehn，可以叫我小雨，是个喜欢画画，也喜欢胡思乱想并对着（未来的）自己唠嗑的人。</p>
 		<p>博客名 “槽” 是吐槽的那个槽，内容我也知道没营养... 可是建博客的初衷就是吐槽啊=A=。</p>
 	</div>
 )}
@@ -46,7 +46,6 @@ export var Friends = function() {return(
         <a className="light" href="https://blog.dlzhang.com/">班班的碎碎念</a>
         <a className="light" href="http://blog.fivest.one/">fivestone</a>
         <a className="light" href="https://mengru.space">mengru</a>
+        <a className="light" href="https://www.sardinefish.com">SardineFish</a>
     </div>
 )}
-
-export var password = "23333";

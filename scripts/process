@@ -10,7 +10,8 @@ import datetime
 
 rawData = []
 content_dir = os.environ['MRBLOG_CONTENT']
-magicword = open(content_dir + '/magicword', 'r').read().strip()
+install_dir = os.environ['MRBLOG_PATH']
+magicword = open(install_dir + '/magicword', 'r').read().strip()
 
 #remove old files in posts/
 paths = glob.glob(content_dir + '/blogposts/*')
@@ -38,6 +39,7 @@ def getTimeKey(obj):
 
 # maintain a set of tags for later
 listsPerTag = {}
+listsPerTagPublic = {}
 
 for path in paths:
     file = open(path, 'r')
@@ -127,50 +129,82 @@ for path in paths:
     for tag in tagarr:
         if not (tag in listsPerTag): listsPerTag[tag] = []
         listsPerTag[tag].append(data)
+        if publicity == 2:
+            if not (tag in listsPerTagPublic): listsPerTagPublic[tag] = []
+            listsPerTagPublic[tag].append(data)
 
     # rewrite file content + magic
+    writeData = {
+        'title': data['title'],
+        'tags': data['tags'],
+        'date': data['date'],
+        'content': textOrig.strip()
+    }
     path = content_dir + '/blogposts' + path[len(content_dir) + 7:]
-    if publicity==2: # public
-        with open(path[:-3], 'w+') as outfile:
-            outfile.write(textOrig.strip())
-    if publicity==1: # partially public
-        with open(path[:-3]+'-'+magicword, 'w+') as outfile:
-            outfile.write(textAlt.strip())
-    else: # hidden
-        with open(path[:-3], 'w+') as outfile:
-            outfile.write(textAlt.strip())
+    with open(path[:-3], 'w+') as outfile:
+        json.dump(writeData, outfile, separators=(',', ':'), ensure_ascii=False)
 
     file.close()
 
+publicData = list(filter(lambda obj: obj['publicity'] == 2, rawData))
+
+######################### output ############################
+
+## tags
+tagslist = []
+for tag in listsPerTagPublic:
+    tagslist.append({'tag':tag, 'num':len(listsPerTagPublic[tag])})
+tagslist.sort(reverse=True, key=lambda e:e['num'])
+with open (content_dir + '/index/tags', 'w+') as outfile:
+    json.dump(tagslist, outfile, separators=(',', ':'), ensure_ascii=False)
+
+# w hidden
+tagslist = []
+for tag in listsPerTag:
+    tagslist.append({'tag':tag, 'num':len(listsPerTag[tag])})
+tagslist.sort(reverse=True, key=lambda e:e['num'])
+with open (content_dir + '/index/'+magicword+'tags', 'w+') as outfile:
+    json.dump(tagslist, outfile, separators=(',', ':'), ensure_ascii=False)
+
+def stripPublicity(l):
+    for i in range(0, len(l)):
+        l[i] = {
+            'title': l[i]['title'],
+            'path': l[i]['path'],
+            'tags': l[i]['tags'],
+            'date': l[i]['date']
+        }
+
 # @data: list to output into chunks
-# @chunkSize: number of posts to output per chunk
-def writeLists(data, outPrefix, chunkSize):
-    data.sort(reverse=True, key=getTimeKey)
+def writeLists(data, outPrefix):
+    chunkSize = 100
     numChunks = int((len(data) + chunkSize - 1) / chunkSize)
+    data.sort(reverse=True, key=getTimeKey)
+    stripPublicity(data)
     for chunkIndex in range(0, numChunks):
         # get sublist
         lo = chunkIndex * chunkSize
         hi = lo + chunkSize
         if hi > len(data): hi = len(data)
         sublist = data[lo:hi]
+        outContent = {
+            'count': len(data),
+            'chunkIndex': chunkIndex,
+            'content': sublist
+        }
         # process sublist
         with open (outPrefix + str(chunkIndex), 'w+') as outfile:
-            json.dump(sublist, outfile, separators=(',',':'), ensure_ascii=False)
+            json.dump(outContent, outfile, separators=(',',':'), ensure_ascii=False)
             #json.dump(rawData, outfile, indent=2, ensure_ascii=False)
 
-
-# TODO: public linked list: no publicity info; other linked list: with publicity info
-publicData = list(filter(lambda obj: obj['publicity'] == 2, rawData))
-
 # all (as seen from blog home page)
-writeLists(rawData, content_dir + '/index/' + magicword + '_all_', 50)
-writeLists(publicData, content_dir + '/index/all_', 50)
+writeLists(rawData, content_dir + '/index/' + magicword)
+writeLists(publicData, content_dir + '/index/')
 
 # tags.. (filter by each, output two respectively)
 for tag in listsPerTag:
     publicTagData = list(filter(lambda obj: obj['publicity'] == 2, listsPerTag[tag]))
-    writeLists(listsPerTag[tag], content_dir + '/index/' + magicword + '_tag_' + tag + '_', 50)
-    writeLists(publicTagData, content_dir + '/index/tag_' + tag + '_', 50)
+    writeLists(listsPerTag[tag], content_dir + '/index/' + magicword + 'tag_' + tag + '_')
+    writeLists(publicTagData, content_dir + '/index/tag_' + tag + '_')
 
 print('summary generated')
-

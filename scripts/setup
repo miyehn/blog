@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#DEPRECATED!
+
 import os
 import json
 
@@ -32,8 +34,8 @@ else:
     file.write('\n#_begin_mrblog_setup\n')
     file.write('export MRBLOG_DOMAIN="'+domain+'"\n')
     file.write('export MRBLOG_CONTENT="'+content_dir+'"\n')
-    file.write('export MRBLOG_SCRIPTS="'+scripts_dir+'"\n')
-    file.write('alias mrblog="$MRBLOG_SCRIPTS/mrblog"\n')
+    file.write('export MRBLOG_PATH="'+scripts_dir+'"\n')
+    file.write('alias mrblog="$MRBLOG_PATH/scripts/mrblog"\n')
     file.write('#_end_mrblog_setup\n')
 
     file.close()

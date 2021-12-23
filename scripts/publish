@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 cd $MRBLOG_CONTENT
-$MRBLOG_SCRIPTS/process
-$MRBLOG_SCRIPTS/process_pics
+$MRBLOG_PATH/scripts/process
+$MRBLOG_PATH/scripts/process_pics
 
 DD=$(date +%d)
 MM=$(date +%m)
@@ -11,11 +11,9 @@ HH=$(date +%H)
 mm=$(date +%M)
 MSG="publish to mrblog: $YYYY-$MM-$DD $HH:$mm"
 
+git add ./index
 git add ./blogposts
 git add ./pics
-git add ./tracks
-git add ./blogSummary
-git add ./tracklist
 git commit -m "$MSG"
 echo "committed changes"
 git push -q

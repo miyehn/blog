@@ -5,7 +5,7 @@ import os
 import shutil
 
 argc = len(sys.argv)
-scripts_dir = os.environ['MRBLOG_SCRIPTS']
+scripts_dir = os.environ['MRBLOG_PATH'] + "/scripts"
 
 if argc==1:
     print('-------- Welcome to mrblog! --------')
