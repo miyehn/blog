@@ -12,7 +12,7 @@
 .markdown>h5,
 .markdown>h6,
 .markdown>blockquote{
-	margin-bottom: calc(var(--base-line-height) - 1em);
+	margin-bottom: calc(var(--base-line-height) - 0.75em);
 }
 
 .markdown>hr{
@@ -28,7 +28,7 @@
 	border: 1px solid var(--grey-color);
 	border-radius: 4px;
 	background-color: var(--white);
-	font-family: Georgia;
+	font-family: Georgia, var(--base-font-family);
 	font-size: var(--big-font-size);
 	padding: 0.5em 0.75em;
 }

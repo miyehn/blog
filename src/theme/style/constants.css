@@ -3,6 +3,14 @@
   font-family: myCabin; 
   src: url(https://miyehn.me/myblog/cabin/Cabin-Regular.otf); 
 }
+@font-face {
+  font-family: LXGW; 
+  src: url(https://miyehn.me/resource/LXGWWenKaiLite/LXGWWenKaiLite-Regular.ttf); 
+}
+@font-face {
+  font-family: LXGW-bold; 
+  src: url(https://miyehn.me/resource/LXGWWenKaiLite/LXGWWenKaiLite-Bold.ttf); 
+}
 
 :root {
     /* Space unit */

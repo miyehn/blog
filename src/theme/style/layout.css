@@ -121,7 +121,7 @@ html{
 }
 
 .intro>p{
-	margin-bottom: calc(var(--base-line-height) - 1em);
+	margin-bottom: calc(var(--base-line-height) - 0.75em);
 }
 
 .tag{
@@ -147,6 +147,8 @@ html{
 }
 
 .date{
+	font-size: var(--small-font-size);
+	font-family: "myCabin", sans-serif;
 	color: var(--grey-color);
 }
 
@@ -191,13 +193,19 @@ html{
 }
 
 .footer{
+	color: var(--grey-color);
+	font-size: var(--small-font-size);
 	margin-top: var(--space-l);
 	margin-bottom: 10px;
 	text-align: center;
 }
 
+.footer>a{
+	color: var(--accent-color);
+}
+
 .footerInput{
 	color: transparent;
-	text-shadow: 0 0 0 var(--black);
+	text-shadow: 0 0 0 var(--grey-color);
 }
 

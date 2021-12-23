@@ -31,8 +31,8 @@ export var PostsPerPage = 6;
 
 export var Intro = function(){return (
 	<div className="intro">
-		<p>我是miyehn，可以叫我小雨，是个喜欢画画，也喜欢胡思乱想并对着（未来的）自己唠嗑的人。</p>
-		<p>博客名 “槽” 是吐槽的那个槽，内容我也知道没营养... 可是建博客的初衷就是吐槽啊=A=。</p>
+		<p>随便放些脑洞，涂鸦和快乐碎片>:D</p>
+		<p>个人主页：<a className="light" href="https://miyehn.me">miyehn.me</a></p>
 	</div>
 )}
 

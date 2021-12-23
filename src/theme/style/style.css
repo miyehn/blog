@@ -2,20 +2,19 @@
 
 :root{
 	/* Font families */
-	--fallback-font-family: Helvetica, Arial, "Hiragino Sans GB", 
-	"Hiragino Sans GB W3", "Microsoft JhengHei", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
-	--base-font-family: "myCabin", var(--fallback-font-family);
+	--base-font-family: "LXGW", Serif;
+	--bold-font-family: "LXGW-bold", Serif;
 	--code-font-family: "inconsolata", Consolas, monospace, sans-serif;
 
 	/* Font configuration */
-	--base-font-size:   10pt;
-	--small-font-size:  9pt;
-	--big-font-size: 	12pt;
-	--huge-font-size:	22pt;
-	--base-line-height: 1.75em;
+	--base-font-size:   12pt;
+	--small-font-size:  10pt;
+	--big-font-size: 	14pt;
+	--huge-font-size:	28pt;
+	--base-line-height: 1.5em;
 
 	/* Colors */
-	--black: 			#404040;
+	--black: 			#394134;
 	--white: 			#ffffff;
 	--background-color: #F8F7F4;
 	--accent-color:     var(--material-green);
@@ -25,5 +24,4 @@
 
 @import './normalize.css';
 @import './markdown.css';
-@import './musicplayer.css';
 @import './layout.css';
