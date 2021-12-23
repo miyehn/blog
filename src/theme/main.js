@@ -373,7 +373,7 @@ class Footer extends Component {
 			</form>
 		return (
 			<div className="footer">
-				本博客<a href="https://github.com/miyehn/mrblog">Github</a> | 博客字体<a href="https://github.com/lxgw/LxgwWenKai-Lite">霞鹜文楷</a><br/>
+				本博客<a href="https://github.com/miyehn/blog">github</a> | 博客字体<a href="https://github.com/lxgw/LxgwWenKai-Lite">霞鹜文楷</a><br/>
 				{powered}
 			</div>
 	)}

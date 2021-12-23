@@ -39,7 +39,10 @@ html{
 .post{
 	margin-bottom: var(--space-ml);
 	padding-left: var(--space-s);
-	border-left: 2px solid var(--accent-color);
+	border-image-source: url('https://miyehn.me/resource/blog-assets/line-vertical.png');
+	border-image-slice: 8;
+	border-image-repeat: repeat;
+	border-left: 5px solid;
 }
 
 .title{
@@ -115,7 +118,10 @@ html{
 
 	.friends{
 		padding-top: var(--space-m);
-		border-top: 1px solid var(--accent-color);
+		border-top: 4px solid;/* var(--accent-color);*/
+		border-image-source: url('https://miyehn.me/resource/blog-assets/line-horizontal.png');
+		border-image-slice: 8;
+		border-image-repeat: repeat;
 	}
 
 }

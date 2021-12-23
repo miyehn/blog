@@ -20,6 +20,7 @@
 	--accent-color:     var(--material-green);
 	--selection-color:  #DCF1C6;
 	--grey-color:       #b3b3b3;
+	--note-yellow: #FFFAE5;
 }
 
 @import './normalize.css';

@@ -26,8 +26,8 @@
 
 .markdown>blockquote{
 	border: 1px solid var(--grey-color);
-	border-radius: 4px;
-	background-color: var(--white);
+	border-radius: 3px;
+	background-color: var(--note-yellow);
 	font-family: Georgia, var(--base-font-family);
 	font-size: var(--big-font-size);
 	padding: 0.5em 0.75em;
