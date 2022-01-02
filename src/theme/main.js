@@ -94,8 +94,8 @@ class SinglePost extends Component {
 		};
 	}
 
-	componentDidMount() {
-		let permalink = this.state.postObject.path;
+	asyncFetchUpdate(permalink)
+	{
 		let url = domainName + '/mrblog-content/blogposts/' + permalink;
 		asyncFetch(url, (data)=>{
 			let newState = this.state;
@@ -106,8 +106,18 @@ class SinglePost extends Component {
 		});
 	}
 
+	componentDidMount() {
+		let permalink = this.state.postObject.path;
+		this.asyncFetchUpdate(permalink);
+	}
+
+	componentWillReceiveProps(nextProp) {
+		let permalink = nextProp.permalink;
+		this.asyncFetchUpdate(permalink);
+	}
+
 	render() {
-		return this.state.found ? <PostRenderer postObj={this.state.postObject} /> : <NotFound />
+		return this.state.found ? <PostRenderer postObj={this.state.postObject} /> : <div>loading...</div>
 	}
 }
 
@@ -231,21 +241,40 @@ function DateString({date, linkPath}) {
 	</div>
 )}
 
-function PostRenderer({postObj}){return(
-	<div>
-		<DateString date={postObj.date} linkPath={'/post/'+postObj.path} />
-		<div className="post">
-			<div>
-				{ postObj.title!=='' && 
-					<div className="title">
-						<Link to={'/post/'+postObj.path}>{postObj.title}</Link>
-					</div> }
-				<ReactMarkDown className="markdown" escapeHtml={false} source={postObj.content} />
+class PostRenderer extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			postObj: props.postObj
+		};
+	}
+
+	componentWillReceiveProps(newProps)
+	{
+		this.setState({
+			postObj: newProps.postObj
+		});
+	}
+
+	render() {
+		let postObj = this.state.postObj;
+		return(
+		<div>
+			<DateString date={postObj.date} linkPath={'/post/'+postObj.path} />
+			<div className="post">
+				<div>
+					{ postObj.title!=='' && 
+						<div className="title">
+							<Link to={'/post/'+postObj.path}>{postObj.title}</Link>
+						</div> }
+					<ReactMarkDown className="markdown" escapeHtml={false} source={postObj.content} />
+				</div>
+				{ postObj.tags.map(item=><Tag key={postObj.path+item} text={item} search={item} />) }
 			</div>
-			{ postObj.tags.map(item=><Tag key={postObj.path+item} text={item} search={item} />) }
 		</div>
-	</div>
-)}
+	)}
+}
 
 //can't reference this outside so had to wrap setState() this way
 class TagsSummary extends Component {
@@ -379,6 +408,8 @@ class Footer extends Component {
 	)}
 }
 
+/*
 function NotFound() { return (
 	<div>Not found...</div>
 )}
+*/
