@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os
+pc = os.environ.get('MRBLOG_PC', '0')
 
 content_dir = os.environ['MRBLOG_CONTENT']
+
 s = input('gimme some text in the post you\'re trying to find:\n> ')
 files = os.popen('grep -l "' + s + '" ' + content_dir + '/drafts/*.md').read().strip().split('\n')
 
@@ -10,7 +12,7 @@ while not (len(files)==1 and len(files[0])>0):
     if len(files[0])==0:
         print('no post contains it.')
     else:
-        print('more than one post contains it.')
+        print('more than one post contains it')
 
     s = input('gimme some other text:\n> ')
     files = os.popen('grep -l "' + s + '" ' + content_dir + '/drafts/*.md').read().strip().split('\n')
@@ -23,7 +25,10 @@ rec_action = False
 while not rec_action:
     a = input('what do you want to do with it?\nreply [e]dit, [r]ename, [d]elete, or [n]othing:\n> ').lower()
     if a=='e' or a=='edit':
-        os.system('open '+f)
+        if pc=='1':
+            os.system('start '+f)
+        else:
+            os.system('open '+f)
         rec_action = True
     elif a=='r' or a=='rename':
         new_name = input('sure. gimme it\'s new name (not the whole path) (without extension):\n> ')

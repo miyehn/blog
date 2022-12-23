@@ -32,4 +32,9 @@ echo "public: " >> $filename
 echo "" >> $filename
 echo "---" >> $filename
 
-open $filename
+if [ $MRBLOG_PC=='1' ]
+then
+	start $filename
+else
+	open $filename
+fi
