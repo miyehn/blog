@@ -14,11 +14,11 @@ install_dir = os.environ['MRBLOG_PATH']
 magicword = open(install_dir + '/magicword', 'r').read().strip()
 
 #remove old files in posts/
-paths = glob.glob(content_dir + '/blogposts/*')
+paths = glob.glob(content_dir + '/docs/blogposts/*')
 for path in paths:
     os.remove(path)
 
-paths = glob.glob(content_dir + '/index/*')
+paths = glob.glob(content_dir + '/docs/index/*')
 for path in paths:
     os.remove(path)
 
@@ -140,7 +140,7 @@ for path in paths:
         'date': data['date'],
         'content': textOrig.strip()
     }
-    path = content_dir + '/blogposts' + path[len(content_dir) + 7:]
+    path = content_dir + '/docs/blogposts' + path[len(content_dir) + 7:]
     with open(path[:-3], mode='w+', encoding='utf8') as outfile:
         json.dump(writeData, outfile, separators=(',', ':'), ensure_ascii=False)
 
@@ -155,7 +155,7 @@ tagslist = []
 for tag in listsPerTagPublic:
     tagslist.append({'tag':tag, 'num':len(listsPerTagPublic[tag])})
 tagslist.sort(reverse=True, key=lambda e:e['num'])
-with open (content_dir + '/index/tags', mode='w+', encoding='utf8') as outfile:
+with open (content_dir + '/docs/index/tags', mode='w+', encoding='utf8') as outfile:
     json.dump(tagslist, outfile, separators=(',', ':'), ensure_ascii=False)
 
 # w hidden
@@ -163,7 +163,7 @@ tagslist = []
 for tag in listsPerTag:
     tagslist.append({'tag':tag, 'num':len(listsPerTag[tag])})
 tagslist.sort(reverse=True, key=lambda e:e['num'])
-with open (content_dir + '/index/'+magicword+'tags', mode='w+', encoding='utf8') as outfile:
+with open (content_dir + '/docs/index/'+magicword+'tags', mode='w+', encoding='utf8') as outfile:
     json.dump(tagslist, outfile, separators=(',', ':'), ensure_ascii=False)
 
 def stripPublicity(l):
@@ -198,13 +198,13 @@ def writeLists(data, outPrefix):
             #json.dump(rawData, outfile, indent=2, ensure_ascii=False)
 
 # all (as seen from blog home page)
-writeLists(rawData, content_dir + '/index/' + magicword)
-writeLists(publicData, content_dir + '/index/')
+writeLists(rawData, content_dir + '/docs/index/' + magicword)
+writeLists(publicData, content_dir + '/docs/index/')
 
 # tags.. (filter by each, output two respectively)
 for tag in listsPerTag:
     publicTagData = list(filter(lambda obj: obj['publicity'] == 2, listsPerTag[tag]))
-    writeLists(listsPerTag[tag], content_dir + '/index/' + magicword + 'tag_' + tag + '_')
-    writeLists(publicTagData, content_dir + '/index/tag_' + tag + '_')
+    writeLists(listsPerTag[tag], content_dir + '/docs/index/' + magicword + 'tag_' + tag + '_')
+    writeLists(publicTagData, content_dir + '/docs/index/tag_' + tag + '_')
 
 print('summary generated')

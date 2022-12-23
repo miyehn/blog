@@ -11,9 +11,7 @@ HH=$(date +%H)
 mm=$(date +%M)
 MSG="publish to mrblog: $YYYY-$MM-$DD $HH:$mm"
 
-git add ./index
-git add ./blogposts
-git add ./pics
+git add -A
 git commit -m "$MSG"
 echo "committed changes"
 git push -q
