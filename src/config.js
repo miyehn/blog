@@ -32,14 +32,13 @@ export var PostsPerPage = 6;
 export var Intro = function(){return (
 	<div className="intro">
 		<p>一些脑洞，涂鸦和快乐碎片>:D</p>
-		<p>个人主页：<a className="light" href="https://miyehn.me">miyehn.me</a></p>
+		<p>作品集页：<a className="light" href="https://miyehn.me">miyehn.me</a></p>
 	</div>
 )}
 
 export var Friends = function() {return(
     <div className="friends">
-        <p>朋友们的博客：</p>
-        <a className="light" href="https://handsomemango.github.io/blog">芒果</a>
+        <p>也拜访下俺的赛博邻居们吧：</p>
         <a className="light" href="https://sumygg.com/">SumyBlog</a>
         <a className="light" href="https://mantyke.icu/">小球飞鱼</a>
         <a className="light" href="https://nachtzug.xyz/">Nachtzug</a>
@@ -47,5 +46,7 @@ export var Friends = function() {return(
         <a className="light" href="http://blog.fivest.one/">fivestone</a>
         <a className="light" href="https://mengru.space">mengru</a>
         <a className="light" href="https://www.sardinefish.com">SardineFish</a>
+        <a className="light" href="https://ablustrund.com/">Ablustrund</a>
+        <a className="light" href="https://ayu.land/">甜鱼</a>
     </div>
 )}
