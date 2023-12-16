@@ -113,6 +113,7 @@ export default class Main extends React.Component {
 		let containerWidth = 1100;
 		let zDist = 1000;
 		let shiftXPx = Math.tan(this.state.rotateY) * zDist;
+		let shiftYPx = Math.tan(this.state.rotateX) * zDist;
 		let outerBoxStyle = {
 			position: "relative",
 			width: containerWidth,
@@ -124,30 +125,40 @@ export default class Main extends React.Component {
 			border: "1px solid red"
 		};
 		let wallStyle = {
-			perspective: "1000px",
-
+			perspective: zDist,
 		};
-		let innerBoxStyle = {
-			position: "relative",
-			width: width,
-			height: height,
+		let rotateYBoxStyle = {
 			left: -shiftXPx,
-			margin: "0 auto",
 			transform: `rotateY(${this.state.rotateY}rad)`,
+			perspective: zDist,
+			position: "relative",
+			pointerEvents: "none"
+		};
+		let rotateXBoxStyle = {
+			top: shiftYPx,
+			transform: `rotateX(${this.state.rotateX}rad)`,
+			position: "relative",
+			margin: "0 auto",
 			border: "1px solid",
 			backgroundImage: "linear-gradient(45deg, hsl(0deg 0% 0%) 0%, hsl(0deg 0% 100%) 100%)",
-		};
+			width: width,
+			height: height,
+		}
 		return (
 			<div style={outerBoxStyle}>
 				<span>x: </span>
-				<input type={"range"} width={200} min={0} max={100} onChange={e=>{
-					this.setState({rotateX: e.target.value});
+				<input type={"range"} width={200} min={-Math.PI * 25} max={Math.PI * 25} onChange={e=>{
+					this.setState({rotateX: e.target.value * 0.01});
 				}}/>
 				<span>y: </span>
-				<input type={"range"} width={200} min={-Math.PI * 100} max={Math.PI * 100} onChange={e=>{
+				<input type={"range"} width={200} min={-Math.PI * 25} max={Math.PI * 25} onChange={e=>{
 					this.setState({rotateY: e.target.value * 0.01});
 				}}/>
-				<div style={innerBoxStyle}></div>
+				<div style={wallStyle}>
+					<div style={rotateYBoxStyle}>
+						<div style={rotateXBoxStyle}></div>
+					</div>
+				</div>
 			</div>
 		)
 	}
