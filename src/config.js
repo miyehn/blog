@@ -48,5 +48,6 @@ export var Friends = function() {return(
         <a className="light" href="https://www.sardinefish.com">SardineFish</a>
         <a className="light" href="https://ablustrund.com/">Ablustrund</a>
         <a className="light" href="https://ayu.land/">甜鱼</a>
+        <a className="light" href="https://nikukikai.art/">肉機械</a>
     </div>
 )}
