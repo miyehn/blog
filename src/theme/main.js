@@ -14,7 +14,8 @@ import {FaTwitterSquare as Twitter} from 'react-icons/fa';
 import {IoMdMail as Mail} from 'react-icons/io';
 import {GoMarkGithub as Github} from "react-icons/go";
 
-var fetchCache = new Map();
+const fetchCache = new Map();
+
 function asyncFetch(url, callback, errorCallback)
 {
 	if (fetchCache.has(url))
@@ -35,10 +36,10 @@ function asyncFetch(url, callback, errorCallback)
 }
 
 let chunkSize = 100;
-var magicword = '';
+let magicword = '';
 
-var Lofter = require('./assets/lofter.png');
-var domainName = process.env.REACT_APP_DOMAIN;
+const Lofter = require('./assets/lofter.png');
+const domainName = process.env.REACT_APP_DOMAIN;
 
 document.title = title;
 
@@ -148,7 +149,7 @@ class PostsManager extends Component {
 
 	asyncFetchPosts(tag, pageNum)
 	{
-		var url = domainName + '/mrblog-content/index/' + magicword;
+		let url = domainName + '/mrblog-content/index/' + magicword;
 		if (tag !== undefined && tag.length > 0) url += 'tag_' + tag + '_';
 		let firstPostIndex = pageNum * PostsPerPage;
 		let chunkIndex = Math.floor(firstPostIndex / chunkSize);
