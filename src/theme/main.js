@@ -75,7 +75,6 @@ class MainColumn extends Component {
 			{/* tag */}
 			<Route exact path="/tag/:tag" render={({match})=>
 				<PostsManager tag={match.params.tag} page={0} />} />
-			}
 		</Switch></div>
 	)}
 }

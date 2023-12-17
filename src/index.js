@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Main from './2023/main.js';
+import ReactDOM from 'react-dom/client';
+import Main from './2023/main.tsx';
 
-ReactDOM.render(
-	<Main />
-	, document.getElementById('root')
-);
+const domNode = document.getElementById('root');
+const rootNode = ReactDOM.createRoot(domNode);
+
+rootNode.render(<Main/>);
