@@ -1,6 +1,6 @@
 import React, {CSSProperties} from "react";
 import {controller} from "./controller";
-import { ProjectionCalculator2d, ProjectionCalculator3d } from "projection-3d-2d";
+import { ProjectionCalculator2d } from "projection-3d-2d";
 import { vec3, quat, mat4, ReadonlyQuat, ReadonlyVec3 } from "gl-matrix";
 
 //const red = "rgba(255, 0, 0, 1)";
@@ -58,6 +58,8 @@ function perspectiveDivide(vi: ReadonlyVec3, o: ReadonlyVec3): [number, number] 
 	return [v[0], v[1]];
 }
 
+const distToProjector = 500;
+
 export default class Main extends React.Component {
 
 	state: {
@@ -82,7 +84,7 @@ export default class Main extends React.Component {
 		}).bind(this);
 	}
 
-	getMatrix(width: number, height: number) {
+	getProjectionInfo(width: number, height: number) {
 
 		// view dir rotation
 		let yRot = quat.create();
@@ -93,7 +95,7 @@ export default class Main extends React.Component {
 		let viewDirRot = quat.create();
 		quat.multiply(viewDirRot, xRot, yRot);
 
-		let origin = vec3.fromValues(0, 0, -500);
+		let origin = vec3.fromValues(0, 0, -distToProjector);
 
 		// rotated points
 		let bl = vec3.fromValues(-width/2, -height/2, 0);
@@ -119,12 +121,16 @@ export default class Main extends React.Component {
 		];
 
 		let projectionCalculator2d = new ProjectionCalculator2d(projectedPoints, originalPoints);
-		return projectionCalculator2d.resultMatrix;
+		let midPt = projectionCalculator2d.getProjectedPoint([0, 0]);
+		return {
+			matrix: projectionCalculator2d.resultMatrix,
+			meanDistance: vec3.len(vec3.fromValues(midPt[0], midPt[1], -distToProjector))
+		};
 	}
 
 	render() {
 		let outerSideLength = Math.min(window.innerWidth, window.innerHeight) * 0.9 - 80;
-		const aspectRatio = 1.5;
+		const aspectRatio = 1.25;
 		const zDist = outerSideLength / 2;
 		const scaleRatio = zDist / (zDist + this.state.cameraOffsetZ);
 		let width = outerSideLength;
@@ -143,7 +149,8 @@ export default class Main extends React.Component {
 			overflow: "visible"
 		};
 
-		let m = this.getMatrix(width, height);
+		let projectionInfo = this.getProjectionInfo(width, height);
+		let m = projectionInfo.matrix;
 		let projectionMatrix = `matrix3d(
 			${m.get(0, 0)}, ${m.get(1, 0)}, ${0}, ${m.get(2, 0)},
 			${m.get(0, 1)}, ${m.get(1, 1)}, ${0}, ${m.get(2, 1)},
@@ -151,8 +158,11 @@ export default class Main extends React.Component {
 			${m.get(0, 2)}, ${m.get(1, 2)}, ${0}, ${m.get(2, 2)}	
 		)`;
 
+		let opacity = (distToProjector) / projectionInfo.meanDistance;
+		const fallOff = 4;
 		let innerBoxStyle: CSSProperties = {
-			backgroundImage: "linear-gradient(45deg, hsl(0deg 0% 0%) 0%, hsl(0deg 0% 100%) 100%)",
+			background: "rgba(220, 220, 220, 1)",
+			opacity: Math.pow(opacity, fallOff),
 			width: width,
 			height: height,
 			transform: projectionMatrix
