@@ -40,15 +40,6 @@ function degrees(n: number) {
 
 type FourPoints = [[number, number], [number, number], [number, number], [number, number]];
 
-type SixPoints2d = [[number, number], [number, number], [number, number], [number, number], [number, number], [number, number]];
-type SixPoints3d = [
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-	[number, number, number],
-	[number, number, number]];
-
 function rotate(v: vec3, o: ReadonlyVec3, q: ReadonlyQuat) {
 	vec3.subtract(v, vec3.clone(v), o);
 	vec3.transformQuat(v, vec3.clone(v), q);
@@ -92,9 +83,6 @@ export default class Main extends React.Component {
 	}
 
 	getMatrix(width: number, height: number) {
-		//let aspectRatio = width / height;
-		//let vHalfFov = radians(30);
-		//let hHalfFov = Math.atan(Math.tan(vHalfFov) * aspectRatio);
 
 		// view dir rotation
 		let yRot = quat.create();
@@ -105,23 +93,23 @@ export default class Main extends React.Component {
 		let viewDirRot = quat.create();
 		quat.multiply(viewDirRot, xRot, yRot);
 
-		let origin = vec3.fromValues(width / 2, height / 2, -500);
+		let origin = vec3.fromValues(0, 0, -500);
 
 		// rotated points
-		let bl = vec3.fromValues(0, 0, 0);
+		let bl = vec3.fromValues(-width/2, -height/2, 0);
 		rotate(bl, origin, viewDirRot);
-		let br = vec3.fromValues(width, 0, 0);
+		let br = vec3.fromValues(width/2, -height/2, 0);
 		rotate(br, origin, viewDirRot);
-		let tl = vec3.fromValues(0, height, 0);
+		let tl = vec3.fromValues(-width/2, height/2, 0);
 		rotate(tl, origin, viewDirRot);
-		let tr = vec3.fromValues(width, height, 0);
+		let tr = vec3.fromValues(width/2, height/2, 0);
 		rotate(tr, origin, viewDirRot);
 
 		let originalPoints: FourPoints = [
-			[0, 0],
-			[width, 0],
-			[0, height],
-			[width, height]
+			[-width/2, -height/2],
+			[width/2, -height/2],
+			[-width/2, height/2],
+			[width/2, height/2]
 		];
 		let projectedPoints: FourPoints = [
 			perspectiveDivide(bl, origin),
@@ -131,28 +119,13 @@ export default class Main extends React.Component {
 		];
 
 		let projectionCalculator2d = new ProjectionCalculator2d(projectedPoints, originalPoints);
-		let m3 = projectionCalculator2d.resultMatrix;
-
-		/*
-		let m4 = mat4.create();
-		mat4.set(m4,
-			m3.get(0, 0), m3.get(1, 0), 0, m3.get(2, 0),
-			m3.get(0, 1), m3.get(1, 1), 0, m3.get(2, 1),
-			0, 0, 1, 0,
-			m3.get(0, 2), m3.get(1, 2), 0, m3.get(2, 2));
-
-		let vtest = vec3.fromValues(0, height, 0);
-		vec3.transformMat4(vtest, vec3.clone(vtest), m4);
-		console.log("vtest: " + vtest);
-		 */
-
-		return m3;
+		return projectionCalculator2d.resultMatrix;
 	}
 
 	render() {
 		let outerSideLength = Math.min(window.innerWidth, window.innerHeight) * 0.9 - 80;
-		const aspectRatio = 1;
-		const zDist = outerSideLength / 2;//500;
+		const aspectRatio = 1.5;
+		const zDist = outerSideLength / 2;
 		const scaleRatio = zDist / (zDist + this.state.cameraOffsetZ);
 		let width = outerSideLength;
 		let height = outerSideLength / aspectRatio;
@@ -166,7 +139,7 @@ export default class Main extends React.Component {
 			margin: "0 auto",
 			marginTop: (window.innerHeight - height) / 2,
 			transform: `scale(${scaleRatio})`,
-			border: "1px solid red",
+			//border: "1px solid red",
 			overflow: "visible"
 		};
 
@@ -179,7 +152,6 @@ export default class Main extends React.Component {
 		)`;
 
 		let innerBoxStyle: CSSProperties = {
-			transformOrigin: "0 0 0",
 			backgroundImage: "linear-gradient(45deg, hsl(0deg 0% 0%) 0%, hsl(0deg 0% 100%) 100%)",
 			width: width,
 			height: height,
