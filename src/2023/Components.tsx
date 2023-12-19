@@ -1,6 +1,7 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {contentManager, PostInfo} from "./ContentManager";
-import {createBrowserRouter, RouterProvider, Link, useMatches, useMatch} from "react-router-dom";
+import {createBrowserRouter, RouterProvider, Link, useMatch, useNavigate} from "react-router-dom";
+import {Tab, Tabs, TabList, TabPanel} from "react-tabs";
 import Markdown from "react-markdown";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
@@ -21,8 +22,10 @@ function Logo() {
 function ArrowButton(props: {
 	expanded: boolean
 }) {
-	let str = localStorage.getItem("directoryPage");
+	let str = localStorage.getItem("directoryPageName");
 	if (str === null) str = "about";
+
+	const navigate = useNavigate();
 
 	return <div style={{
 		position: "absolute",
@@ -32,12 +35,10 @@ function ArrowButton(props: {
 		height: 30,
 		cursor: "pointer"
 	}} onClick={e=>{
-		localStorage.setItem("directoryExpanded", props.expanded ? "0" : "1");
-	}}><Link to={
-		props.expanded ? "/" : "/page/" + str.toString()
-	}><div style={{textAlign: "center", margin: "auto"}}>{
+		navigate(props.expanded ? "/" : "/page/" + str);
+	}}><div style={{textAlign: "center", margin: "auto"}}>{
 		props.expanded ? "<<" : ">>"
-	}</div></Link></div>
+	}</div></div>
 }
 
 function DateString(props: {
@@ -178,28 +179,36 @@ function AboutPage() {
 	</div>
 }
 
+function DirectoryTabs(props: {
+	pageName: string
+}) {
+	const pageNames = [
+		"about",
+		"archive"
+	];
+	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
+	const navigate = useNavigate();
+	return <Tabs selectedIndex={currentIndex} onSelect={(idx, lastIdx, e)=>{
+		localStorage.setItem("directoryPageName", pageNames[idx]);
+		navigate("/page/" + pageNames[idx]);
+	}}>
+		<TabList>
+			<Tab>about</Tab>
+			<Tab>archive</Tab>
+		</TabList>
+		<TabPanel>
+			<AboutPage/>
+		</TabPanel>
+		<TabPanel>
+			archive page placeholder
+		</TabPanel>
+	</Tabs>
+}
+
 function Directory(props: {
 	pageName: string
 }) {
-	let expanded = false;
-	let str = localStorage.getItem("directoryExpanded");
-	if (str !== null) {
-		expanded = parseInt(str) > 0;
-	}
-	if (props.pageName.length === 0) {
-		expanded = false;
-	}
-
-	let pageContent = undefined;
-
-	if (expanded) {
-		if (props.pageName === "about") {
-			pageContent = <AboutPage/>
-		} else {
-			pageContent = <Error404/>
-		}
-	}
-
+	const expanded = props.pageName.length > 0;
 	let directoryContent = <div style={{
 		height: "100%",
 		display: "flex",
@@ -211,10 +220,9 @@ function Directory(props: {
 			height: "100%",
 			background: "rgba(255, 255, 255, 0.95)",
 			paddingLeft: 60,
-			paddingRight: expanded? 60 : 0,
-			outline: "1px solid green"
+			paddingRight: expanded? 80 : 0,
 		}}>
-			{pageContent}
+			{expanded ? <DirectoryTabs pageName={props.pageName}/> : undefined}
 			<ArrowButton expanded={expanded}/>
 		</div>
 		<div style={{flex: 1}}/>

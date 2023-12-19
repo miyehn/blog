@@ -23,6 +23,9 @@ html, body {
     height: 101%;
     pointer-events: none;
 }
+.forceScrollable::-webkit-scrollbar {
+    display: none;
+}
 
 .date{
     /*font-size: var(--small-font-size);*/

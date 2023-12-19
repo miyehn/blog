@@ -11,7 +11,7 @@
     "jquery": ">=3.7.1",
     "moment": ">=2.29.4",
     "projection-3d-2d": ">=2.0.8",
-    "react": ">=16.14.0",
+    "react": ">=18.0.0",
     "react-dom": ">=16.14.0",
     "react-error-overlay": "6.0.9",
     "react-icons": ">=3.11.0",
@@ -19,6 +19,7 @@
     "react-router": ">=4.3.1",
     "react-router-dom": ">=4.3.1",
     "react-scripts": "^4.0.0",
+    "react-tabs": "^6.0.2",
     "typescript": "^4.6.3"
   },
   "scripts": {
