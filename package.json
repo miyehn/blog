@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/jquery": "^3.5.29",
     "gh-pages": ">=2.2.0"
   },
   "browserslist": {

@@ -1,24 +1,14 @@
-import React, {CSSProperties} from "react";
-import {controller} from "./controller";
+import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import { ProjectionCalculator2d } from "projection-3d-2d";
 import { vec3, quat, mat4, ReadonlyQuat, ReadonlyVec3 } from "gl-matrix";
+import '../common/style/style.css';
+import './layout.css';
+import Blog from "./Components";
+import {projector} from "./Projector";
 
 //const red = "rgba(255, 0, 0, 1)";
 //const green = "rgba(0, 255, 0, 1)";
 //const blue = "rgba(0, 0, 255, 1)";
-
-function Logo() {
-	return <div style={{
-		position: "absolute",
-		top: "50%",
-	}}> <img style={{
-			position: "relative",
-			top: -50,
-			left: -100,
-			height: 100,
-		}} src={require("../avatar.png")} alt={"avatar"}/>
-	</div>
-}
 
 type ProjectionParams = {
 	cameraOffsetX: number,
@@ -60,37 +50,23 @@ function perspectiveDivide(vi: ReadonlyVec3, o: ReadonlyVec3): [number, number] 
 
 const distToProjector = 500;
 
-export default class Main extends React.Component {
+export default function Main() {
 
-	state: {
-		cameraOffsetX: number,
-		cameraOffsetY: number,
-		cameraOffsetZ: number,
-		rotateX: number,
-		rotateY: number
-	};
+	const containerRef = useRef<HTMLDivElement | null>(null);
 
-	constructor(props: {}) {
-		super(props);
-		this.state = {
-			cameraOffsetX: 0,
-			cameraOffsetY: 0,
-			cameraOffsetZ: 0,
-			rotateX: 0,
-			rotateY: 0,
-		};
-		setProjectionParams = ((params: ProjectionParams) => {
-			this.setState(params);
-		}).bind(this);
-	}
+	const [rotateX, setRotateX] = useState(0);
+	const [rotateY, setRotateY] = useState(0);
+	const [cameraOffsetX, setCameraOffsetX] = useState(0);
+	const [cameraOffsetY, setCameraOffsetY] = useState(0);
+	const [cameraOffsetZ, setCameraOffsetZ] = useState(0);
 
-	getProjectionInfo(width: number, height: number) {
+	const getProjectionInfo = function(width: number, height: number) {
 
 		// view dir rotation
 		let yRot = quat.create();
-		quat.setAxisAngle(yRot, vec3.fromValues(0, 1, 0), this.state.rotateY);
+		quat.setAxisAngle(yRot, vec3.fromValues(0, 1, 0), rotateY);
 		let xRot = quat.create();
-		quat.setAxisAngle(xRot, vec3.fromValues(1, 0, 0), this.state.rotateX);
+		quat.setAxisAngle(xRot, vec3.fromValues(1, 0, 0), rotateX);
 
 		let viewDirRot = quat.create();
 		quat.multiply(viewDirRot, xRot, yRot);
@@ -128,61 +104,78 @@ export default class Main extends React.Component {
 		};
 	}
 
-	render() {
-		let outerSideLength = Math.min(window.innerWidth, window.innerHeight) * 0.9 - 80;
-		const aspectRatio = 1.25;
-		const zDist = outerSideLength / 2;
-		const scaleRatio = zDist / (zDist + this.state.cameraOffsetZ);
-		let width = outerSideLength;
-		let height = outerSideLength / aspectRatio;
-
-		let outerBoxStyle: CSSProperties = {
-			position: "relative",
-			left: -this.state.cameraOffsetX,
-			top: this.state.cameraOffsetY,
-			width: width,
-			height: height,
-			margin: "0 auto",
-			marginTop: (window.innerHeight - height) / 2,
-			transform: `scale(${scaleRatio})`,
-			//border: "1px solid red",
-			overflow: "visible"
+	// initialization
+	useEffect(()=>{
+		setProjectionParams = (params: ProjectionParams) => {
+			setRotateX(params.rotateX);
+			setRotateY(params.rotateY);
+			setCameraOffsetX(params.cameraOffsetX);
+			setCameraOffsetY(params.cameraOffsetY);
+			setCameraOffsetZ(params.cameraOffsetZ);
 		};
+	}, []);
 
-		let projectionInfo = this.getProjectionInfo(width, height);
-		let m = projectionInfo.matrix;
-		let projectionMatrix = `matrix3d(
+	let outerSideLength = Math.min(window.innerWidth, window.innerHeight) * 0.9 - 80;
+	const aspectRatio = 1.25;
+	const zDist = outerSideLength / 2;
+	const scaleRatio = zDist / (zDist + cameraOffsetZ);
+	let width = outerSideLength;
+	let height = outerSideLength / aspectRatio;
+
+	let outerBoxStyle: CSSProperties = {
+		position: "relative",
+		left: -cameraOffsetX,
+		top: cameraOffsetY,
+		width: width,
+		height: height,
+		margin: "0 auto",
+		marginTop: (window.innerHeight - height) / 2,
+		transform: `scale(${scaleRatio})`,
+		//border: "1px solid red",
+		overflow: "visible"
+	};
+
+	let projectionInfo = getProjectionInfo(width, height);
+	let m = projectionInfo.matrix;
+	let projectionMatrix = `matrix3d(
 			${m.get(0, 0)}, ${m.get(1, 0)}, ${0}, ${m.get(2, 0)},
 			${m.get(0, 1)}, ${m.get(1, 1)}, ${0}, ${m.get(2, 1)},
 			${0}, ${0}, ${1}, ${0},
 			${m.get(0, 2)}, ${m.get(1, 2)}, ${0}, ${m.get(2, 2)}	
 		)`;
 
-		let opacity = (distToProjector) / projectionInfo.meanDistance;
-		const fallOff = 4;
-		let innerBoxStyle: CSSProperties = {
-			background: "rgba(220, 220, 220, 1)",
-			opacity: Math.pow(opacity, fallOff),
-			width: width,
-			height: height,
-			transform: projectionMatrix
-		};
-
-		return (
-			<div
-				style={{width: "100%", height: window.innerHeight - 20, margin: 0, padding: 0, outline: "none", overflow: "hidden"}}
-				tabIndex={0}
-				onKeyDown={e=>{
-					controller.onKeyDown(e.key);
-				}}
-				onKeyUp={e=>{
-					controller.onKeyUp(e.key);
-				}}
-			>
-				<div style={outerBoxStyle}>
-					<div style={innerBoxStyle}></div>
-				</div>
+	let opacity = (distToProjector) / projectionInfo.meanDistance;
+	const fallOff = 4;
+	let innerBoxStyle: CSSProperties = {
+		background: "rgba(220, 220, 220, 1)",
+		opacity: Math.pow(opacity, fallOff),
+		width: width,
+		height: height,
+		transform: projectionMatrix
+	};
+	return <div
+		ref={containerRef}
+		style={{
+			width: "100%",
+			height: window.innerHeight - 20,
+			margin: 0,
+			padding: 0,
+			outline: "none",
+			overflow: "hidden"
+		}}
+		tabIndex={0}
+		onKeyDown={e => {
+			projector.onKeyDown(e.key);
+		}}
+		onKeyUp={e => {
+			projector.onKeyUp(e.key);
+		}}
+	>
+		<div style={outerBoxStyle}>
+			<div style={innerBoxStyle}>
+				<Blog/>
 			</div>
-		)
-	}
+		</div>
+	</div>
+
 }

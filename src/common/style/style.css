@@ -1,4 +1,4 @@
-@import './constants.css';
+@import 'constants.css';
 
 :root{
 	/* Font families */
@@ -23,6 +23,6 @@
 	--note-yellow: #FFFAE5;
 }
 
-@import './normalize.css';
-@import './markdown.css';
-@import './layout.css';
+@import 'normalize.css';
+@import 'markdown.css';
+/*@import './layout.css';*/

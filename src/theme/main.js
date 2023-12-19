@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import { HashRouter } from 'react-router-dom';
 import jQuery from 'jquery';
 import ReactMarkDown from 'react-markdown';
-import './style/style.css';
-import { Intro, Friends, PostsPerPage, email, socialHandles, title} from '../config.js';
+import '../common/style/style.css';
+import './layout.css';
+import { Intro, Friends, PostsPerPage, email, socialHandles, title} from '../config.ts';
 
 import {FaTumblrSquare as Tumblr} from 'react-icons/fa';
 import {FaWeibo as Weibo} from 'react-icons/fa';

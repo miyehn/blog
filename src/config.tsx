@@ -31,7 +31,7 @@ export var PostsPerPage = 6;
 
 export var Intro = function(){return (
 	<div className="intro">
-		<p>一些脑洞，涂鸦和快乐碎片>:D</p>
+		<p>一些脑洞，涂鸦和快乐碎片{'>'}:D</p>
 		<p>作品集页：<a className="light" href="https://miyehn.me">miyehn.me</a></p>
 	</div>
 )}
