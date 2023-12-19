@@ -1,5 +1,17 @@
+html{
+    background-color: var(--background-color);
+    font-family: var(--base-font-family);
+    font-size: var(--base-font-size);
+    line-height: var(--base-line-height);
+    color: var(--black);
+}
+
+*::selection {
+    background: var(--selection-color); /* WebKit/Blink Browsers */
+}
+
 html, body {
-    overscroll-behavior: none;
+    overscroll-behavior-y: none;
 }
 
 .forceScrollable:after {
@@ -9,4 +21,5 @@ html, body {
     display: block;
     width: 100%;
     height: 101%;
+    pointer-events: none;
 }

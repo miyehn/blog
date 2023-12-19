@@ -1,6 +1,6 @@
 import {setProjectionParams} from "./Main";
 
-class Projector {
+class ProjectorController {
 
 	#cameraOffsetX: number = 0;
 	#cameraOffsetY: number = 0;
@@ -173,4 +173,4 @@ class Projector {
 	}
 }
 
-export const projector = new Projector();
+export const projectorController = new ProjectorController();

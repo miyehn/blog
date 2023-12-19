@@ -84,8 +84,21 @@ class ContentManager {
 		this.#magicword = "";
 	}
 
+	asyncGetPost(permalink: string, cb: (info: PostInfo, content: string)=>void) {
+		const url = this.blogInfo.domainName + "/mrblog-content/blogposts/" + permalink;
+		this.#networkManager.asyncFetch(url, data =>{
+			let parsed = JSON.parse(data);
+			cb({
+				title: parsed.title,
+				tags: parsed.tags,
+				date: parsed.date,
+				path: permalink
+			}, parsed.content);
+		});
+	}
+
 	// this call assumes globalStartIdx is valid. If numPosts is too large, it'll simply finish at the last available fetch
-	asyncGetPosts(
+	asyncGetPostsInfo(
 		globalStartIdx: number,
 		numPosts: number,
 		cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void): void

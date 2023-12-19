@@ -4,7 +4,7 @@ import { vec3, quat, mat4, ReadonlyQuat, ReadonlyVec3 } from "gl-matrix";
 import '../common/style/style.css';
 import './layout.css';
 import Blog from "./Components";
-import {projector} from "./Projector";
+import {projectorController} from "./ProjectorController";
 
 //const red = "rgba(255, 0, 0, 1)";
 //const green = "rgba(0, 255, 0, 1)";
@@ -19,14 +19,6 @@ type ProjectionParams = {
 };
 
 export let setProjectionParams = (params: ProjectionParams) => {};
-
-function radians(n: number) {
-	return n * Math.PI / 180;
-}
-
-function degrees(n: number) {
-	return n * 180 / Math.PI;
-}
 
 type FourPoints = [[number, number], [number, number], [number, number], [number, number]];
 
@@ -147,7 +139,6 @@ export default function Main() {
 	let opacity = (distToProjector) / projectionInfo.meanDistance;
 	const fallOff = 4;
 	let innerBoxStyle: CSSProperties = {
-		background: "rgba(220, 220, 220, 1)",
 		opacity: Math.pow(opacity, fallOff),
 		width: width,
 		height: height,
@@ -166,14 +157,14 @@ export default function Main() {
 		tabIndex={0}
 		onKeyDown={e => {
 			if (e.target === containerRef.current) {
-				projector.onKeyDown(e.key);
-				if (projector.isCapturedKey(e.key)) e.preventDefault();
+				projectorController.onKeyDown(e.key);
+				if (projectorController.isCapturedKey(e.key)) e.preventDefault();
 			}
 		}}
 		onKeyUp={e => {
 			if (e.target === containerRef.current) {
-				projector.onKeyUp(e.key);
-				if (projector.isCapturedKey(e.key)) e.preventDefault();
+				projectorController.onKeyUp(e.key);
+				if (projectorController.isCapturedKey(e.key)) e.preventDefault();
 			}
 		}}
 	>

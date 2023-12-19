@@ -1,5 +1,7 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {contentManager, PostInfo} from "./ContentManager";
+import {createBrowserRouter, RouterProvider, Link, useMatches, useMatch} from "react-router-dom";
+import Markdown from "react-markdown";
 
 function Logo() {
 	return <div style={{
@@ -14,8 +16,51 @@ function Logo() {
 	</div>
 }
 
-function Post(props: {info: PostInfo}) {
-	return <div>{props.info.date}</div>
+type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
+
+function DateString(props: {
+	date: string,
+	linkPath: string
+}) {
+	if (props.date.length === 0) {
+		return <div>Unknown</div>;
+	}
+	let convertOptions: Intl.DateTimeFormatOptions = {
+		weekday: 'short',
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric'
+	};
+	let dateStr = props.date==='pinned' ?
+		'Pinned' : (new Date(Date.parse(props.date))).toLocaleString('en-US', convertOptions);
+	return(
+		<div>
+			<Link to={props.linkPath}>
+				{dateStr}
+			</Link>
+		</div>
+	)}
+
+function Post(props: {permalink: string, info?: PostInfo}) {
+	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
+		date: "",
+		title: "",
+		path: props.permalink,
+		tags: []
+	});
+	const [content, setContent]: StateType<string> = useState("loading...");
+	useEffect(()=>{
+		contentManager.asyncGetPost(info.path, (info, content) => {
+			setInfo(info);
+			setContent(content);
+		});
+	}, []);
+	return <div style={{marginBottom: 20}}>
+		<DateString date={info.date} linkPath={"/post/" + info.path}/>
+		<Markdown className="markdown" skipHtml={true}>{content}</Markdown>
+	</div>
 }
 
 function PostStream(props: {
@@ -28,13 +73,13 @@ function PostStream(props: {
 	const [fetching, setFetching] = useState(false);
 
 	const initialPosts: PostInfo[] = [];
-	const [posts, setPosts]: [PostInfo[], React.Dispatch<React.SetStateAction<PostInfo[]>>] = useState(initialPosts);
+	const [posts, setPosts]: StateType<PostInfo[]> = useState(initialPosts);
 
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	const asyncGetPosts = function(startIdx: number, count: number) {
 		setFetching(true);
-		contentManager.asyncGetPosts(startIdx, count, (arr, finished, totalNumPosts)=>{
+		contentManager.asyncGetPostsInfo(startIdx, count, (arr, finished, totalNumPosts)=>{
 			if (finished) {
 				setStartPostIndex(startIdx);
 				setPosts(arr);
@@ -42,10 +87,14 @@ function PostStream(props: {
 				setFetching(false);
 			}
 		});
-	}
+	};
 
+	const postsPerPage = contentManager.blogInfo.postsPerPage;
+
+	// initial range
 	useEffect(()=>{
-		asyncGetPosts(props.startIndex, 10);
+		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, postsPerPage);
+		asyncGetPosts(props.startIndex, numInitialPosts);
 	}, []);
 
 	//console.log(`min ${props.scrollMinIndex}, start ${startPostIndex}, max ${scrollMaxIndex}, total ${posts.length}`);
@@ -55,7 +104,7 @@ function PostStream(props: {
 		width: "100%",
 		height: "100%",
 		overflow: "scroll",
-		overscrollBehavior: "contain",
+		overscrollBehaviorY: "contain",
 	};
 
 	return <div
@@ -73,21 +122,52 @@ function PostStream(props: {
 					&& scrollTop + clientHeight >= scrollHeight - 5/* arbitrary */ // scroll reached bottom
 					&& posts.length < (scrollMaxIndex - startPostIndex) // there are more posts to fetch (after)
 				) {
-					asyncGetPosts(startPostIndex, posts.length + 20);
+					let numPostsAfter = Math.min(posts.length + postsPerPage, scrollMaxIndex) - posts.length;
+					asyncGetPosts(startPostIndex, posts.length + numPostsAfter);
 				}
 				else if (e.deltaY < 0
 					&& scrollTop === 0
 					&& startPostIndex > props.scrollMinIndex
 				) {
-					let postsBefore = startPostIndex - Math.max(props.scrollMinIndex, startPostIndex - 20);
-					asyncGetPosts(startPostIndex - postsBefore, posts.length + postsBefore);
+					let numPostsBefore = startPostIndex - Math.max(props.scrollMinIndex, startPostIndex - postsPerPage);
+					asyncGetPosts(startPostIndex - numPostsBefore, posts.length + numPostsBefore);
 				}
 			}
 		}}
 	>
-		{posts.map(p => <Post key={p.path} info={p}/>)}
+		{posts.map(p => <Post key={p.path} info={p} permalink={p.path}/>)}
 	</div>;
 }
+
+function Error404() {
+	return <div>blah 404</div>;
+}
+
+function SinglePostPage() {
+	const match = useMatch("post/:permalink");
+	if (match?.params?.permalink !== undefined) {
+		return <Post permalink={match.params.permalink}/>
+	} else {
+		return <Error404/>;
+	}
+}
+
+const router = createBrowserRouter([
+	{
+		path: "/",
+		errorElement: <Error404/>,
+		children:[
+			{
+				path: '',
+				element: <PostStream startIndex={1} scrollMinIndex={0} scrollMaxIndex={40}/>
+			},
+			{
+				path: 'post/:permalink',
+				element: <SinglePostPage/>
+			}
+		]
+	}
+]);
 
 export default function Blog() {
 	return <div tabIndex={0} style={{
@@ -95,6 +175,6 @@ export default function Blog() {
 		height: "100%",
 		outline: "1px solid red",
 	}}>
-		<PostStream startIndex={302} scrollMinIndex={280} scrollMaxIndex={Infinity}/>
+		<RouterProvider router={router}/>
 	</div>
 }
