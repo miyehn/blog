@@ -3,6 +3,8 @@ import {contentManager, PostInfo} from "./ContentManager";
 import {createBrowserRouter, RouterProvider, Link, useMatches, useMatch} from "react-router-dom";
 import Markdown from "react-markdown";
 
+type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
+
 function Logo() {
 	return <div style={{
 		position: "absolute",
@@ -16,7 +18,27 @@ function Logo() {
 	</div>
 }
 
-type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
+function ArrowButton(props: {
+	expanded: boolean
+}) {
+	let str = localStorage.getItem("directoryPage");
+	if (str === null) str = "about";
+
+	return <div style={{
+		position: "absolute",
+		top: 20,
+		right: 10,
+		width: 30,
+		height: 30,
+		cursor: "pointer"
+	}} onClick={e=>{
+		localStorage.setItem("directoryExpanded", props.expanded ? "0" : "1");
+	}}><Link to={
+		props.expanded ? "/" : "/page/" + str.toString()
+	}><div style={{textAlign: "center", margin: "auto"}}>{
+		props.expanded ? "<<" : ">>"
+	}</div></Link></div>
+}
 
 function DateString(props: {
 	date: string,
@@ -35,13 +57,8 @@ function DateString(props: {
 	};
 	let dateStr = props.date==='pinned' ?
 		'Pinned' : (new Date(Date.parse(props.date))).toLocaleString('en-US', convertOptions);
-	return(
-		<div>
-			<Link to={props.linkPath}>
-				{dateStr}
-			</Link>
-		</div>
-	)}
+	return(<Link to={props.linkPath}><span className="date">{dateStr}</span></Link>)
+}
 
 function Post(props: {permalink: string, info?: PostInfo}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
@@ -101,7 +118,6 @@ function PostStream(props: {
 
 	let style: CSSProperties = {
 		position: "relative",
-		width: "100%",
 		height: "100%",
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
@@ -135,7 +151,9 @@ function PostStream(props: {
 			}
 		}}
 	>
+		<div style={{height: 20}}/>
 		{posts.map(p => <Post key={p.path} info={p} permalink={p.path}/>)}
+		<div style={{height: 20}}/>
 	</div>;
 }
 
@@ -152,18 +170,97 @@ function SinglePostPage() {
 	}
 }
 
+function AboutPage() {
+	return <div style={{
+		border: "1px solid red"
+	}}>
+		(about page)
+	</div>
+}
+
+function Directory(props: {
+	pageName: string
+}) {
+	let expanded = false;
+	let str = localStorage.getItem("directoryExpanded");
+	if (str !== null) {
+		expanded = parseInt(str) > 0;
+	}
+	if (props.pageName.length === 0) {
+		expanded = false;
+	}
+
+	let pageContent = undefined;
+
+	if (expanded) {
+		if (props.pageName === "about") {
+			pageContent = <AboutPage/>
+		} else {
+			pageContent = <Error404/>
+		}
+	}
+
+	let directoryContent = <div style={{
+		height: "100%",
+		display: "flex",
+		flexDirection: "row",
+	}}>
+		<div style={{
+			position: "relative",
+			flex: 9,
+			height: "100%",
+			background: "rgba(255, 255, 255, 0.95)",
+			paddingLeft: 60,
+			paddingRight: expanded? 60 : 0,
+			outline: "1px solid green"
+		}}>
+			{pageContent}
+			<ArrowButton expanded={expanded}/>
+		</div>
+		<div style={{flex: 1}}/>
+	</div>
+
+	return <div style={{
+		position: "absolute",
+		left: 0,
+		top: 0,
+		width: expanded ? "100%" : 0,
+		height: expanded ? "100%" : 0,
+	}}>
+		{directoryContent}
+	</div>
+}
+
+function MainContentPage() {
+	const match = useMatch("page/:page");
+	const pageName = match?.params?.page ?? "";
+	return <div style={{
+		position: "relative",
+		height: "100%",
+		paddingLeft: 60,
+		paddingRight: 20,
+	}}>
+		<PostStream startIndex={1} scrollMinIndex={0} scrollMaxIndex={40}/>
+		<Directory pageName={pageName}/>
+	</div>
+}
+
 const router = createBrowserRouter([
 	{
 		path: "/",
 		errorElement: <Error404/>,
 		children:[
 			{
-				path: '',
-				element: <PostStream startIndex={1} scrollMinIndex={0} scrollMaxIndex={40}/>
+				path: "",
+				element: <MainContentPage/>
 			},
 			{
-				path: 'post/:permalink',
+				path: "post/:permalink",
 				element: <SinglePostPage/>
+			},
+			{
+				path: "page/:page",
+				element: <MainContentPage/>
 			}
 		]
 	}
@@ -173,7 +270,7 @@ export default function Blog() {
 	return <div tabIndex={0} style={{
 		width: "100%",
 		height: "100%",
-		outline: "1px solid red",
+		outline: "1px solid lightgrey",
 	}}>
 		<RouterProvider router={router}/>
 	</div>

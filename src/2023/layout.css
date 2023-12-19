@@ -23,3 +23,10 @@ html, body {
     height: 101%;
     pointer-events: none;
 }
+
+.date{
+    /*font-size: var(--small-font-size);*/
+    font-family: "myCabin", sans-serif;
+    color: var(--grey-color);
+}
+
