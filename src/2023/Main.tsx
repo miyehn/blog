@@ -165,10 +165,16 @@ export default function Main() {
 		}}
 		tabIndex={0}
 		onKeyDown={e => {
-			projector.onKeyDown(e.key);
+			if (e.target === containerRef.current) {
+				projector.onKeyDown(e.key);
+				if (projector.isCapturedKey(e.key)) e.preventDefault();
+			}
 		}}
 		onKeyUp={e => {
-			projector.onKeyUp(e.key);
+			if (e.target === containerRef.current) {
+				projector.onKeyUp(e.key);
+				if (projector.isCapturedKey(e.key)) e.preventDefault();
+			}
 		}}
 	>
 		<div style={outerBoxStyle}>

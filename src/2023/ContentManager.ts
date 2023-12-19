@@ -84,43 +84,50 @@ class ContentManager {
 		this.#magicword = "";
 	}
 
-	asyncGetPosts(globalStartIdx: number, numPosts: number, cb: (data: PostInfo[], finished: boolean)=>void): void {
+	// this call assumes globalStartIdx is valid. If numPosts is too large, it'll simply finish at the last available fetch
+	asyncGetPosts(
+		globalStartIdx: number,
+		numPosts: number,
+		cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void): void
+	{
 
 		if (numPosts <= 0) {
 			console.log("there's nothing to fetch.");
-			cb([], true);
+			cb([], true, -1);
 			return;
 		}
 
 		let result: PostInfo[] = [];
 		const cm = this;
-		let recursiveHelper = function(globalStartIdx: number, numPosts: number, cb: (data: PostInfo[], finished: boolean)=>void) {
-			// recursive:
+		let recursiveHelper = function(globalStartIdx: number, numPosts: number, cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void) {
+
 			const currentChunkIndex = Math.floor(globalStartIdx / cm.blogInfo.chunkSize);
 			const currentChunkStartIdx = currentChunkIndex * cm.blogInfo.chunkSize;
 			const postsInCurrentChunk = Math.min(numPosts, currentChunkStartIdx + cm.blogInfo.chunkSize - globalStartIdx);
 			const url = cm.blogInfo.domainName + "/mrblog-content/index/" + cm.#magicword + currentChunkIndex.toString();
-			console.log("fetching " + postsInCurrentChunk + " posts from " + url);
+			console.log("fetching " + postsInCurrentChunk + " posts from chunk " + currentChunkIndex);
 
 			cm.#networkManager.asyncFetch(url, data=>{
-				console.log("fetch succeeded.");
-				const content = JSON.parse(data).content;
+				const parsed = JSON.parse(data);
 				const start = globalStartIdx - currentChunkStartIdx;
 				const end = start + postsInCurrentChunk;
-				result = result.concat(content.slice(start, end));
+				result = result.concat(parsed.content.slice(start, end));
 
-				// potentially recurse, if current chunk didn't contain everything asked for
-				if (numPosts - postsInCurrentChunk > 0) {
-					cb(result, false);
+				const totalNumChunks = Math.floor((parsed.count + cm.blogInfo.chunkSize - 1) / cm.blogInfo.chunkSize);
+				if (numPosts - postsInCurrentChunk > 0 && currentChunkIndex + 1 < totalNumChunks) {
+					// recurse, if current chunk didn't contain everything asked for and there are more chunks to fetch
+					cb(result, false, parsed.count);
 					recursiveHelper(globalStartIdx + postsInCurrentChunk, numPosts - postsInCurrentChunk, cb);
 				} else {
-					cb(result, true);
+					// finished
+					cb(result, true, parsed.count);
 				}
 			}, (jqXHR, textStatus, errorThrown) => {
 				console.log("failed fetching from url: " + url);
-				if (jqXHR.status === 404) {
+				if (jqXHR.status === 404) { // likely due to wrong magicword
 					cm.#magicword = "";
 				}
+				cb(result, true, -1);
 			});
 		}
 		recursiveHelper(globalStartIdx, numPosts, cb);

@@ -19,6 +19,8 @@ class Projector {
 	#key_Q: boolean = false;
 	#key_E: boolean = false;
 
+	#key_Meta: boolean = false;
+
 	// should be readonly outside of #runLoop()
 	#looping: boolean = false;
 
@@ -27,36 +29,53 @@ class Projector {
 			this.#key_UP || this.#key_DOWN || this.#key_LEFT || this.#key_RIGHT;
 	}
 
-	onKeyDown(key: string) {
-		if (key === 'w' || key === 'W') {
-			this.#key_W = true;
-		} else if (key === 'a' || key === 'A') {
-			this.#key_A = true;
-		} else if (key === 's' || key === 'S') {
-			this.#key_S = true;
-		} else if (key === 'd' || key === 'D') {
-			this.#key_D = true;
-		} else if (key === 'q' || key === 'Q') {
-			this.#key_Q = true;
-		} else if (key === 'e' || key === 'E') {
-			this.#key_E = true;
-		}
-		else if (key === "ArrowUp") {
-			this.#key_UP = true;
-		} else if (key === "ArrowDown") {
-			this.#key_DOWN = true;
-		} else if (key === "ArrowLeft") {
-			this.#key_LEFT = true;
-		} else if (key === "ArrowRight") {
-			this.#key_RIGHT = true;
-		}
+	isCapturedKey(key: string) {
+		const keys = [
+			'w', 'W', 'a', 'A', 's', 'S', 'd', 'D',
+			'q', 'Q', 'e', 'E',
+			"ArrowUp", 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+		];
+		return keys.includes(key);
+	}
 
-		if (!this.#looping && this.#anyKeyDown()) {
-			this.#runLoop();
+	onKeyDown(key: string) {
+		if (key === "Meta") { // mac: exception
+			this.#key_Meta = true;
+		}
+		if (!this.#key_Meta) {
+			if (key === 'w' || key === 'W') {
+				this.#key_W = true;
+			} else if (key === 'a' || key === 'A') {
+				this.#key_A = true;
+			} else if (key === 's' || key === 'S') {
+				this.#key_S = true;
+			} else if (key === 'd' || key === 'D') {
+				this.#key_D = true;
+			} else if (key === 'q' || key === 'Q') {
+				this.#key_Q = true;
+			} else if (key === 'e' || key === 'E') {
+				this.#key_E = true;
+			}
+			else if (key === "ArrowUp") {
+				this.#key_UP = true;
+			} else if (key === "ArrowDown") {
+				this.#key_DOWN = true;
+			} else if (key === "ArrowLeft") {
+				this.#key_LEFT = true;
+			} else if (key === "ArrowRight") {
+				this.#key_RIGHT = true;
+			}
+
+			if (!this.#looping && this.#anyKeyDown()) {
+				this.#runLoop();
+			}
 		}
 	}
 
 	onKeyUp(key: string) {
+		if (key === "Meta") {
+			this.#key_Meta = false;
+		}
 		if (key === 'w' || key === 'W') {
 			this.#key_W = false;
 		} else if (key === 'a' || key === 'A') {
