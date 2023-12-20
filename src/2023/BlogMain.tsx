@@ -92,8 +92,8 @@ function Directory(props: {
 }
 
 function MainContentPage() {
-	const match = useMatch("page/:page");
-	const pageName = match?.params?.page ?? "";
+	const pageMatch = useMatch("page/:page");
+	const pageName = pageMatch?.params?.page ?? "";
 	return <div style={{
 		position: "relative",
 		height: "100%",
@@ -127,6 +127,10 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "page/:page",
+				element: <MainContentPage/>
+			},
+			{
+				path: "page/archive/:category",
 				element: <MainContentPage/>
 			}
 		]

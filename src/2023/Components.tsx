@@ -1,5 +1,5 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
-import {contentManager, PostInfo} from "./ContentManager";
+import {CategoryInfo, contentManager, PostInfo} from "./ContentManager";
 import {Link, useMatch, useNavigate} from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -321,17 +321,25 @@ function CategoryEntry(props: {
 }
 
 export function ArchivePage() {
+
+	const initialCategories: CategoryInfo[] = [];
+	const [categories, setCategories]: StateType<CategoryInfo[]> = useState(initialCategories);
+
+	useEffect(()=>{
+		contentManager.asyncGetCategoriesInfo(list => {
+			setCategories(list);
+		});
+	}, []);
+
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
 			<CategoryEntry title={"Timeline"}/>
-			<Expandable title={"Tag"} content={
-				<div>
-					<CategoryEntry title={"example category 2 with a long name"}/>
-					<CategoryEntry title={"example tag 2"}/>
-					<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
-					<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
-				</div>
-			}/>
+			<Expandable title={"Tags (legacy)"} content={<div>{
+				categories.map(c => {
+					const title = c.count > 1 ? (c.category + " (" + c.count.toString() + ")") : c.category;
+					return <CategoryEntry key={c.category} title={title}/>
+				})
+			}</div>}/>
 			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
 			<CategoryEntry title={"example category 2 with a long name"}/>
 			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
@@ -346,7 +354,7 @@ export function ArchivePage() {
 
 export function FriendsPage() {
 	return <div className={"friends"}>
-		<p>也拜访下俺的赛博邻居们吧：</p>
+		<p>也拜访下赛博邻居们吧：</p>
 		<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
 		<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
 		<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>

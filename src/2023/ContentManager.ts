@@ -7,20 +7,10 @@ export type PostInfo = {
 	tags: string[],
 };
 
-class Post {
-	index: number;
-	info: PostInfo;
-	#bContentReady: boolean = false;
-	#content: string = "abababa";
-	constructor(index: number, info: PostInfo) {
-		this.index = index;
-		this.info = info;
-	}
-	asyncGetContent(cb: (content: string)=>void): string {
-		if (this.#bContentReady) return this.#content;
-		return "loading..";
-	}
-}
+export type CategoryInfo = {
+	category: string,
+	count: number
+};
 
 class NetworkManager {
 	#fetchCache = new Map<string, string>();
@@ -56,9 +46,6 @@ class ContentManager {
 		email: "rainduym@gmail.com",
 		socialHandles: [
 			{
-				"platform": "lofter",
-				"url": ""
-			}, {
 				"platform": "instagram",
 				"url": ""
 			}, {
@@ -88,6 +75,15 @@ class ContentManager {
 		const url = this.blogInfo.domainName + "/mrblog-content/about";
 		this.#networkManager.asyncFetch(url, data =>{
 			cb(data);
+		});
+	}
+
+	asyncGetCategoriesInfo(cb: (list: CategoryInfo[])=>void) {
+		const url = this.blogInfo.domainName + "/mrblog-content/index/tags";
+		this.#networkManager.asyncFetch(url, data =>{
+			const parsed: {tag: string, num: number}[] = JSON.parse(data);
+			const mapped: CategoryInfo[] = parsed.map(tag => {return {category: tag.tag, count: tag.num}});
+			cb(mapped);
 		});
 	}
 
