@@ -52,10 +52,10 @@ export class Expandable extends React.Component {
 		};
 	}
 	render() {
-		let indentDivStyle = this.autoIndent ? {margin: 10, paddingLeft: 6, marginBottom: 20}: {};
-		return <div style={{marginTop: 10, marginBottom: 10}}>
+		let indentDivStyle = this.autoIndent ? {paddingLeft: 20}: {};
+		return <div style={{}}>
 			<Clickable content={<span>
-				<span>{this.state.show ? '- ' : '+ '}</span>
+				<span style={{display: "inline-block", width: 20}}>{this.state.show ? '- ' : '+ '}</span>
 				{(this.props.titleNode ? this.props.titleNode : this.props.title)}
 			</span>} onClickFn={this.onClick}/>
 			<div style={{position: "relative", display: this.state.show ? "block" : "none"}}>

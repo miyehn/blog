@@ -105,15 +105,17 @@ class ContentManager {
 	}
 
 	// this call assumes globalStartIdx is valid. If numPosts is too large, it'll simply finish at the last available fetch
-	asyncGetPostsInfo(
+	asyncGetPostsInfo(props: {
 		globalStartIdx: number,
 		numPosts: number,
-		cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void): void
+		category?: string,
+		cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void
+	})
 	{
 
-		if (numPosts <= 0) {
+		if (props.numPosts <= 0) {
 			console.log("there's nothing to fetch.");
-			cb([], true, -1);
+			props.cb([], true, -1);
 			return;
 		}
 
@@ -124,7 +126,18 @@ class ContentManager {
 			const currentChunkIndex = Math.floor(globalStartIdx / cm.blogInfo.chunkSize);
 			const currentChunkStartIdx = currentChunkIndex * cm.blogInfo.chunkSize;
 			const postsInCurrentChunk = Math.min(numPosts, currentChunkStartIdx + cm.blogInfo.chunkSize - globalStartIdx);
-			const url = cm.blogInfo.domainName + "/mrblog-content/index/" + cm.#magicword + currentChunkIndex.toString();
+			// construct url
+			let url = cm.blogInfo.domainName + "/mrblog-content/index/" + cm.#magicword;
+			if (props.category !== undefined) {
+				// HACK: using tags as categories for now:
+				if (props.category.slice(0, 4) === "tag_") {
+					url += props.category + "_";
+				} else {
+					url += "category_" + props.category + "_";
+				}
+			}
+			url += currentChunkIndex.toString();
+
 			console.log("fetching " + postsInCurrentChunk + " posts from chunk " + currentChunkIndex);
 
 			cm.#networkManager.asyncFetch(url, data=>{
@@ -150,7 +163,7 @@ class ContentManager {
 				cb(result, true, -1);
 			});
 		}
-		recursiveHelper(globalStartIdx, numPosts, cb);
+		recursiveHelper(props.globalStartIdx, props.numPosts, props.cb);
 	}
 }
 

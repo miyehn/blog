@@ -3,6 +3,7 @@ import {contentManager, PostInfo} from "./ContentManager";
 import {Link, useMatch, useNavigate} from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
 import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} from "react-icons/fa";
@@ -22,8 +23,33 @@ function Logo() {
 	}} src={require("../avatar.png")} alt={"avatar"}/>
 }
 
-function Markdown(props: {content: string}) {
-	return <ReactMarkdown className="markdown" remarkPlugins={[[remarkGfm, {singleTilde: false}]]}>{props.content}</ReactMarkdown>
+function Markdown(props: {content: string, includeImage: boolean, inline?: boolean}) {
+	const className = props.inline ? "markdown inline" : "markdown";
+	if (props.includeImage) {
+		return <ReactMarkdown
+			className={className}
+			remarkPlugins={[
+				[remarkGfm, {singleTilde: false}],
+			]}
+			//@ts-expect-error
+			rehypePlugins={[rehypeRaw]}
+		>{props.content}</ReactMarkdown>
+	} else {
+		return <ReactMarkdown
+			className={className}
+			remarkPlugins={[
+				[remarkGfm, {singleTilde: false}],
+			]}
+			//@ts-expect-error
+			rehypePlugins={[rehypeRaw]}
+			children={props.content}
+			components={{
+				img({...props}) {
+					return <span> [img] </span>
+				}
+			}}
+		/>
+	}
 }
 
 // using raw <a> tags here so that hovering over these elements show the url
@@ -72,7 +98,7 @@ function AboutContent() {
 	useEffect(()=>{
 		contentManager.asyncGetAbout(newContent=>{setContent(newContent);});
 	}, []);
-	return <Markdown content={content}/>;
+	return <Markdown includeImage content={content}/>;
 }
 
 export function AboutPage() {
@@ -135,7 +161,34 @@ function DateString(props: {
 	return(<Link to={props.linkPath}><span className="date">{dateStr}</span></Link>)
 }
 
-function Post(props: {permalink: string, info?: PostInfo}) {
+type PostRenderer = (props: {info: PostInfo, content: string}) => any;
+
+export const TimelinePostRenderer: PostRenderer = function(props: {
+	info: PostInfo,
+	content: string
+}) {
+	return <div style={{marginBottom: 20}}>
+		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		<Markdown includeImage content={props.content}/>
+	</div>
+}
+
+export const PostExcerptRenderer: PostRenderer = function(props: {
+	info: PostInfo,
+	content: string
+}) {
+	let renderContent = "";
+	if (props.info.title.length > 0) {
+		renderContent += "**" + props.info.title + "** | ";
+	}
+	renderContent += props.content;
+	return <div style={{marginBottom: 20}}>
+		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		<Markdown inline includeImage={false} content={renderContent}/>
+	</div>
+}
+
+export function Post(props: {permalink: string, info?: PostInfo, renderer: PostRenderer}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
 		date: "",
 		title: "",
@@ -149,16 +202,20 @@ function Post(props: {permalink: string, info?: PostInfo}) {
 			setContent(content);
 		});
 	}, []);
-	return <div style={{marginBottom: 20}}>
-		<DateString date={info.date} linkPath={"/post/" + info.path}/>
-		<Markdown content={content}/>
-	</div>
+	return props.renderer({
+		info: info,
+		content: content
+	});
 }
 
-export function PostStream(props: {
+export function ContentStream(props: {
 	startIndex: number,
+	initialCount: number,
+	increment: number,
 	scrollMinIndex: number,
 	scrollMaxIndex: number,
+	renderFn: (p: PostInfo) => React.ReactNode,
+	category?: string,
 }) {
 	const [startPostIndex, setStartPostIndex] = useState(props.startIndex);
 	const [scrollMaxIndex, setScrollMaxIndex] = useState(props.scrollMaxIndex);
@@ -171,21 +228,24 @@ export function PostStream(props: {
 
 	const asyncGetPosts = function(startIdx: number, count: number) {
 		setFetching(true);
-		contentManager.asyncGetPostsInfo(startIdx, count, (arr, finished, totalNumPosts)=>{
-			if (finished) {
-				setStartPostIndex(startIdx);
-				setPosts(arr);
-				if (totalNumPosts >= 0) setScrollMaxIndex(i => Math.min(i, totalNumPosts));
-				setFetching(false);
+		contentManager.asyncGetPostsInfo({
+			globalStartIdx: startIdx,
+			numPosts: count,
+			category: props.category,
+			cb: (arr, finished, totalNumPosts)=>{
+				 if (finished) {
+					 setStartPostIndex(startIdx);
+					 setPosts(arr);
+					 if (totalNumPosts >= 0) setScrollMaxIndex(i => Math.min(i, totalNumPosts));
+					 setFetching(false);
+				 }
 			}
 		});
 	};
 
-	const postsPerPage = contentManager.blogInfo.postsPerPage;
-
 	// initial range
 	useEffect(()=>{
-		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, postsPerPage);
+		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, props.initialCount);
 		asyncGetPosts(props.startIndex, numInitialPosts);
 	}, []);
 
@@ -197,6 +257,8 @@ export function PostStream(props: {
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
 	};
+
+	//const postsPerPage = contentManager.blogInfo.postsPerPage;
 
 	return <div
 		ref={ref}
@@ -213,21 +275,21 @@ export function PostStream(props: {
 					&& scrollTop + clientHeight >= scrollHeight - 5/* arbitrary */ // scroll reached bottom
 					&& posts.length < (scrollMaxIndex - startPostIndex) // there are more posts to fetch (after)
 				) {
-					let numPostsAfter = Math.min(posts.length + postsPerPage, scrollMaxIndex) - posts.length;
+					let numPostsAfter = Math.min(posts.length + props.increment, scrollMaxIndex) - posts.length;
 					asyncGetPosts(startPostIndex, posts.length + numPostsAfter);
 				}
 				else if (e.deltaY < 0
 					&& scrollTop === 0
 					&& startPostIndex > props.scrollMinIndex
 				) {
-					let numPostsBefore = startPostIndex - Math.max(props.scrollMinIndex, startPostIndex - postsPerPage);
+					let numPostsBefore = startPostIndex - Math.max(props.scrollMinIndex, startPostIndex - props.increment);
 					asyncGetPosts(startPostIndex - numPostsBefore, posts.length + numPostsBefore);
 				}
 			}
 		}}
 	>
 		<div style={{height: 20}}/>
-		{posts.map(p => <Post key={p.path} info={p} permalink={p.path}/>)}
+		{posts.map(props.renderFn)}
 		<div style={{height: 20}}/>
 	</div>;
 }
@@ -239,21 +301,46 @@ export function Error404() {
 export function SinglePostPage() {
 	const match = useMatch("post/:permalink");
 	if (match?.params?.permalink !== undefined) {
-		return <Post permalink={match.params.permalink}/>
+		return <Post permalink={match.params.permalink} renderer={TimelinePostRenderer}/>
 	} else {
 		return <Error404/>;
 	}
 }
 
+function CategoryEntry(props: {
+	title: React.ReactNode
+}) {
+	return <Clickable content={<div style={{position: "relative"}}>
+		<span style={{position: "absolute", top: 0, left: 0}}>{">"}</span>
+		<div style={{
+			marginLeft: 20
+		}}>
+			{props.title}
+		</div>
+	</div>}/>
+}
+
 export function ArchivePage() {
-	return <div>
-		<Clickable content={"Timeline"}/>
-		<Expandable title={"Tag"} content={
-			<div>
-				<Clickable content={"example tag 1"}/>
-				<Clickable content={"example tag 2"}/>
-			</div>
-		}/>
+	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
+		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
+			<CategoryEntry title={"Timeline"}/>
+			<Expandable title={"Tag"} content={
+				<div>
+					<CategoryEntry title={"example category 2 with a long name"}/>
+					<CategoryEntry title={"example tag 2"}/>
+					<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+					<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+				</div>
+			}/>
+			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+			<CategoryEntry title={"example category 2 with a long name"}/>
+			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+		</div>
+		<div style={{flex: 2, height: "100%", overflow: "scroll", outline: "1px solid red"}}>
+			ababab
+		</div>
 	</div>
 }
 

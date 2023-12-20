@@ -39,7 +39,7 @@
 }
 
 .markdown>p>img{
-        max-width: 100%;
+	max-width: 100%;
 }
 .markdown>*>a {
     color: var(--accent-color);
@@ -62,4 +62,11 @@
 }
 .markdown>h1{
 	font-size: calc(var(--base-font-size) + 8pt);
+}
+
+.markdown.inline>*{
+	display: inline;
+}
+.markdown.inline>*>*{
+	display: inline;
 }

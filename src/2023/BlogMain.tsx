@@ -1,8 +1,18 @@
 import {createBrowserRouter, Link, RouterProvider, useMatch, useNavigate} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React from "react";
-import {AboutPage, ArchivePage, ArrowButton, Error404, FriendsPage, PostStream, SinglePostPage} from "./Components";
+import {
+	AboutPage,
+	ArchivePage,
+	ArrowButton,
+	Error404,
+	FriendsPage,
+	ContentStream,
+	SinglePostPage,
+	Post, TimelinePostRenderer, PostExcerptRenderer
+} from "./Components";
 import './tabs.css';
+import {contentManager} from "./ContentManager";
 
 function DirectoryTabs(props: {
 	pageName: string
@@ -90,7 +100,14 @@ function MainContentPage() {
 		paddingLeft: 60,
 		paddingRight: 20,
 	}}>
-		<PostStream startIndex={1} scrollMinIndex={0} scrollMaxIndex={40}/>
+		<ContentStream
+			startIndex={0}
+			initialCount={contentManager.blogInfo.postsPerPage}
+			increment={contentManager.blogInfo.postsPerPage}
+			scrollMinIndex={0}
+			scrollMaxIndex={40}
+			renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>}
+		/>
 		<Directory pageName={pageName}/>
 	</div>
 }
