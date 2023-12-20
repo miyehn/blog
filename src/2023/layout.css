@@ -23,7 +23,8 @@ html, body {
     height: 101%;
     pointer-events: none;
 }
-.forceScrollable::-webkit-scrollbar {
+
+.noScrollBar::-webkit-scrollbar {
     display: none;
 }
 
@@ -33,3 +34,27 @@ html, body {
     color: var(--grey-color);
 }
 
+#mail{
+    position: relative;
+    top: 5px;
+    right: 1px;
+}
+
+.socialIcon {
+    margin: 0 6px;
+}
+
+.clickable:hover{
+    cursor: pointer;
+    color: var(--accent-color);
+    transition: color 100ms ease-in;
+}
+
+.friends>a{
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.friends>p{
+    margin-bottom: calc(var(--base-line-height) - 1em);
+}

@@ -1,4 +1,4 @@
-import {setProjectionParams} from "./Main";
+import {setProjectionParams} from "./Projector";
 
 class ProjectorController {
 

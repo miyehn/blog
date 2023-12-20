@@ -6,7 +6,7 @@ import jQuery from 'jquery';
 import ReactMarkDown from 'react-markdown';
 import '../common/style/style.css';
 import './layout.css';
-import { Intro, Friends, PostsPerPage, email, socialHandles, title} from '../config.ts';
+import { Intro, Friends, PostsPerPage, email, socialHandles, title} from '../config.tsx';
 
 import {FaTumblrSquare as Tumblr} from 'react-icons/fa';
 import {FaWeibo as Weibo} from 'react-icons/fa';

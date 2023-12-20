@@ -1,0 +1,30 @@
+
+.tabs-outerContainer {
+    display: flex;
+    flex-direction: row-reverse;
+    height: 100%;
+}
+
+.tabs-listContainer {
+    flex: 1;
+    margin-top: 80px;
+}
+
+.tabs-selectedPanel {
+    flex: 9;
+    padding-top: 72px;
+    padding-bottom: 40px;
+}
+
+.tabs-button {
+    height: 80px;
+    margin: auto;
+    text-align: center;
+    writing-mode: vertical-rl;
+    border: 1px solid grey;
+}
+
+.tabs-button::marker {
+    display: none;
+    content: ''
+}

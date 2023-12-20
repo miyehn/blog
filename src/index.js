@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Main from './2023/Main.tsx';
+import Projector from './2023/Projector.tsx';
 
 const domNode = document.getElementById('root');
 const rootNode = ReactDOM.createRoot(domNode);
 
-rootNode.render(<Main/>);
+rootNode.render(<Projector/>);

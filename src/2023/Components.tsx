@@ -1,44 +1,118 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {contentManager, PostInfo} from "./ContentManager";
-import {createBrowserRouter, RouterProvider, Link, useMatch, useNavigate} from "react-router-dom";
-import {Tab, Tabs, TabList, TabPanel} from "react-tabs";
-import Markdown from "react-markdown";
+import {Link, useMatch, useNavigate} from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+import {TiSocialInstagram as Ins} from "react-icons/ti";
+import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} from "react-icons/fa";
+import {GrGithub as Github} from "react-icons/gr";
+import {IoMdMail as Mail} from "react-icons/io";
+import {Clickable, Expandable} from "./Utils";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
 function Logo() {
-	return <div style={{
-		position: "absolute",
-		top: "50%",
-	}}> <img style={{
+	return  <img style={{
+		display: "block",
 		position: "relative",
-		top: -50,
-		left: -100,
-		height: 100,
-	}} src={require("../avatar.png").default} alt={"avatar"}/>
+		margin: "auto",
+		marginTop: 20,
+		height: 72,
+	}} src={require("../avatar.png")} alt={"avatar"}/>
+}
+
+function Markdown(props: {content: string}) {
+	return <ReactMarkdown className="markdown" remarkPlugins={[[remarkGfm, {singleTilde: false}]]}>{props.content}</ReactMarkdown>
+}
+
+// using raw <a> tags here so that hovering over these elements show the url
+function Social() {
+	let mailto = "mailto" + contentManager.blogInfo.email;
+	let handles = contentManager.blogInfo.socialHandles.filter(s=>{
+		return s.url.trim().length > 0
+	});
+
+	let toIcon = function(s: string) {
+		if (s==="instagram") {
+			return <Ins id="instagram" className="socialIcon clickable" size={26} />
+		} else if (s==="weibo") {
+			return <Weibo className="socialIcon clickable" size={22} />
+		} else if (s==="tumblr") {
+			return <Tumblr className="socialIcon clickable" size={22} />
+		} else if (s==="github") {
+			return <Github className="socialIcon clickable" size={22} />
+		} else if (s==="twitter") {
+			return <Twitter className="socialIcon clickable" size={22} />
+		}
+	}
+
+	return(
+		<div style={{
+			marginTop: 30,
+			marginBottom: 50,
+			textAlign: "center",
+			verticalAlign: "middle"
+		}}>
+			{handles.map(item=>
+				<a key={item.platform} href={item.url}> {toIcon(item.platform)} </a>
+			)}
+
+			<br/>
+
+			<a className="clickable" href={mailto}>
+				<Mail id="mail" size={18} /> {contentManager.blogInfo.email}
+			</a>
+		</div>
+	)
+}
+
+function AboutContent() {
+	const [content, setContent] = useState("loading..");
+	useEffect(()=>{
+		contentManager.asyncGetAbout(newContent=>{setContent(newContent);});
+	}, []);
+	return <Markdown content={content}/>;
+}
+
+export function AboutPage() {
+	return <div className="noScrollBar" style={{
+		height: "100%",
+		overflow: "scroll",
+		overscrollBehaviorY: "contain",
+	}}>
+		<Logo/>
+		<Social/>
+		<AboutContent/>
 	</div>
 }
 
-function ArrowButton(props: {
+export function ArrowButton(props: {
 	expanded: boolean
 }) {
 	let str = localStorage.getItem("directoryPageName");
 	if (str === null) str = "about";
 
 	const navigate = useNavigate();
+	const style: CSSProperties = {
+		position: "relative",
+		width: 30,
+		height: 30,
+		left: -15,
+		textAlign: "center",
+		margin: "auto",
+		cursor: "pointer"
+	};
+
+	const btn = <Clickable style={style} onClickFn={e=>{
+		navigate(props.expanded ? "/" : "/page/" + str);
+	}} content={props.expanded ? "<<" : ">>"}/>
 
 	return <div style={{
 		position: "absolute",
 		top: 20,
-		right: 10,
-		width: 30,
-		height: 30,
-		cursor: "pointer"
-	}} onClick={e=>{
-		navigate(props.expanded ? "/" : "/page/" + str);
-	}}><div style={{textAlign: "center", margin: "auto"}}>{
-		props.expanded ? "<<" : ">>"
-	}</div></div>
+		left: props.expanded ? "95%" : 30,
+	}}>{btn}</div>
 }
 
 function DateString(props: {
@@ -77,11 +151,11 @@ function Post(props: {permalink: string, info?: PostInfo}) {
 	}, []);
 	return <div style={{marginBottom: 20}}>
 		<DateString date={info.date} linkPath={"/post/" + info.path}/>
-		<Markdown className="markdown" skipHtml={true}>{content}</Markdown>
+		<Markdown content={content}/>
 	</div>
 }
 
-function PostStream(props: {
+export function PostStream(props: {
 	startIndex: number,
 	scrollMinIndex: number,
 	scrollMaxIndex: number,
@@ -126,7 +200,7 @@ function PostStream(props: {
 
 	return <div
 		ref={ref}
-		className={"forceScrollable"}
+		className={"forceScrollable noScrollBar"}
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
@@ -158,11 +232,11 @@ function PostStream(props: {
 	</div>;
 }
 
-function Error404() {
+export function Error404() {
 	return <div>blah 404</div>;
 }
 
-function SinglePostPage() {
+export function SinglePostPage() {
 	const match = useMatch("post/:permalink");
 	if (match?.params?.permalink !== undefined) {
 		return <Post permalink={match.params.permalink}/>
@@ -171,115 +245,29 @@ function SinglePostPage() {
 	}
 }
 
-function AboutPage() {
-	return <div style={{
-		border: "1px solid red"
-	}}>
-		(about page)
+export function ArchivePage() {
+	return <div>
+		<Clickable content={"Timeline"}/>
+		<Expandable title={"Tag"} content={
+			<div>
+				<Clickable content={"example tag 1"}/>
+				<Clickable content={"example tag 2"}/>
+			</div>
+		}/>
 	</div>
 }
 
-function DirectoryTabs(props: {
-	pageName: string
-}) {
-	const pageNames = [
-		"about",
-		"archive"
-	];
-	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
-	const navigate = useNavigate();
-	return <Tabs selectedIndex={currentIndex} onSelect={(idx, lastIdx, e)=>{
-		localStorage.setItem("directoryPageName", pageNames[idx]);
-		navigate("/page/" + pageNames[idx]);
-	}}>
-		<TabList>
-			<Tab>about</Tab>
-			<Tab>archive</Tab>
-		</TabList>
-		<TabPanel>
-			<AboutPage/>
-		</TabPanel>
-		<TabPanel>
-			archive page placeholder
-		</TabPanel>
-	</Tabs>
-}
-
-function Directory(props: {
-	pageName: string
-}) {
-	const expanded = props.pageName.length > 0;
-	let directoryContent = <div style={{
-		height: "100%",
-		display: "flex",
-		flexDirection: "row",
-	}}>
-		<div style={{
-			position: "relative",
-			flex: 9,
-			height: "100%",
-			background: "rgba(255, 255, 255, 0.95)",
-			paddingLeft: 60,
-			paddingRight: expanded? 80 : 0,
-		}}>
-			{expanded ? <DirectoryTabs pageName={props.pageName}/> : undefined}
-			<ArrowButton expanded={expanded}/>
-		</div>
-		<div style={{flex: 1}}/>
-	</div>
-
-	return <div style={{
-		position: "absolute",
-		left: 0,
-		top: 0,
-		width: expanded ? "100%" : 0,
-		height: expanded ? "100%" : 0,
-	}}>
-		{directoryContent}
-	</div>
-}
-
-function MainContentPage() {
-	const match = useMatch("page/:page");
-	const pageName = match?.params?.page ?? "";
-	return <div style={{
-		position: "relative",
-		height: "100%",
-		paddingLeft: 60,
-		paddingRight: 20,
-	}}>
-		<PostStream startIndex={1} scrollMinIndex={0} scrollMaxIndex={40}/>
-		<Directory pageName={pageName}/>
-	</div>
-}
-
-const router = createBrowserRouter([
-	{
-		path: "/",
-		errorElement: <Error404/>,
-		children:[
-			{
-				path: "",
-				element: <MainContentPage/>
-			},
-			{
-				path: "post/:permalink",
-				element: <SinglePostPage/>
-			},
-			{
-				path: "page/:page",
-				element: <MainContentPage/>
-			}
-		]
-	}
-]);
-
-export default function Blog() {
-	return <div tabIndex={0} style={{
-		width: "100%",
-		height: "100%",
-		outline: "1px solid lightgrey",
-	}}>
-		<RouterProvider router={router}/>
+export function FriendsPage() {
+	return <div className={"friends"}>
+		<p>也拜访下俺的赛博邻居们吧：</p>
+		<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
+		<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
+		<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
+		<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>
+		<a className="clickable" href="http://blog.fivest.one/">fivestone</a>
+		<a className="clickable" href="https://mengru.space">mengru</a>
+		<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
+		<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
+		<a className="clickable" href="https://ayu.land/">甜鱼</a>
 	</div>
 }

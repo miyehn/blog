@@ -84,6 +84,13 @@ class ContentManager {
 		this.#magicword = "";
 	}
 
+	asyncGetAbout(cb: (content: string)=>void) {
+		const url = this.blogInfo.domainName + "/mrblog-content/about";
+		this.#networkManager.asyncFetch(url, data =>{
+			cb(data);
+		});
+	}
+
 	asyncGetPost(permalink: string, cb: (info: PostInfo, content: string)=>void) {
 		const url = this.blogInfo.domainName + "/mrblog-content/blogposts/" + permalink;
 		this.#networkManager.asyncFetch(url, data =>{

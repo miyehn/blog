@@ -3,7 +3,7 @@ import { ProjectionCalculator2d } from "projection-3d-2d";
 import { vec3, quat, mat4, ReadonlyQuat, ReadonlyVec3 } from "gl-matrix";
 import '../common/style/style.css';
 import './layout.css';
-import Blog from "./Components";
+import BlogMain from "./BlogMain";
 import {projectorController} from "./ProjectorController";
 
 //const red = "rgba(255, 0, 0, 1)";
@@ -42,7 +42,7 @@ function perspectiveDivide(vi: ReadonlyVec3, o: ReadonlyVec3): [number, number] 
 
 const distToProjector = 500;
 
-export default function Main() {
+export default function Projector() {
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -170,7 +170,7 @@ export default function Main() {
 	>
 		<div style={outerBoxStyle}>
 			<div style={innerBoxStyle}>
-				<Blog/>
+				<BlogMain/>
 			</div>
 		</div>
 	</div>
