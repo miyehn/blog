@@ -58,3 +58,8 @@ html, body {
 .friends>p{
     margin-bottom: calc(var(--base-line-height) - 1em);
 }
+
+.cssTruncate {
+    overflow: hidden;
+    max-height: 100px;
+}

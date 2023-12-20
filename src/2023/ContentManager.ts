@@ -124,17 +124,17 @@ class ContentManager {
 			const postsInCurrentChunk = Math.min(numPosts, currentChunkStartIdx + cm.blogInfo.chunkSize - globalStartIdx);
 			// construct url
 			let url = cm.blogInfo.domainName + "/mrblog-content/index/" + cm.#magicword;
-			if (props.category !== undefined) {
+			if (props.category !== undefined && props.category.length > 0) {
 				// HACK: using tags as categories for now:
-				if (props.category.slice(0, 4) === "tag_") {
-					url += props.category + "_";
+				if (props.category.slice(0, 4) === "tag-") {
+					url += "tag_" + props.category.slice(4, props.category.length) + "_";
 				} else {
 					url += "category_" + props.category + "_";
 				}
 			}
 			url += currentChunkIndex.toString();
 
-			console.log("fetching " + postsInCurrentChunk + " posts from chunk " + currentChunkIndex);
+			//console.log("fetching " + postsInCurrentChunk + " posts from chunk " + currentChunkIndex);
 
 			cm.#networkManager.asyncFetch(url, data=>{
 				const parsed = JSON.parse(data);

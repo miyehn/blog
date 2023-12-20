@@ -1,6 +1,6 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {CategoryInfo, contentManager, PostInfo} from "./ContentManager";
-import {Link, useMatch, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -10,6 +10,7 @@ import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} 
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable, Expandable} from "./Utils";
+import {useParams} from "react-router";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -131,7 +132,7 @@ export function ArrowButton(props: {
 	};
 
 	const btn = <Clickable style={style} onClickFn={e=>{
-		navigate(props.expanded ? "/" : "/page/" + str);
+		navigate(props.expanded ? "/" : "/" + str);
 	}} content={props.expanded ? "<<" : ">>"}/>
 
 	return <div style={{
@@ -182,7 +183,9 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 		renderContent += "**" + props.info.title + "** | ";
 	}
 	renderContent += props.content;
-	return <div style={{marginBottom: 20}}>
+	return <div className={"cssTruncate"} style={{
+		marginBottom: 20,
+	}}>
 		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 		<Markdown inline includeImage={false} content={renderContent}/>
 	</div>
@@ -208,12 +211,14 @@ export function Post(props: {permalink: string, info?: PostInfo, renderer: PostR
 	});
 }
 
+// todo: more carefully control scrollTop
 export function ContentStream(props: {
 	startIndex: number,
 	initialCount: number,
 	increment: number,
 	scrollMinIndex: number,
 	scrollMaxIndex: number,
+	verticalMargin: number,
 	renderFn: (p: PostInfo) => React.ReactNode,
 	category?: string,
 }) {
@@ -249,6 +254,11 @@ export function ContentStream(props: {
 		asyncGetPosts(props.startIndex, numInitialPosts);
 	}, []);
 
+	useEffect(()=>{
+		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, props.initialCount);
+		asyncGetPosts(props.startIndex, numInitialPosts);
+	}, [props.category]);
+
 	//console.log(`min ${props.scrollMinIndex}, start ${startPostIndex}, max ${scrollMaxIndex}, total ${posts.length}`);
 
 	let style: CSSProperties = {
@@ -257,8 +267,6 @@ export function ContentStream(props: {
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
 	};
-
-	//const postsPerPage = contentManager.blogInfo.postsPerPage;
 
 	return <div
 		ref={ref}
@@ -288,9 +296,9 @@ export function ContentStream(props: {
 			}
 		}}
 	>
-		<div style={{height: 20}}/>
+		<div style={{height: props.verticalMargin}}/>
 		{posts.map(props.renderFn)}
-		<div style={{height: 20}}/>
+		<div style={{height: props.verticalMargin}}/>
 	</div>;
 }
 
@@ -299,55 +307,63 @@ export function Error404() {
 }
 
 export function SinglePostPage() {
-	const match = useMatch("post/:permalink");
-	if (match?.params?.permalink !== undefined) {
-		return <Post permalink={match.params.permalink} renderer={TimelinePostRenderer}/>
+	const {permalink} = useParams();
+	if (permalink !== undefined) {
+		return <Post permalink={permalink} renderer={TimelinePostRenderer}/>
 	} else {
 		return <Error404/>;
 	}
 }
 
 function CategoryEntry(props: {
-	title: React.ReactNode
+	title: React.ReactNode,
+	category: string
 }) {
-	return <Clickable content={<div style={{position: "relative"}}>
+	return <Link to={"/archive/" + props.category}><Clickable content={<div style={{position: "relative"}}>
 		<span style={{position: "absolute", top: 0, left: 0}}>{">"}</span>
 		<div style={{
 			marginLeft: 20
 		}}>
 			{props.title}
 		</div>
-	</div>}/>
+	</div>}/></Link>
 }
 
 export function ArchivePage() {
 
 	const initialCategories: CategoryInfo[] = [];
-	const [categories, setCategories]: StateType<CategoryInfo[]> = useState(initialCategories);
+	const [categoriesList, setCategoriesList]: StateType<CategoryInfo[]> = useState(initialCategories);
 
 	useEffect(()=>{
 		contentManager.asyncGetCategoriesInfo(list => {
-			setCategories(list);
+			setCategoriesList(list);
 		});
 	}, []);
 
+	const {category} = useParams();
+
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
-			<CategoryEntry title={"Timeline"}/>
-			<Expandable title={"Tags (legacy)"} content={<div>{
-				categories.map(c => {
+			<CategoryEntry title={"Timeline"} category={""}/>
+			<Expandable title={"Tag (legacy)"} content={<div>{
+				categoriesList.map(c => {
 					const title = c.count > 1 ? (c.category + " (" + c.count.toString() + ")") : c.category;
-					return <CategoryEntry key={c.category} title={title}/>
+					return <CategoryEntry key={c.category} title={title} category={"tag-" + c.category}/>
 				})
 			}</div>}/>
-			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
-			<CategoryEntry title={"example category 2 with a long name"}/>
-			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
-			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
-			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"}/>
+			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"} category={""}/>
+			<CategoryEntry title={"example category 2 with a long name"} category={""}/>
 		</div>
-		<div style={{flex: 2, height: "100%", overflow: "scroll", outline: "1px solid red"}}>
-			ababab
+		<div style={{flex: 2, height: "100%", overflow: "scroll"}}>
+			<ContentStream
+				category={category}
+				startIndex={0}
+				initialCount={10}
+				increment={10}
+				scrollMinIndex={0}
+				scrollMaxIndex={50}
+				verticalMargin={0}
+				renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>}/>
 		</div>
 	</div>
 }

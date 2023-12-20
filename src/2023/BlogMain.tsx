@@ -1,4 +1,4 @@
-import {createBrowserRouter, Link, RouterProvider, useMatch, useNavigate} from "react-router-dom";
+import {BrowserRouter, Route, Routes, createBrowserRouter, useNavigate} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React from "react";
 import {
@@ -13,6 +13,7 @@ import {
 } from "./Components";
 import './tabs.css';
 import {contentManager} from "./ContentManager";
+import {useParams} from "react-router";
 
 function DirectoryTabs(props: {
 	pageName: string
@@ -32,7 +33,7 @@ function DirectoryTabs(props: {
 		selectedTabPanelClassName="tabs-selectedPanel"
 		onSelect={(idx, lastIdx, e)=>{
 			localStorage.setItem("directoryPageName", pageNames[idx]);
-			navigate("/page/" + pageNames[idx]);
+			navigate("/" + pageNames[idx]);
 		}}>
 		<TabList className="tabs-listContainer">
 			<Tab className="tabs-button">about</Tab>
@@ -91,51 +92,37 @@ function Directory(props: {
 	</div>
 }
 
-function MainContentPage() {
-	const pageMatch = useMatch("page/:page");
-	const pageName = pageMatch?.params?.page ?? "";
+type MatchType = "page" | "category" | "wildcard";
+
+function MainContentPage(props: {
+	matchType: MatchType
+}) {
+	let pageName;
+	if (props.matchType === "category") {
+		pageName = "archive";
+	} else {
+		const {page} = useParams();
+		pageName = page ?? "";
+	}
+
 	return <div style={{
 		position: "relative",
 		height: "100%",
 		paddingLeft: 60,
 		paddingRight: 20,
 	}}>
-		<ContentStream
-			startIndex={0}
-			initialCount={contentManager.blogInfo.postsPerPage}
-			increment={contentManager.blogInfo.postsPerPage}
-			scrollMinIndex={0}
-			scrollMaxIndex={40}
-			renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>}
-		/>
+		 <ContentStream
+			 startIndex={0}
+			 verticalMargin={20}
+			 initialCount={contentManager.blogInfo.postsPerPage}
+			 increment={contentManager.blogInfo.postsPerPage}
+			 scrollMinIndex={0}
+			 scrollMaxIndex={40}
+			 renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>}
+		 />
 		<Directory pageName={pageName}/>
 	</div>
 }
-
-const router = createBrowserRouter([
-	{
-		path: "/",
-		errorElement: <Error404/>,
-		children:[
-			{
-				path: "",
-				element: <MainContentPage/>
-			},
-			{
-				path: "post/:permalink",
-				element: <SinglePostPage/>
-			},
-			{
-				path: "page/:page",
-				element: <MainContentPage/>
-			},
-			{
-				path: "page/archive/:category",
-				element: <MainContentPage/>
-			}
-		]
-	}
-]);
 
 export default function BlogMain() {
 	return <div tabIndex={0} style={{
@@ -144,6 +131,13 @@ export default function BlogMain() {
 		borderTop: "1px solid lightgrey",
 		borderBottom: "1px solid lightgrey",
 	}}>
-		<RouterProvider router={router}/>
+		<BrowserRouter>
+			<Routes>
+				<Route path={"/archive/:category"} element={<MainContentPage matchType={"category"}/>}/>
+				<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
+				<Route path={"/:page"} element={<MainContentPage matchType={"page"}/>}/>
+				<Route path={"/"} element={<MainContentPage matchType={"wildcard"}/>}/>
+			</Routes>
+		</BrowserRouter>
 	</div>
 }
