@@ -1,19 +1,26 @@
 
 .tabs-outerContainer {
-    display: flex;
-    flex-direction: row-reverse;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
+    background: var(--white);
 }
 
 .tabs-listContainer {
-    flex: 1;
-    margin-top: 80px;
+    position: absolute;
+    top: 0;
+    right: 15px;
+    padding-top: 80px;
 }
 
 .tabs-selectedPanel {
-    flex: 9;
-    padding-top: 72px;
-    padding-bottom: 40px;
+    position: absolute;
+    top: 72px;
+    bottom: 40px;
+    left: 60px;
+    right: 60px;
 }
 
 .tabs-button {
@@ -21,7 +28,12 @@
     margin: auto;
     text-align: center;
     writing-mode: vertical-rl;
-    border: 1px solid grey;
+    border-left: 1px solid var(--black);
+    cursor: pointer;
+}
+.tabs-button.tabs-selectedButton {
+    color: var(--white);
+    background-color: var(--black);
 }
 
 .tabs-button::marker {

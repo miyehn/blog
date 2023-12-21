@@ -1,6 +1,6 @@
 import {BrowserRouter, Route, Routes, createBrowserRouter, useNavigate} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import React from "react";
+import React, {useEffect} from "react";
 import {
 	AboutPage,
 	ArchivePage,
@@ -29,18 +29,12 @@ function DirectoryTabs(props: {
 	return <Tabs
 		className="tabs-outerContainer"
 		selectedIndex={currentIndex}
-		selectedTabClassName="tabs-selectedTab"
+		selectedTabClassName="tabs-selectedButton"
 		selectedTabPanelClassName="tabs-selectedPanel"
 		onSelect={(idx, lastIdx, e)=>{
 			localStorage.setItem("directoryPageName", pageNames[idx]);
 			navigate("/" + pageNames[idx]);
 		}}>
-		<TabList className="tabs-listContainer">
-			<Tab className="tabs-button">about</Tab>
-			<Tab className="tabs-button">archive</Tab>
-			<Tab className="tabs-button">friends</Tab>
-			<Tab className="tabs-button">gallery</Tab>
-		</TabList>
 		<TabPanel>
 			<AboutPage/>
 		</TabPanel>
@@ -53,6 +47,12 @@ function DirectoryTabs(props: {
 		<TabPanel>
 			gallery
 		</TabPanel>
+		<TabList className="tabs-listContainer">
+			<Tab className="tabs-button">About</Tab>
+			<Tab className="tabs-button">Archive</Tab>
+			<Tab className="tabs-button">Friends</Tab>
+			<Tab className="tabs-button">Gallery</Tab>
+		</TabList>
 	</Tabs>
 }
 
@@ -60,35 +60,15 @@ function Directory(props: {
 	pageName: string
 }) {
 	const expanded = props.pageName.length > 0;
-	const navigate = useNavigate();
-	let directoryContent = <div style={{
-		height: "100%",
-		display: "flex",
-		flexDirection: "row",
-	}}>
-		<div style={{
-			position: "relative",
-			flex: 5,
-			height: "100%",
-			background: "rgba(255, 255, 255, 0.98)",
-			paddingLeft: 60,
-		}}>
-			{expanded ? <DirectoryTabs pageName={props.pageName}/> : undefined}
-			<ArrowButton expanded={expanded}/>
-		</div>
-		<div style={{flex: 1}} onClick={()=>{
-			navigate("/");
-		}}/>
-	</div>
-
 	return <div style={{
 		position: "absolute",
 		left: 0,
+		right: 0,
 		top: 0,
-		width: expanded ? "100%" : 0,
 		height: expanded ? "100%" : 0,
 	}}>
-		{directoryContent}
+		{expanded ? <DirectoryTabs pageName={props.pageName}/> : undefined}
+		<ArrowButton expanded={expanded}/>
 	</div>
 }
 
@@ -130,6 +110,7 @@ export default function BlogMain() {
 		height: "100%",
 		borderTop: "1px solid lightgrey",
 		borderBottom: "1px solid lightgrey",
+		overflow: "scroll"
 	}}>
 		<BrowserRouter>
 			<Routes>

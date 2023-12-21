@@ -1,14 +1,18 @@
 import React, {ReactNode, CSSProperties} from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 type ClickableProps = {
 	content?: ReactNode,
 	onClickFn?: (e: any) => void,
-	style?: CSSProperties
-}
+	style?: CSSProperties,
+	noHoverHighlight?: boolean
+};
 
 export function Clickable(props: ClickableProps) {
 	return <div
-		className={"clickable"}
+		className={props.noHoverHighlight ? "clickable" : "clickable hoverHighlight"}
 		onClick={props.onClickFn}
 		style={props.style}
 	>{props.content}</div>
@@ -64,5 +68,76 @@ export class Expandable extends React.Component {
 				</div>
 			</div>
 		</div>
+	}
+}
+
+export function Markdown(props: {content: string, inline?: boolean, className?: string}) {
+	const className = props.className ? "markdown " + props.className : "markdown";
+	if (!props.inline) {
+		return <ReactMarkdown
+			className={className}
+			remarkPlugins={[
+				[remarkGfm, {singleTilde: false}],
+			]}
+			//@ts-expect-error
+			rehypePlugins={[rehypeRaw]}
+		>{props.content}</ReactMarkdown>
+	} else {
+		return <ReactMarkdown
+			className={className}
+			remarkPlugins={[
+				[remarkGfm, {singleTilde: false}],
+			]}
+			//@ts-expect-error
+			rehypePlugins={[rehypeRaw]}
+			children={props.content}
+			components={{
+				img({...props}) {
+					return <span>[img]</span>
+				},
+				p({...props}) {
+					return <span{...props}/>
+				},
+				a({...props}) {
+					return <span{...props}/>
+				},
+				ul({ordered, ...props}) {
+					return <span{...props}/>
+				},
+				ol({ordered, ...props}) {
+					return <span{...props}/>
+				},
+				li({ordered, ...props}) {
+					return <span{...props}/>
+				},
+				blockquote({children, ...otherProps}) {
+					return <span{...otherProps}>{children}</span>
+				},
+				hr({...props}) {
+					return <span> | </span>
+				},
+				br({...props}) {
+					return <span> </span>
+				},
+				h1({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+				h2({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+				h3({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+				h4({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+				h5({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+				h6({children, ...otherProps}) {
+					return <b{...otherProps}>{children}</b>
+				},
+			}}
+		/>
 	}
 }

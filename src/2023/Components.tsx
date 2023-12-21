@@ -1,16 +1,14 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {CategoryInfo, contentManager, PostInfo} from "./ContentManager";
-import {Link, useNavigate} from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import {Link} from "react-router-dom";
+import {Markdown} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
 import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} from "react-icons/fa";
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable, Expandable} from "./Utils";
-import {useParams} from "react-router";
+import {useLocation, useParams} from "react-router";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -24,35 +22,6 @@ function Logo() {
 	}} src={require("../avatar.png")} alt={"avatar"}/>
 }
 
-function Markdown(props: {content: string, includeImage: boolean, inline?: boolean}) {
-	const className = props.inline ? "markdown inline" : "markdown";
-	if (props.includeImage) {
-		return <ReactMarkdown
-			className={className}
-			remarkPlugins={[
-				[remarkGfm, {singleTilde: false}],
-			]}
-			//@ts-expect-error
-			rehypePlugins={[rehypeRaw]}
-		>{props.content}</ReactMarkdown>
-	} else {
-		return <ReactMarkdown
-			className={className}
-			remarkPlugins={[
-				[remarkGfm, {singleTilde: false}],
-			]}
-			//@ts-expect-error
-			rehypePlugins={[rehypeRaw]}
-			children={props.content}
-			components={{
-				img({...props}) {
-					return <span> [img] </span>
-				}
-			}}
-		/>
-	}
-}
-
 // using raw <a> tags here so that hovering over these elements show the url
 function Social() {
 	let mailto = "mailto" + contentManager.blogInfo.email;
@@ -62,15 +31,15 @@ function Social() {
 
 	let toIcon = function(s: string) {
 		if (s==="instagram") {
-			return <Ins id="instagram" className="socialIcon clickable" size={26} />
+			return <Ins id="instagram" className="socialIcon clickable hoverHighlight" size={26} />
 		} else if (s==="weibo") {
-			return <Weibo className="socialIcon clickable" size={22} />
+			return <Weibo className="socialIcon clickable hoverHighlight" size={22} />
 		} else if (s==="tumblr") {
-			return <Tumblr className="socialIcon clickable" size={22} />
+			return <Tumblr className="socialIcon clickable hoverHighlight" size={22} />
 		} else if (s==="github") {
-			return <Github className="socialIcon clickable" size={22} />
+			return <Github className="socialIcon clickable hoverHighlight" size={22} />
 		} else if (s==="twitter") {
-			return <Twitter className="socialIcon clickable" size={22} />
+			return <Twitter className="socialIcon clickable hoverHighlight" size={22} />
 		}
 	}
 
@@ -87,7 +56,7 @@ function Social() {
 
 			<br/>
 
-			<a className="clickable" href={mailto}>
+			<a className="clickable hoverHighlight" href={mailto}>
 				<Mail id="mail" size={18} /> {contentManager.blogInfo.email}
 			</a>
 		</div>
@@ -99,7 +68,7 @@ function AboutContent() {
 	useEffect(()=>{
 		contentManager.asyncGetAbout(newContent=>{setContent(newContent);});
 	}, []);
-	return <Markdown includeImage content={content}/>;
+	return <Markdown content={content}/>;
 }
 
 export function AboutPage() {
@@ -117,10 +86,18 @@ export function AboutPage() {
 export function ArrowButton(props: {
 	expanded: boolean
 }) {
-	let str = localStorage.getItem("directoryPageName");
-	if (str === null) str = "about";
+	let pageName = localStorage.getItem("directoryPageName");
+	if (pageName === null) pageName = "about";
 
-	const navigate = useNavigate();
+	const cachedCategory = localStorage.getItem("lastRenderedCategory");
+	let linkPath = "/";
+	if (!props.expanded) {
+		linkPath += pageName;
+		if (pageName === "archive" && cachedCategory !== null) {
+			linkPath += "/" + cachedCategory;
+		}
+	}
+
 	const style: CSSProperties = {
 		position: "relative",
 		width: 30,
@@ -131,20 +108,19 @@ export function ArrowButton(props: {
 		cursor: "pointer"
 	};
 
-	const btn = <Clickable style={style} onClickFn={e=>{
-		navigate(props.expanded ? "/" : "/" + str);
-	}} content={props.expanded ? "<<" : ">>"}/>
+	const btn = <Link to={linkPath}><Clickable style={style} content={props.expanded ? "<<" : ">>"}/></Link>
 
 	return <div style={{
 		position: "absolute",
 		top: 20,
-		left: props.expanded ? "95%" : 30,
+		left: props.expanded ? undefined : 30,
+		right: props.expanded ? 0 : undefined,
 	}}>{btn}</div>
 }
 
 function DateString(props: {
 	date: string,
-	linkPath: string
+	linkPath?: string
 }) {
 	if (props.date.length === 0) {
 		return <div>Unknown</div>;
@@ -157,9 +133,11 @@ function DateString(props: {
 		hour: 'numeric',
 		minute: 'numeric'
 	};
-	let dateStr = props.date==='pinned' ?
+	const dateStr = props.date==='pinned' ?
 		'Pinned' : (new Date(Date.parse(props.date))).toLocaleString('en-US', convertOptions);
-	return(<Link to={props.linkPath}><span className="date">{dateStr}</span></Link>)
+	const visualContent = <span className="date">{dateStr}</span>;
+	if (props.linkPath) return <Link to={props.linkPath}>{visualContent}</Link>
+	else return visualContent;
 }
 
 type PostRenderer = (props: {info: PostInfo, content: string}) => any;
@@ -170,7 +148,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 }) {
 	return <div style={{marginBottom: 20}}>
 		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-		<Markdown includeImage content={props.content}/>
+		<Markdown content={props.content}/>
 	</div>
 }
 
@@ -183,11 +161,15 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 		renderContent += "**" + props.info.title + "** | ";
 	}
 	renderContent += props.content;
-	return <div className={"cssTruncate"} style={{
-		marginBottom: 20,
+	const linkPath = "/post/" + props.info.path;
+
+	return <div style={{
+		marginBottom: 10,
 	}}>
-		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-		<Markdown inline includeImage={false} content={renderContent}/>
+		<Link to={linkPath}><div>
+			<DateString date={props.info.date}/>
+			<div><Markdown className={"cssTruncate"} inline content={renderContent}/></div>
+		</div></Link>
 	</div>
 }
 
@@ -211,7 +193,8 @@ export function Post(props: {permalink: string, info?: PostInfo, renderer: PostR
 	});
 }
 
-// todo: more carefully control scrollTop
+// NOTE: when loading content upwards, it's hard to handle scrollTop without causing layout shift (many times)..
+// so for now let's just disable that by ensuring scrollMinIndex === startIndex
 export function ContentStream(props: {
 	startIndex: number,
 	initialCount: number,
@@ -222,6 +205,8 @@ export function ContentStream(props: {
 	renderFn: (p: PostInfo) => React.ReactNode,
 	category?: string,
 }) {
+	console.assert(props.startIndex === props.scrollMinIndex);
+
 	const [startPostIndex, setStartPostIndex] = useState(props.startIndex);
 	const [scrollMaxIndex, setScrollMaxIndex] = useState(props.scrollMaxIndex);
 	const [fetching, setFetching] = useState(false);
@@ -255,6 +240,9 @@ export function ContentStream(props: {
 	}, []);
 
 	useEffect(()=>{
+		if (ref?.current) {
+			ref.current.scrollTop = 0;
+		}
 		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, props.initialCount);
 		asyncGetPosts(props.startIndex, numInitialPosts);
 	}, [props.category]);
@@ -274,7 +262,7 @@ export function ContentStream(props: {
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
-				console.log("skip.."); // this could happen when there's slow network
+				console.log("skip..");
 			} else {
 				let clientHeight = ref?.current?.clientHeight ?? 0;
 				let scrollTop = ref?.current?.scrollTop ?? 0;
@@ -309,7 +297,9 @@ export function Error404() {
 export function SinglePostPage() {
 	const {permalink} = useParams();
 	if (permalink !== undefined) {
-		return <Post permalink={permalink} renderer={TimelinePostRenderer}/>
+		return <div style={{
+			padding: "20px",
+		}}><Post permalink={permalink} renderer={TimelinePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -342,6 +332,8 @@ export function ArchivePage() {
 
 	const {category} = useParams();
 
+	localStorage.setItem("lastRenderedCategory", category ?? "");
+
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
 			<CategoryEntry title={"Timeline"} category={""}/>
@@ -354,14 +346,14 @@ export function ArchivePage() {
 			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"} category={""}/>
 			<CategoryEntry title={"example category 2 with a long name"} category={""}/>
 		</div>
-		<div style={{flex: 2, height: "100%", overflow: "scroll"}}>
+		<div style={{flex: 3, height: "100%", overflow: "scroll"}}>
 			<ContentStream
 				category={category}
 				startIndex={0}
-				initialCount={10}
-				increment={10}
+				initialCount={20}
+				increment={20}
 				scrollMinIndex={0}
-				scrollMaxIndex={50}
+				scrollMaxIndex={Infinity}
 				verticalMargin={0}
 				renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>}/>
 		</div>
