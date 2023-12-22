@@ -6,6 +6,7 @@ import shutil
 
 argc = len(sys.argv)
 scripts_dir = os.environ['MRBLOG_PATH'] + "/scripts"
+content_dir = os.environ['MRBLOG_CONTENT']
 
 pc = os.environ.get('MRBLOG_PC', '0')
 
@@ -18,12 +19,17 @@ if argc==1:
 
 elif sys.argv[1]=='new':
     if argc > 2:
-        os.system('bash ' + scripts_dir + '/new ' + sys.argv[2])
+        os.system('bash ' + scripts_dir + '/new.py ' + sys.argv[2])
     else: 
-        os.system('bash ' + scripts_dir + '/new')
+        os.system('bash ' + scripts_dir + '/new.py')
 elif sys.argv[1]=='find':
-    os.system('python ' + scripts_dir + '/find')
+    os.system('python ' + scripts_dir + '/find.py')
 elif sys.argv[1]=='publish':
-    os.system('bash ' + scripts_dir + '/publish')
+    os.system('bash ' + scripts_dir + '/publish.py')
 elif sys.argv[1]=='pic':
-    os.system('python ' + scripts_dir + '/post_pic ')
+    os.system('python ' + scripts_dir + '/post_pic.py ')
+elif sys.argv[1]=='config':
+    if pc=='1':
+        os.system('start ' + content_dir + '/docs')
+    else:
+        os.system('open ' + content_dir + '/docs')

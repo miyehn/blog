@@ -27,7 +27,7 @@ touch $filename
 echo "---" >> $filename
 echo "title: " >> $filename
 echo "date: $YYYY-$MM-$DD $HH:$mm" >> $filename
-echo "tags: []" >> $filename
+echo "categories: []" >> $filename
 echo "public: " >> $filename
 echo "" >> $filename
 echo "---" >> $filename

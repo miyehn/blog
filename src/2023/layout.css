@@ -10,6 +10,10 @@ html{
     background: var(--selection-color); /* WebKit/Blink Browsers */
 }
 
+*::-webkit-scrollbar {
+    display: none;
+}
+
 html, body {
     overscroll-behavior-y: none;
 }

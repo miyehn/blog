@@ -77,13 +77,14 @@ for path in paths:
     else:
         title = header[ind:]
     title = title[0:title.find('\n')].strip()
+
     # tags
     ind = header.find('tags:')+5
     if ind<5:
         tagstr = ''
     else:
         tagstr = header[ind:]
-    tagstr = tagstr[0:tagstr.find('\n')].strip()[1:-1]
+        tagstr = tagstr[0:tagstr.find('\n')].strip()[1:-1]
     tagarr0 = tagstr.split(',')
     tagarr0 = filter(None, tagarr0)
     tagarr = []
@@ -91,9 +92,23 @@ for path in paths:
         tagStripped = tag.strip()
         tagarr.append(tagStripped)
 
+    # categories
+    ind = header.find('categories:')+11
+    if ind<11: # old posts that don't have categories but may have tags
+        categoriesStr = tagstr
+    else:
+        categoriesStr = header[ind:]
+        categoriesStr = categoriesStr[0:categoriesStr.find('\n')].strip()[1:-1]
+    categoriesArr0 = categoriesStr.split(',')
+    categoriesArr0 = filter(None, categoriesArr0)
+    categoriesArr = []
+    for category in categoriesArr0:
+        categoryStripped = category.strip()
+        categoriesArr.append(categoryStripped)
+
     # publicity
     ind = header.find('public:')+7
-    if ind<5:
+    if ind<7:
         publicity = 0
     elif header[ind:].strip()[0:4].lower()=='true':
         if partial:
@@ -104,6 +119,7 @@ for path in paths:
         publicity = 0
     if publicity==0 or publicity==1:
         tagarr.append('hidden')
+        categoriesArr.append('hidden')
 
     # date
     ind = header.find('date:')+5
@@ -118,6 +134,7 @@ for path in paths:
         'title': title,
         'path': path[len(content_dir) + 8:-3],
         'tags': tagarr,
+        'categories': categoriesArr,
         'publicity': publicity,
         'date': datestr
     }
@@ -137,6 +154,7 @@ for path in paths:
     writeData = {
         'title': data['title'],
         'tags': data['tags'],
+        'categories': data['categories'],
         'date': data['date'],
         'content': textOrig.strip()
     }
