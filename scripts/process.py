@@ -40,6 +40,8 @@ def getTimeKey(obj):
 # maintain a set of tags for later
 listsPerTag = {}
 listsPerTagPublic = {}
+listsPerCategory = {}
+listsPerCategoryPublic = {}
 
 for path in paths:
     file = open(path, mode='r', encoding='utf8')
@@ -150,6 +152,14 @@ for path in paths:
             if not (tag in listsPerTagPublic): listsPerTagPublic[tag] = []
             listsPerTagPublic[tag].append(data)
 
+    # and categories list, in the same way:
+    for category in categoriesArr:
+        if not (category in listsPerCategory): listsPerCategory[category] = []
+        listsPerCategory[category].append(data)
+        if publicity == 2:
+            if not (category in listsPerCategoryPublic): listsPerCategoryPublic[category] = []
+            listsPerCategoryPublic[category].append(data)
+
     # rewrite file content + magic
     writeData = {
         'title': data['title'],
@@ -183,6 +193,22 @@ for tag in listsPerTag:
 tagslist.sort(reverse=True, key=lambda e:e['num'])
 with open (content_dir + '/docs/index/'+magicword+'tags', mode='w+', encoding='utf8') as outfile:
     json.dump(tagslist, outfile, separators=(',', ':'), ensure_ascii=False)
+
+# categories
+categoriesList = []
+for category in listsPerCategoryPublic:
+    categoriesList.append({'category':category, 'num':len(listsPerCategoryPublic[category])})
+categoriesList.sort(reverse=True, key=lambda e:e['num'])
+with open (content_dir + '/docs/index/categories', mode='w+', encoding='utf8') as outfile:
+    json.dump(categoriesList, outfile, separators=(',', ':'), ensure_ascii=False)
+
+# and with hidden ones
+categoriesList = []
+for category in listsPerCategory:
+    categoriesList.append({'category':category, 'num':len(listsPerCategory[category])})
+categoriesList.sort(reverse=True, key=lambda e:e['num'])
+with open (content_dir + '/docs/index/'+magicword+'categories', mode='w+', encoding='utf8') as outfile:
+    json.dump(categoriesList, outfile, separators=(',', ':'), ensure_ascii=False)
 
 def stripPublicity(l):
     for i in range(0, len(l)):
@@ -224,5 +250,10 @@ for tag in listsPerTag:
     publicTagData = list(filter(lambda obj: obj['publicity'] == 2, listsPerTag[tag]))
     writeLists(listsPerTag[tag], content_dir + '/docs/index/' + magicword + 'tag_' + tag + '_')
     writeLists(publicTagData, content_dir + '/docs/index/tag_' + tag + '_')
+
+for category in listsPerCategory:
+    publicCategoryData = list(filter(lambda obj: obj['publicity']==2, listsPerCategory[category]))
+    writeLists(listsPerCategory[category], content_dir + '/docs/index/' + magicword + 'category_' + category + '_')
+    writeLists(publicCategoryData, content_dir + '/docs/index/category_' + category + '_')
 
 print('summary generated')
