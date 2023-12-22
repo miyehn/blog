@@ -1,14 +1,14 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
-import {CategoryInfo, contentManager, PostInfo} from "./ContentManager";
+import {CategoryFolderNode, CategoryInfo, CategoryTree, contentManager, PostInfo} from "./ContentManager";
 import {Link} from "react-router-dom";
-import {Markdown} from "./Utils"
+import {Expandable, Markdown} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
 import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} from "react-icons/fa";
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
-import {Clickable, Expandable} from "./Utils";
-import {useLocation, useParams} from "react-router";
+import {Clickable} from "./Utils";
+import {useParams} from "react-router";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -178,7 +178,7 @@ export function Post(props: {permalink: string, info?: PostInfo, renderer: PostR
 		date: "",
 		title: "",
 		path: props.permalink,
-		tags: []
+		categories: []
 	});
 	const [content, setContent]: StateType<string> = useState("loading...");
 	useEffect(()=>{
@@ -310,9 +310,7 @@ function CategoryEntry(props: {
 	category: string
 }) {
 	return <Link to={"/archive/" + props.category}><Clickable content={<div style={{position: "relative"}}>
-		<span style={{position: "absolute", top: 0, left: 0}}>{">"}</span>
 		<div style={{
-			marginLeft: 20
 		}}>
 			{props.title}
 		</div>
@@ -321,12 +319,12 @@ function CategoryEntry(props: {
 
 export function ArchivePage() {
 
-	const initialCategories: CategoryInfo[] = [];
-	const [categoriesList, setCategoriesList]: StateType<CategoryInfo[]> = useState(initialCategories);
+	const initialCategories: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []} as CategoryFolderNode;
+	const [categoryTree, setCategoryTree]: StateType<CategoryFolderNode> = useState(initialCategories);
 
 	useEffect(()=>{
-		contentManager.asyncGetCategoriesInfo(list => {
-			setCategoriesList(list);
+		contentManager.asyncGetCategoryTree(tree => {
+			setCategoryTree(tree);
 		});
 	}, []);
 
@@ -334,24 +332,43 @@ export function ArchivePage() {
 
 	localStorage.setItem("lastRenderedCategory", category ?? "");
 
+	const constructCategoryTree: (tree: CategoryTree) => React.ReactNode = (tree: CategoryTree) => {
+		const children: React.ReactNode = tree.isFolder ? tree.children.map(child => {
+			return constructCategoryTree(child);
+		}) : undefined;
+
+		if (tree.isFolder) {
+			return <Expandable
+				key={tree.path + " (folder)"}
+				title={"category: " + tree.path}
+				titleNode={tree.name}
+				content={children}
+			/>
+		} else {
+			return <CategoryEntry
+				key={tree.node.categoryPath}
+				title={tree.node.categoryName + " (" + tree.node.count + ")"}
+				category={tree.node.categoryPath}
+			/>;
+		}
+	};
+
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
-			<CategoryEntry title={"Timeline"} category={""}/>
-			<Expandable title={"Tag (legacy)"} content={<div>{
-				categoriesList.map(c => {
-					const title = c.count > 1 ? (c.category + " (" + c.count.toString() + ")") : c.category;
-					return <CategoryEntry key={c.category} title={title} category={"tag-" + c.category}/>
-				})
-			}</div>}/>
-			<CategoryEntry title={"example category 1 name also pretty long into multiple lines"} category={""}/>
-			<CategoryEntry title={"example category 2 with a long name"} category={""}/>
+			<CategoryEntry title={"Timeline (All)"} category={""}/>
+			<hr style={{
+				height: 1,
+				margin: "1.25em 0",
+				backgroundColor: "grey"
+			}}/>
+			{categoryTree.children.map(child => constructCategoryTree(child))}
 		</div>
 		<div style={{flex: 3, height: "100%", overflow: "scroll"}}>
 			<ContentStream
 				category={category}
 				startIndex={0}
 				initialCount={20}
-				increment={20}
+				increment={10}
 				scrollMinIndex={0}
 				scrollMaxIndex={Infinity}
 				verticalMargin={0}

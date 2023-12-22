@@ -15,10 +15,6 @@
 	margin-bottom: calc(var(--base-line-height) - 0.75em);
 }
 
-.markdown hr{
-	margin: 1.25em 0;
-}
-
 .markdown ul,
 .markdown ol{
 	padding-left: 2em;
@@ -39,6 +35,7 @@
 
 .markdown hr{
 	height: 1px;
+	margin: 1.25em 0;
 	background-color: var(--grey-color);
 }
 

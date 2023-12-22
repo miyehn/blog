@@ -105,6 +105,9 @@ function MainContentPage(props: {
 }
 
 export default function BlogMain() {
+	useEffect(()=>{
+		document.title = contentManager.blogInfo.title;
+	}, []);
 	return <div tabIndex={0} style={{
 		width: "100%",
 		height: "100%",

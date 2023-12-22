@@ -4,13 +4,27 @@ export type PostInfo = {
 	date: string,
 	title: string,
 	path: string,
-	tags: string[],
+	categories: string[],
 };
 
 export type CategoryInfo = {
-	category: string,
+	categoryName: string,
+	categoryPath: string,
 	count: number
 };
+
+export type CategoryFolderNode = {
+	isFolder: true,
+	name: string,
+	path: string,
+	children: CategoryTree[]
+};
+type CategoryContentNode = {
+	isFolder: false,
+	node: CategoryInfo
+}
+
+export type CategoryTree = CategoryFolderNode | CategoryContentNode;
 
 class NetworkManager {
 	#fetchCache = new Map<string, string>();
@@ -78,12 +92,52 @@ class ContentManager {
 		});
 	}
 
-	asyncGetCategoriesInfo(cb: (list: CategoryInfo[])=>void) {
-		const url = this.blogInfo.domainName + "/mrblog-content/index/tags";
+	asyncGetCategoryTree(cb: (T: CategoryFolderNode)=>void) {
+		const url = this.blogInfo.domainName + "/mrblog-content/index/categories";
 		this.#networkManager.asyncFetch(url, data =>{
-			const parsed: {tag: string, num: number}[] = JSON.parse(data);
-			const mapped: CategoryInfo[] = parsed.map(tag => {return {category: tag.tag, count: tag.num}});
-			cb(mapped);
+			const parsed: {category: string, num: number}[] = JSON.parse(data);
+
+			// construct tree here
+			const tree: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []};
+			parsed.forEach(cat => { // root level category (with full path)
+				const nodes = cat.category.split('-').map(n => n.trim()).filter(n => n.length > 0);
+				let currentParent: CategoryFolderNode = tree;
+				for (let i = 0; i < nodes.length; i++) {// go down the tree from tree root (depth=0)
+					const c = nodes[i];
+
+					let found = false;
+					currentParent.children.forEach(child => {
+						if (child.isFolder && child.name === c) {
+							// found existing category -> no need to create anything unless it's leaf content node
+							// also, since it's traversing down, all leaf content should go here
+							if (i===nodes.length - 1) {
+								currentParent.children.push({
+									isFolder: false,
+									node: {categoryName: c, categoryPath: cat.category, count: cat.num},
+								});
+							}
+							currentParent = child;
+							found = true;
+						}
+					});
+
+					if (!found) {
+						const newTreeNode: CategoryTree = (i===nodes.length-1) ? {
+							isFolder: false,
+							node: {categoryName: c, categoryPath: cat.category, count: cat.num},
+						} : {
+							isFolder: true,
+							name: c,
+							path: nodes.slice(0, i+1).join('-'),
+							children: []
+						};
+						currentParent.children.push(newTreeNode);
+						// next iter, if need to keep going
+						if (newTreeNode.isFolder) currentParent = newTreeNode;
+					}
+				}
+			});
+			cb(tree);
 		});
 	}
 
@@ -93,7 +147,7 @@ class ContentManager {
 			let parsed = JSON.parse(data);
 			cb({
 				title: parsed.title,
-				tags: parsed.tags,
+				categories: parsed.categories,
 				date: parsed.date,
 				path: permalink
 			}, parsed.content);
@@ -125,12 +179,7 @@ class ContentManager {
 			// construct url
 			let url = cm.blogInfo.domainName + "/mrblog-content/index/" + cm.#magicword;
 			if (props.category !== undefined && props.category.length > 0) {
-				// HACK: using tags as categories for now:
-				if (props.category.slice(0, 4) === "tag-") {
-					url += "tag_" + props.category.slice(4, props.category.length) + "_";
-				} else {
-					url += "category_" + props.category + "_";
-				}
+				 url += "category_" + props.category + "_";
 			}
 			url += currentChunkIndex.toString();
 
