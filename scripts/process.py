@@ -256,4 +256,31 @@ for category in listsPerCategory:
     writeLists(listsPerCategory[category], content_dir + '/docs/index/' + magicword + 'category_' + category + '_')
     writeLists(publicCategoryData, content_dir + '/docs/index/category_' + category + '_')
 
+###############################################################
+# config
+###############################################################
+
+# copy "about"
+shutil.copyfile(content_dir + '/config/about.md', content_dir + '/docs/about')
+
+# read and process timeline
+def filterCond(l):
+    l = l.strip()
+    return len(l)>0 and l[0:1]!='#'
+
+def eventLineToObj(l):
+    arr = l.split(']')
+    return {
+        't': arr[0].strip()[1:],
+        'd': arr[1].strip()
+    }
+# read timeline
+timelineFile = open(content_dir + '/config/timeline.txt', mode='r', encoding='utf8')
+eventLines = timelineFile.read().split('\n')
+timelineFile.close()
+# process timeline and output
+eventObjs = list(map(eventLineToObj, filter(filterCond, eventLines)))
+with open(content_dir + '/docs/timeline', mode='w+', encoding='utf8') as outfile:
+    json.dump(eventObjs, outfile, separators=(',', ':'), ensure_ascii=False)
+
 print('summary generated')

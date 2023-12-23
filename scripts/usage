@@ -8,6 +8,7 @@ Commands (can be called anywhere):
     find                    : find a specific post and edit / rename / delete it
     publish                 : publish posts
     pic                     : picture posting helper
+    content                 : open content folder
 
 Blog actions (need to be at blog site's directory) 
              (run "cd $MRBLOG_PATH" first):
