@@ -22,7 +22,7 @@ function DirectoryTabs(props: {
 		"about",
 		"archive",
 		"friends",
-		"gallery"
+		//"gallery"
 	];
 	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
 	const navigate = useNavigate();
@@ -44,14 +44,10 @@ function DirectoryTabs(props: {
 		<TabPanel>
 			<FriendsPage/>
 		</TabPanel>
-		<TabPanel>
-			gallery
-		</TabPanel>
 		<TabList className="tabs-listContainer">
 			<Tab className="tabs-button">About</Tab>
 			<Tab className="tabs-button">Archive</Tab>
 			<Tab className="tabs-button">Friends</Tab>
-			<Tab className="tabs-button">Gallery</Tab>
 		</TabList>
 	</Tabs>
 }
@@ -98,7 +94,9 @@ function MainContentPage(props: {
 			 increment={contentManager.blogInfo.postsPerPage}
 			 scrollMinIndex={0}
 			 scrollMaxIndex={40}
-			 renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>}
+			 renderFn={posts => posts.map(p =>
+				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
+			 )}
 		 />
 		<Directory pageName={pageName}/>
 	</div>

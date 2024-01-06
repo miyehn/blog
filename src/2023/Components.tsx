@@ -164,7 +164,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	const linkPath = "/post/" + props.info.path;
 
 	return <div style={{
-		marginBottom: 10,
+		marginBottom: 12,
 	}}>
 		<Link to={linkPath}><div>
 			<DateString date={props.info.date}/>
@@ -202,7 +202,7 @@ export function ContentStream(props: {
 	scrollMinIndex: number,
 	scrollMaxIndex: number,
 	verticalMargin: number,
-	renderFn: (p: PostInfo) => React.ReactNode,
+	renderFn: (posts: PostInfo[]) => React.ReactNode,
 	category?: string,
 }) {
 	console.assert(props.startIndex === props.scrollMinIndex);
@@ -285,7 +285,7 @@ export function ContentStream(props: {
 		}}
 	>
 		<div style={{height: props.verticalMargin}}/>
-		{posts.map(props.renderFn)}
+		{props.renderFn(posts)}
 		<div style={{height: props.verticalMargin}}/>
 	</div>;
 }
@@ -318,8 +318,58 @@ function CategoryEntry(props: {
 }
 
 function TimelineWithEvents() {
-	contentManager.asyncGetTimelineEvents((evts: {time: Date, event: string}[]) => {});
-	return <div>uhhh</div>
+	const [events, setEvents] : StateType<{time: Date, event: string}[]> = useState([] as {time: Date, event: string}[]);
+	useEffect(()=>{
+		contentManager.asyncGetTimelineEvents((evts: {time: Date, event: string}[]) => {
+			setEvents(evts);
+		});
+	}, []);
+	const renderFn = (posts: PostInfo[]) => {
+		let evtItr = 0;
+		let postItr = 0;
+		let result: React.ReactNode[] = [];
+		const addPost = (i: number) => {
+			result.push(<Post key={i} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
+			postItr++;
+		}
+		const addEvt = (i: number) => {
+			result.push(<div key={i} className={"event-title-container"}>
+				<div className={"event-title-text"}>{events[evtItr].event}</div>
+				<div className={"event-title-time"}>{events[evtItr].time.toDateString()}</div>
+			</div>);
+			evtItr++;
+		}
+		for (let i = 0; i < posts.length + events.length; i++) {
+			if (evtItr === events.length) {
+				addPost(i);
+			} else if (postItr === posts.length) {
+				addEvt(i);
+			}
+			else {
+
+				const nextEvtTime = events[evtItr].time.getTime();
+				const nextPostTime = posts[postItr].date==='pinned' ? Infinity : Date.parse(posts[postItr].date);
+
+				if (nextEvtTime > nextPostTime) {
+					addEvt(i);
+				} else {
+					addPost(i);
+				}
+
+			}
+		}
+
+		return result;
+	};
+	return <ContentStream
+		category={""}
+		startIndex={0}
+		initialCount={20}
+		increment={10}
+		scrollMinIndex={0}
+		scrollMaxIndex={Infinity}
+		verticalMargin={0}
+		renderFn={renderFn}/>
 }
 
 export function ArchivePage() {
@@ -366,8 +416,9 @@ export function ArchivePage() {
 		scrollMinIndex={0}
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
-		renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>}/> :
-		<TimelineWithEvents/>
+		renderFn={posts => posts.map(p=>
+			<Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
+		)}/> : <TimelineWithEvents/>
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>

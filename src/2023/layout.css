@@ -80,3 +80,19 @@ html, body {
     height: var(--base-line-height);
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
 }
+
+.event-title-container {
+    position: relative;
+    font-family: "myCabin", sans-serif;
+    background-color: var(--black);
+    color: var(--white);
+    margin-bottom: 12px;
+    padding-left: 6px;
+}
+
+.event-title-time {
+    font-size: var(--small-font-size);
+    position: absolute;
+    top: 0;
+    right: 6px;
+}

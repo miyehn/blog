@@ -99,12 +99,11 @@ class ContentManager {
 				time: Date.parse(date.t),
 				event: date.d
 			} }).sort((a: {time: number, event: string}, b: {time: number, event: string}) => {
-				return a.time - b.time
+				return b.time - a.time
 			}).map((evt: {time: number, event: string}) => { return {
 				time: new Date(evt.time),
 				event: evt.event
 			} });
-			console.log(parsed);
 			cb(parsed);
 		});
 	}
