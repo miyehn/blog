@@ -317,6 +317,11 @@ function CategoryEntry(props: {
 	</div>}/></Link>
 }
 
+function TimelineWithEvents() {
+	contentManager.asyncGetTimelineEvents((evts: {time: Date, event: string}[]) => {});
+	return <div>uhhh</div>
+}
+
 export function ArchivePage() {
 
 	const initialCategories: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []} as CategoryFolderNode;
@@ -353,6 +358,17 @@ export function ArchivePage() {
 		}
 	};
 
+	const contentColumn = (category && category.length > 0) ? <ContentStream
+		category={category}
+		startIndex={0}
+		initialCount={20}
+		increment={10}
+		scrollMinIndex={0}
+		scrollMaxIndex={Infinity}
+		verticalMargin={0}
+		renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>}/> :
+		<TimelineWithEvents/>
+
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
 			<CategoryEntry title={"Timeline (All)"} category={""}/>
@@ -364,15 +380,7 @@ export function ArchivePage() {
 			{categoryTree.children.map(child => constructCategoryTree(child))}
 		</div>
 		<div style={{flex: 3, height: "100%", overflow: "scroll"}}>
-			<ContentStream
-				category={category}
-				startIndex={0}
-				initialCount={20}
-				increment={10}
-				scrollMinIndex={0}
-				scrollMaxIndex={Infinity}
-				verticalMargin={0}
-				renderFn={p => <Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>}/>
+			{contentColumn}
 		</div>
 	</div>
 }

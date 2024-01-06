@@ -92,6 +92,23 @@ class ContentManager {
 		});
 	}
 
+	asyncGetTimelineEvents(cb: (evts: {time: Date, event: string}[]) => void) {
+		const url = this.blogInfo.domainName + "/mrblog-content/timeline";
+		this.#networkManager.asyncFetch(url, data => {
+			const parsed = JSON.parse(data).map((date: any)=>{ return {
+				time: Date.parse(date.t),
+				event: date.d
+			} }).sort((a: {time: number, event: string}, b: {time: number, event: string}) => {
+				return a.time - b.time
+			}).map((evt: {time: number, event: string}) => { return {
+				time: new Date(evt.time),
+				event: evt.event
+			} });
+			console.log(parsed);
+			cb(parsed);
+		});
+	}
+
 	asyncGetCategoryTree(cb: (T: CategoryFolderNode)=>void) {
 		const url = this.blogInfo.domainName + "/mrblog-content/index/categories";
 		this.#networkManager.asyncFetch(url, data =>{
