@@ -95,7 +95,7 @@ function MainContentPage(props: {
 			 scrollMinIndex={0}
 			 scrollMaxIndex={40}
 			 renderFn={posts => posts.map(p =>
-				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
+				 <Post key={p.path} collapsible={true} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
 			 )}
 		 />
 		<Directory pageName={pageName}/>

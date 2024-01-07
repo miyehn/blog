@@ -140,21 +140,57 @@ function DateString(props: {
 	else return visualContent;
 }
 
-type PostRenderer = (props: {info: PostInfo, content: string}) => any;
+type PostRenderer = (props: {info: PostInfo, content: string, collapsible: boolean}) => any;
 
 export const TimelinePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
-	content: string
+	content: string,
+	collapsible: boolean
 }) {
-	return <div style={{marginBottom: 20}}>
-		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-		<Markdown content={props.content}/>
-	</div>
+	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
+	const [collapsed, setCollapsed] = useState(false);
+
+	const collapseIcon = <div style={{
+		position: "absolute",
+		top: 0,
+		right: 6,
+		cursor: "pointer"
+	}} onClick={e=>{
+		setCollapsed(true);
+	}}>^</div>;
+
+	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
+	const expandIcon = <div
+		style={{marginBottom: 20, marginRight: 6}}
+		className={"expand-post-icon"}
+		onClick={e=>{
+			setCollapsed(false);
+		}}
+	>{expandIconText}</div>
+
+	if (props.collapsible && collapsed) {
+		return expandIcon;
+	} else {
+		return <div
+			style={{position: "relative", marginBottom: 20}}
+			onMouseEnter={e=>{
+				setShowCollapseIcon(true);
+			}}
+			onMouseLeave={e=>{
+				setShowCollapseIcon(false);
+			}}
+		>
+			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+			{(props.collapsible && showCollapseIcon) ? collapseIcon : undefined}
+			<Markdown content={props.content}/>
+		</div>
+	}
 }
 
 export const PostExcerptRenderer: PostRenderer = function(props: {
 	info: PostInfo,
-	content: string
+	content: string,
+	collapsible: boolean
 }) {
 	let renderContent = "";
 	if (props.info.title.length > 0) {
@@ -173,7 +209,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	</div>
 }
 
-export function Post(props: {permalink: string, info?: PostInfo, renderer: PostRenderer}) {
+export function Post(props: {collapsible: boolean, permalink: string, info?: PostInfo, renderer: PostRenderer}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
 		date: "",
 		title: "",
@@ -189,7 +225,8 @@ export function Post(props: {permalink: string, info?: PostInfo, renderer: PostR
 	}, []);
 	return props.renderer({
 		info: info,
-		content: content
+		content: content,
+		collapsible: props.collapsible
 	});
 }
 
@@ -299,7 +336,7 @@ export function SinglePostPage() {
 	if (permalink !== undefined) {
 		return <div style={{
 			padding: "20px",
-		}}><Post permalink={permalink} renderer={TimelinePostRenderer}/></div>
+		}}><Post collapsible={false} permalink={permalink} renderer={TimelinePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -329,7 +366,7 @@ function TimelineWithEvents() {
 		let postItr = 0;
 		let result: React.ReactNode[] = [];
 		const addPost = (i: number) => {
-			result.push(<Post key={i} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
+			result.push(<Post key={i} collapsible={false} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
 			postItr++;
 		}
 		const addEvt = (i: number) => {
@@ -417,7 +454,7 @@ export function ArchivePage() {
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
 		renderFn={posts => posts.map(p=>
-			<Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
+			<Post collapsible={false} key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
 		)}/> : <TimelineWithEvents/>
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>

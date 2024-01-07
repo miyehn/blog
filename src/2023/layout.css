@@ -81,6 +81,15 @@ html, body {
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
 }
 
+.expand-post-icon {
+    display: inline-block;
+    cursor: pointer;
+    padding: 0 calc(var(--base-line-height) * 0.5);
+    border-radius: calc(var(--base-line-height) * 0.5);
+    background-color: var(--black);
+    color: var(--white);
+}
+
 .event-title-container {
     position: relative;
     font-family: "myCabin", sans-serif;

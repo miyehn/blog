@@ -215,7 +215,7 @@ def stripPublicity(l):
         l[i] = {
             'title': l[i]['title'],
             'path': l[i]['path'],
-            'tags': l[i]['tags'],
+            'categories': l[i]['categories'],
             'date': l[i]['date']
         }
 
