@@ -19,9 +19,9 @@ if argc==1:
 
 elif sys.argv[1]=='new':
     if argc > 2:
-        os.system('bash ' + scripts_dir + '/new.py ' + sys.argv[2])
+        os.system('bash ' + scripts_dir + '/new.sh ' + sys.argv[2])
     else: 
-        os.system('bash ' + scripts_dir + '/new.py')
+        os.system('bash ' + scripts_dir + '/new.sh')
 elif sys.argv[1]=='find':
     os.system('python ' + scripts_dir + '/find.py')
 elif sys.argv[1]=='publish':

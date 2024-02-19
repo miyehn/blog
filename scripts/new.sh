@@ -32,7 +32,7 @@ echo "public: " >> $filename
 echo "" >> $filename
 echo "---" >> $filename
 
-if [ $MRBLOG_PC=='1' ]
+if [ "$MRBLOG_PC" == "1" ]
 then
 	start $filename
 else

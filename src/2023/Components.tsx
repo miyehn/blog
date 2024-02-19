@@ -149,7 +149,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 }) {
 	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
 	const [collapsed, setCollapsed] = useState(props.info.defaultCollapsed);
-	console.warn(props.info.defaultCollapsed);
+	//console.warn(props.info.defaultCollapsed);
 
 	const collapseIcon = <div style={{
 		position: "absolute",

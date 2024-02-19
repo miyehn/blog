@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import glob
@@ -44,7 +44,7 @@ listsPerCategory = {}
 listsPerCategoryPublic = {}
 
 for path in paths:
-    file = open(path, mode='r', encoding='utf8')
+    file = open(path, mode='r', encoding='utf8') # encoding not supported in python2 wtf
     text = file.read().strip()
 
     header = text[text.find('---\n')+4:]
@@ -105,7 +105,11 @@ for path in paths:
     categoriesArr0 = filter(None, categoriesArr0)
     categoriesArr = []
     for category in categoriesArr0:
-        categoryStripped = category.strip()
+        levels = category.split('-')
+        categoryStripped = ''
+        for l in levels:
+            categoryStripped += l.strip() + '-'
+        categoryStripped = categoryStripped[:-1]
         categoriesArr.append(categoryStripped)
 
     # publicity
