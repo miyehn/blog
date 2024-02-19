@@ -5,6 +5,7 @@ export type PostInfo = {
 	title: string,
 	path: string,
 	categories: string[],
+	defaultCollapsed: boolean
 };
 
 export type CategoryInfo = {
@@ -165,7 +166,8 @@ class ContentManager {
 				title: parsed.title,
 				categories: parsed.categories,
 				date: parsed.date,
-				path: permalink
+				path: permalink,
+				defaultCollapsed: false
 			}, parsed.content);
 		});
 	}

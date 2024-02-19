@@ -148,7 +148,8 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 	collapsible: boolean
 }) {
 	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
-	const [collapsed, setCollapsed] = useState(false);
+	const [collapsed, setCollapsed] = useState(props.info.defaultCollapsed);
+	console.warn(props.info.defaultCollapsed);
 
 	const collapseIcon = <div style={{
 		position: "absolute",
@@ -171,6 +172,9 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 	if (props.collapsible && collapsed) {
 		return expandIcon;
 	} else {
+		const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
+			return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
+		});
 		return <div
 			style={{position: "relative", marginBottom: 40}}
 			onMouseEnter={e=>{
@@ -183,6 +187,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 			{(props.collapsible && showCollapseIcon) ? collapseIcon : undefined}
 			<Markdown content={props.content}/>
+			<div className={"category-tags-container"}>{categoryTags}</div>
 		</div>
 	}
 }
@@ -216,7 +221,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 			marginBottom: 12,
 		}}>
 			<div >
-				<Link to={linkPath}><DateString date={props.info.date}/></Link>
+				<DateString date={props.info.date} linkPath={linkPath}/>
 				<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
 					<Markdown className={"cssTruncate"} inline content={renderContent}/>
 				</div>
@@ -228,7 +233,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 			marginBottom: 12,
 		}}>
 			<div onMouseEnter={()=>{setShowCollapseIcon(true);}} onMouseLeave={()=>{setShowCollapseIcon(false);}}>
-				<Link to={linkPath}><DateString date={props.info.date}/></Link>
+				<DateString date={props.info.date} linkPath={linkPath}/>
 				{showCollapseIcon ? collapseIcon : undefined}
 				<div><Markdown content={renderContent}/></div>
 			</div>
@@ -242,7 +247,8 @@ export function Post(props: {collapsible: boolean, permalink: string, info?: Pos
 		date: "",
 		title: "",
 		path: props.permalink,
-		categories: []
+		categories: [],
+		defaultCollapsed: false
 	});
 	const [content, setContent]: StateType<string> = useState("loading...");
 	useEffect(()=>{

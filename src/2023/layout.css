@@ -105,3 +105,21 @@ html, body {
     top: 0;
     right: 6px;
 }
+
+.category-tags-container {
+    margin-top: 20px;
+}
+
+.category-tag {
+    display: inline-block;
+    color: var(--white);
+    font-size: var(--small-font-size);
+    padding: 2px 6px;
+    margin-right: 6px;
+    background-color: var(--black);
+    border-radius: 3px;
+}
+
+.category-tag::before {
+    content: "# "
+}
