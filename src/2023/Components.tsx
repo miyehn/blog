@@ -161,7 +161,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 
 	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
 	const expandIcon = <div
-		style={{marginBottom: 20, marginRight: 6}}
+		style={{marginBottom: 40, marginRight: 6}}
 		className={"expand-post-icon"}
 		onClick={e=>{
 			setCollapsed(false);
@@ -172,7 +172,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 		return expandIcon;
 	} else {
 		return <div
-			style={{position: "relative", marginBottom: 20}}
+			style={{position: "relative", marginBottom: 40}}
 			onMouseEnter={e=>{
 				setShowCollapseIcon(true);
 			}}
@@ -199,14 +199,42 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	renderContent += props.content;
 	const linkPath = "/post/" + props.info.path;
 
-	return <div style={{
-		marginBottom: 12,
-	}}>
-		<Link to={linkPath}><div>
-			<DateString date={props.info.date}/>
-			<div><Markdown className={"cssTruncate"} inline content={renderContent}/></div>
-		</div></Link>
-	</div>
+	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
+	const [collapsed, setCollapsed] = useState(true);
+
+	const collapseIcon = <div style={{
+		position: "absolute",
+		top: 0,
+		right: 6,
+		cursor: "pointer"
+	}} onClick={e=>{
+		setCollapsed(true);
+	}}>^</div>;
+
+	if (collapsed) {
+		return <div style={{
+			marginBottom: 12,
+		}}>
+			<div >
+				<Link to={linkPath}><DateString date={props.info.date}/></Link>
+				<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
+					<Markdown className={"cssTruncate"} inline content={renderContent}/>
+				</div>
+			</div>
+		</div>
+	} else {
+		return <div style={{
+			position: "relative",
+			marginBottom: 12,
+		}}>
+			<div onMouseEnter={()=>{setShowCollapseIcon(true);}} onMouseLeave={()=>{setShowCollapseIcon(false);}}>
+				<Link to={linkPath}><DateString date={props.info.date}/></Link>
+				{showCollapseIcon ? collapseIcon : undefined}
+				<div><Markdown content={renderContent}/></div>
+			</div>
+		</div>
+	}
+
 }
 
 export function Post(props: {collapsible: boolean, permalink: string, info?: PostInfo, renderer: PostRenderer}) {
