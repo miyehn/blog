@@ -31,7 +31,7 @@
     border-left: 1px solid var(--black);
     cursor: pointer;
 }
-.tabs-button.tabs-selectedButton {
+.tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
     color: var(--white);
     background-color: var(--black);
 }

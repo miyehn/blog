@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
+import {HashRouter, Route, Switch, Link } from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React, {useEffect} from "react";
 import {
@@ -9,14 +9,14 @@ import {
 	FriendsPage,
 	ContentStream,
 	SinglePostPage,
-	Post, TimelinePostRenderer, PostExcerptRenderer
+	Post, TimelinePostRenderer,
 } from "./Components";
 import './tabs.css';
 import {contentManager} from "./ContentManager";
-import {useParams} from "react-router";
 
 function DirectoryTabs(props: {
-	pageName: string
+	pageName: string,
+	category?: string
 }) {
 	const pageNames = [
 		"about",
@@ -25,7 +25,6 @@ function DirectoryTabs(props: {
 		//"gallery"
 	];
 	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
-	const navigate = useNavigate();
 	return <Tabs
 		className="tabs-outerContainer"
 		selectedIndex={currentIndex}
@@ -33,27 +32,27 @@ function DirectoryTabs(props: {
 		selectedTabPanelClassName="tabs-selectedPanel"
 		onSelect={(idx, lastIdx, e)=>{
 			localStorage.setItem("directoryPageName", pageNames[idx]);
-			navigate("/" + pageNames[idx]);
 		}}>
 		<TabPanel>
 			<AboutPage/>
 		</TabPanel>
 		<TabPanel>
-			<ArchivePage/>
+			<ArchivePage category={props.category ?? ""}/>
 		</TabPanel>
 		<TabPanel>
 			<FriendsPage/>
 		</TabPanel>
 		<TabList className="tabs-listContainer">
-			<Tab className="tabs-button">About</Tab>
-			<Tab className="tabs-button">Archive</Tab>
-			<Tab className="tabs-button">Friends</Tab>
+			<Tab className="tabs-button"><Link to={"/about"}>About</Link></Tab>
+			<Tab className="tabs-button"><Link to={"/archive"}>Archive</Link></Tab>
+			<Tab className="tabs-button"><Link to={"/friends"}>Friends</Link></Tab>
 		</TabList>
 	</Tabs>
 }
 
 function Directory(props: {
-	pageName: string
+	pageName: string,
+	category?: string
 }) {
 	const expanded = props.pageName.length > 0;
 	return <div style={{
@@ -63,7 +62,7 @@ function Directory(props: {
 		top: 0,
 		height: expanded ? "100%" : 0,
 	}}>
-		{expanded ? <DirectoryTabs pageName={props.pageName}/> : undefined}
+		{expanded ? <DirectoryTabs pageName={props.pageName} category={props.category}/> : undefined}
 		<ArrowButton expanded={expanded}/>
 	</div>
 }
@@ -71,14 +70,15 @@ function Directory(props: {
 type MatchType = "page" | "category" | "wildcard";
 
 function MainContentPage(props: {
-	matchType: MatchType
+	matchType: MatchType,
+	page?: string,
+	category?: string
 }) {
 	let pageName;
 	if (props.matchType === "category") {
 		pageName = "archive";
 	} else {
-		const {page} = useParams();
-		pageName = page ?? "";
+		pageName = props.page ?? "";
 	}
 
 	return <div style={{
@@ -97,7 +97,7 @@ function MainContentPage(props: {
 				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
 			 )}
 		 />
-		<Directory pageName={pageName}/>
+		<Directory pageName={pageName} category={props.category}/>
 	</div>
 }
 
@@ -112,13 +112,13 @@ export default function BlogMain() {
 		borderBottom: "1px solid lightgrey",
 		overflow: "scroll"
 	}}>
-		<BrowserRouter>
-			<Routes>
-				<Route path={"/archive/:category"} element={<MainContentPage matchType={"category"}/>}/>
-				<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
-				<Route path={"/:page"} element={<MainContentPage matchType={"page"}/>}/>
-				<Route path={"/"} element={<MainContentPage matchType={"wildcard"}/>}/>
-			</Routes>
-		</BrowserRouter>
+		<HashRouter hashType={"noslash"}>
+			<Switch>
+				<Route exact path={"/archive/:category"} render={({match})=><MainContentPage matchType={"category"} category={match.params.category}/>}/>
+				<Route exact path={"/post/:permalink"} render={({match})=><SinglePostPage permalink={match.params.permalink}/>}/>
+				<Route exact path={"/:page"} render={({match})=><MainContentPage matchType={"page"} page={match.params.page}/>}/>
+				<Route exact path={"/"} render={()=><MainContentPage matchType={"wildcard"}/>}/>
+			</Switch>
+		</HashRouter>
 	</div>
 }

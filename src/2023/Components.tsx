@@ -1,6 +1,6 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import {CategoryFolderNode, CategoryInfo, CategoryTree, contentManager, PostInfo} from "./ContentManager";
-import {Link} from "react-router-dom";
+import {Route, Link, BrowserRouter} from "react-router-dom";
 import {Expandable, Markdown} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
@@ -379,12 +379,11 @@ export function Error404() {
 	return <div>blah 404</div>;
 }
 
-export function SinglePostPage() {
-	const {permalink} = useParams();
-	if (permalink !== undefined) {
+export function SinglePostPage(props: { permalink: string }) {
+	if (props.permalink !== undefined) {
 		return <div style={{
 			padding: "20px",
-		}}><Post permalink={permalink} renderer={SinglePostRenderer}/></div>
+		}}><Post permalink={props.permalink} renderer={SinglePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -457,7 +456,7 @@ function TimelineWithEvents() {
 		renderFn={renderFn}/>
 }
 
-export function ArchivePage() {
+export function ArchivePage(props: {category: string}) {
 
 	const initialCategories: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []} as CategoryFolderNode;
 	const [categoryTree, setCategoryTree]: StateType<CategoryFolderNode> = useState(initialCategories);
@@ -468,9 +467,7 @@ export function ArchivePage() {
 		});
 	}, []);
 
-	const {category} = useParams();
-
-	localStorage.setItem("lastRenderedCategory", category ?? "");
+	localStorage.setItem("lastRenderedCategory", props.category);
 
 	const constructCategoryTree: (tree: CategoryTree) => React.ReactNode = (tree: CategoryTree) => {
 		const children: React.ReactNode = tree.isFolder ? tree.children.map(child => {
@@ -493,8 +490,8 @@ export function ArchivePage() {
 		}
 	};
 
-	const contentColumn = (category && category.length > 0) ? <ContentStream
-		category={category}
+	const contentColumn = (props.category.length > 0) ? <ContentStream
+		category={props.category}
 		startIndex={0}
 		initialCount={20}
 		increment={10}
