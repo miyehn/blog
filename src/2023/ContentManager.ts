@@ -5,7 +5,7 @@ export type PostInfo = {
 	title: string,
 	path: string,
 	categories: string[],
-	defaultCollapsed: boolean
+	collapsed: boolean
 };
 
 export type CategoryInfo = {
@@ -77,7 +77,7 @@ class ContentManager {
 				"url": "https://github.com/miyehn"
 			}
 		],
-		title: "槽",
+		title: "槽 - 新版施工中",
 		postsPerPage: 6
 	}
 
@@ -167,7 +167,7 @@ class ContentManager {
 				categories: parsed.categories,
 				date: parsed.date,
 				path: permalink,
-				defaultCollapsed: false
+				collapsed: false
 			}, parsed.content);
 		});
 	}

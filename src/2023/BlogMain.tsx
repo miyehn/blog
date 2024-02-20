@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes, createBrowserRouter, useNavigate} from "react-router-dom";
+import {BrowserRouter, Route, Routes, useNavigate} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React, {useEffect} from "react";
 import {
@@ -84,8 +84,6 @@ function MainContentPage(props: {
 	return <div style={{
 		position: "relative",
 		height: "100%",
-		paddingLeft: 60,
-		paddingRight: 20,
 	}}>
 		 <ContentStream
 			 startIndex={0}
@@ -94,8 +92,9 @@ function MainContentPage(props: {
 			 increment={contentManager.blogInfo.postsPerPage}
 			 scrollMinIndex={0}
 			 scrollMaxIndex={40}
+			 style={{ marginLeft: 60 }}
 			 renderFn={posts => posts.map(p =>
-				 <Post key={p.path} collapsible={true} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
+				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
 			 )}
 		 />
 		<Directory pageName={pageName}/>

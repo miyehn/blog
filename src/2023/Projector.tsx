@@ -52,6 +52,8 @@ export default function Projector() {
 	const [cameraOffsetY, setCameraOffsetY] = useState(0);
 	const [cameraOffsetZ, setCameraOffsetZ] = useState(0);
 
+	const [renderWidth, setRenderWidth] = useState(0);
+
 	const getProjectionInfo = function(width: number, height: number) {
 
 		// view dir rotation
@@ -105,10 +107,15 @@ export default function Projector() {
 			setCameraOffsetY(params.cameraOffsetY);
 			setCameraOffsetZ(params.cameraOffsetZ);
 		};
+
 	}, []);
 
-	let outerSideLength = Math.min(window.innerWidth, window.innerHeight) * 0.9 - 80;
 	const aspectRatio = 1.25;
+	const w1 = window.innerWidth * 0.8;
+	const w2 = window.innerHeight * 0.8 * aspectRatio;
+	const wmax = 1280;
+	let outerSideLength = Math.min(wmax, w1, w2);
+
 	const zDist = outerSideLength / 2;
 	const scaleRatio = zDist / (zDist + cameraOffsetZ);
 	let width = outerSideLength;

@@ -28,6 +28,7 @@ echo "---" >> $filename
 echo "title: " >> $filename
 echo "date: $YYYY-$MM-$DD $HH:$mm" >> $filename
 echo "categories: []" >> $filename
+echo "collapsed: false" >> $filename
 echo "public: " >> $filename
 echo "" >> $filename
 echo "---" >> $filename

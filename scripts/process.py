@@ -135,6 +135,15 @@ for path in paths:
         datestr = header[ind:]
     datestr = datestr[0:datestr.find('\n')].strip()
 
+    # collapsed
+    ind = header.find('collapsed:')+10
+    if ind<10:
+        collapsed = False
+    elif header[ind:].strip()[0:4].lower()=='true':
+        collapsed = True
+    else:
+        collapsed = False
+
     # jsonify
     data = {
         'title': title,
@@ -142,6 +151,7 @@ for path in paths:
         'tags': tagarr,
         'categories': categoriesArr,
         'publicity': publicity,
+        'collapsed': collapsed,
         'date': datestr
     }
 
@@ -169,6 +179,7 @@ for path in paths:
         'title': data['title'],
         'tags': data['tags'],
         'categories': data['categories'],
+        'collapsed': data['collapsed'],
         'date': data['date'],
         'content': textOrig.strip()
     }
@@ -220,6 +231,7 @@ def stripPublicity(l):
             'title': l[i]['title'],
             'path': l[i]['path'],
             'categories': l[i]['categories'],
+            'collapsed': l[i]['collapsed'],
             'date': l[i]['date']
         }
 

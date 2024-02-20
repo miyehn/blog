@@ -140,16 +140,14 @@ function DateString(props: {
 	else return visualContent;
 }
 
-type PostRenderer = (props: {info: PostInfo, content: string, collapsible: boolean}) => any;
+type PostRenderer = (props: {info: PostInfo, content: string}) => any;
 
 export const TimelinePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
-	collapsible: boolean
 }) {
 	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
-	const [collapsed, setCollapsed] = useState(props.info.defaultCollapsed);
-	//console.warn(props.info.defaultCollapsed);
+	const [collapsed, setCollapsed] = useState(props.info.collapsed);
 
 	const collapseIcon = <div style={{
 		position: "absolute",
@@ -166,10 +164,11 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 		className={"expand-post-icon"}
 		onClick={e=>{
 			setCollapsed(false);
+			setShowCollapseIcon(true);
 		}}
 	>{expandIconText}</div>
 
-	if (props.collapsible && collapsed) {
+	if (collapsed) {
 		return expandIcon;
 	} else {
 		const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
@@ -185,17 +184,32 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 			}}
 		>
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-			{(props.collapsible && showCollapseIcon) ? collapseIcon : undefined}
+			{showCollapseIcon ? collapseIcon : undefined}
 			<Markdown content={props.content}/>
 			<div className={"category-tags-container"}>{categoryTags}</div>
 		</div>
 	}
 }
 
+export const SinglePostRenderer: PostRenderer = function(props: {
+	info: PostInfo,
+	content: string,
+}) {
+	const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
+		return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
+	});
+	return <div
+		style={{position: "relative", marginBottom: 40}}
+	>
+		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		<Markdown content={props.content}/>
+		<div className={"category-tags-container"}>{categoryTags}</div>
+	</div>
+}
+
 export const PostExcerptRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
-	collapsible: boolean
 }) {
 	let renderContent = "";
 	if (props.info.title.length > 0) {
@@ -242,13 +256,13 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 
 }
 
-export function Post(props: {collapsible: boolean, permalink: string, info?: PostInfo, renderer: PostRenderer}) {
+export function Post(props: {permalink: string, info?: PostInfo, renderer: PostRenderer}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
 		date: "",
 		title: "",
 		path: props.permalink,
 		categories: [],
-		defaultCollapsed: false
+		collapsed: false
 	});
 	const [content, setContent]: StateType<string> = useState("loading...");
 	useEffect(()=>{
@@ -260,7 +274,6 @@ export function Post(props: {collapsible: boolean, permalink: string, info?: Pos
 	return props.renderer({
 		info: info,
 		content: content,
-		collapsible: props.collapsible
 	});
 }
 
@@ -275,6 +288,7 @@ export function ContentStream(props: {
 	verticalMargin: number,
 	renderFn: (posts: PostInfo[]) => React.ReactNode,
 	category?: string,
+	style?: CSSProperties
 }) {
 	console.assert(props.startIndex === props.scrollMinIndex);
 
@@ -320,12 +334,12 @@ export function ContentStream(props: {
 
 	//console.log(`min ${props.scrollMinIndex}, start ${startPostIndex}, max ${scrollMaxIndex}, total ${posts.length}`);
 
-	let style: CSSProperties = {
+	let style: CSSProperties = {...{
 		position: "relative",
 		height: "100%",
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
-	};
+	}, ...props.style};
 
 	return <div
 		ref={ref}
@@ -370,7 +384,7 @@ export function SinglePostPage() {
 	if (permalink !== undefined) {
 		return <div style={{
 			padding: "20px",
-		}}><Post collapsible={false} permalink={permalink} renderer={TimelinePostRenderer}/></div>
+		}}><Post permalink={permalink} renderer={SinglePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -400,7 +414,7 @@ function TimelineWithEvents() {
 		let postItr = 0;
 		let result: React.ReactNode[] = [];
 		const addPost = (i: number) => {
-			result.push(<Post key={i} collapsible={false} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
+			result.push(<Post key={i} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
 			postItr++;
 		}
 		const addEvt = (i: number) => {
@@ -488,11 +502,11 @@ export function ArchivePage() {
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
 		renderFn={posts => posts.map(p=>
-			<Post collapsible={false} key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
+			<Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
 		)}/> : <TimelineWithEvents/>
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-		<div style={{flex: 1, height: "100%", overflow: "scroll", paddingRight: 10}}>
+		<div style={{flex: 0, flexBasis: Math.min(180, window.innerWidth * 0.2), height: "100%", overflow: "scroll", paddingRight: 10}}>
 			<CategoryEntry title={"Timeline (All)"} category={""}/>
 			<hr style={{
 				height: 1,
@@ -501,7 +515,7 @@ export function ArchivePage() {
 			}}/>
 			{categoryTree.children.map(child => constructCategoryTree(child))}
 		</div>
-		<div style={{flex: 3, height: "100%", overflow: "scroll"}}>
+		<div style={{flex: 1, height: "100%", overflow: "scroll"}}>
 			{contentColumn}
 		</div>
 	</div>
@@ -514,10 +528,13 @@ export function FriendsPage() {
 		<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
 		<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
 		<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>
-		<a className="clickable" href="http://blog.fivest.one/">fivestone</a>
+		<a className="clickable" href="https://blog.fivest.one/">fivestone</a>
 		<a className="clickable" href="https://mengru.space">mengru</a>
 		<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
 		<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
 		<a className="clickable" href="https://ayu.land/">甜鱼</a>
+		<br/>
+		<br/>
+		<p>（此页面目前近乎毛坯，该继续施工了）</p>
 	</div>
 }
