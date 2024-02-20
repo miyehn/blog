@@ -520,7 +520,7 @@ export function ArchivePage(props: {category: string}) {
 
 export function FriendsPage() {
 	return <div className={"friends"}>
-		<p>也拜访下赛博邻居们吧：</p>
+		<p>也拜访下赛博邻居们吧！</p>
 		<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
 		<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
 		<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
@@ -530,6 +530,7 @@ export function FriendsPage() {
 		<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
 		<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
 		<a className="clickable" href="https://ayu.land/">甜鱼</a>
+		<a className="clickable" href="https://nikukikai.art/">肉機械</a>
 		<br/>
 		<br/>
 		<p>（此页面目前近乎毛坯，该继续施工了）</p>
