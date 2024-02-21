@@ -19,7 +19,7 @@ function Logo() {
 		margin: "auto",
 		marginTop: 20,
 		height: 72,
-	}} src={require("../avatar.png")} alt={"avatar"}/>
+	}} src={require("./avatar.png")} alt={"avatar"}/>
 }
 
 // using raw <a> tags here so that hovering over these elements show the url

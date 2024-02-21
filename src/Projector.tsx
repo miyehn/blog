@@ -1,8 +1,8 @@
 import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import { ProjectionCalculator2d } from "projection-3d-2d";
 import { vec3, quat, mat4, ReadonlyQuat, ReadonlyVec3 } from "gl-matrix";
-import '../common/style/style.css';
-import './layout.css';
+import './style/style.css';
+import './style/layout.css';
 import BlogMain from "./BlogMain";
 import {projectorController} from "./ProjectorController";
 

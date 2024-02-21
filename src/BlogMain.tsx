@@ -11,7 +11,7 @@ import {
 	SinglePostPage,
 	Post, TimelinePostRenderer,
 } from "./Components";
-import './tabs.css';
+import './style/tabs.css';
 import {contentManager} from "./ContentManager";
 
 function DirectoryTabs(props: {
