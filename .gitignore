@@ -3,3 +3,4 @@ package-lock.json
 magicword
 build
 .idea
+**__pycache__/

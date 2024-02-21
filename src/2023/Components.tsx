@@ -146,25 +146,14 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
 }) {
-	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
 	const [collapsed, setCollapsed] = useState(props.info.collapsed);
-
-	const collapseIcon = <div style={{
-		position: "absolute",
-		top: 0,
-		right: 6,
-		cursor: "pointer"
-	}} onClick={e=>{
-		setCollapsed(true);
-	}}>^</div>;
 
 	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
 	const expandIcon = <div
-		style={{marginBottom: 40, marginRight: 6}}
+		style={{marginBottom: 10, marginRight: 6}}
 		className={"expand-post-icon"}
 		onClick={e=>{
 			setCollapsed(false);
-			setShowCollapseIcon(true);
 		}}
 	>{expandIconText}</div>
 
@@ -174,19 +163,15 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 		const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
 			return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
 		});
-		return <div
-			style={{position: "relative", marginBottom: 40}}
-			onMouseEnter={e=>{
-				setShowCollapseIcon(true);
-			}}
-			onMouseLeave={e=>{
-				setShowCollapseIcon(false);
-			}}
-		>
+		return <div className="timeline-post">
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-			{showCollapseIcon ? collapseIcon : undefined}
-			<Markdown content={props.content}/>
-			<div className={"category-tags-container"}>{categoryTags}</div>
+			<div className="foldable">
+				<div className="left-fold-handle" onClick={e=>{ setCollapsed(true); }}/>
+				<div className="right-fold-content">
+					<Markdown content={props.content}/>
+					<div className={"category-tags-container"}>{categoryTags}</div>
+				</div>
+			</div>
 		</div>
 	}
 }
@@ -218,17 +203,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	renderContent += props.content;
 	const linkPath = "/post/" + props.info.path;
 
-	const [showCollapseIcon, setShowCollapseIcon] = useState(false);
 	const [collapsed, setCollapsed] = useState(true);
-
-	const collapseIcon = <div style={{
-		position: "absolute",
-		top: 0,
-		right: 6,
-		cursor: "pointer"
-	}} onClick={e=>{
-		setCollapsed(true);
-	}}>^</div>;
 
 	if (collapsed) {
 		return <div style={{
@@ -246,10 +221,12 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 			position: "relative",
 			marginBottom: 12,
 		}}>
-			<div onMouseEnter={()=>{setShowCollapseIcon(true);}} onMouseLeave={()=>{setShowCollapseIcon(false);}}>
+			<div>
 				<DateString date={props.info.date} linkPath={linkPath}/>
-				{showCollapseIcon ? collapseIcon : undefined}
-				<div><Markdown content={renderContent}/></div>
+				<div className="foldable">
+					<div className="left-fold-handle" onClick={e=>{ setCollapsed(true); }}/>
+					<Markdown content={renderContent} className="right-fold-content"/>
+				</div>
 			</div>
 		</div>
 	}
@@ -369,9 +346,7 @@ export function ContentStream(props: {
 			}
 		}}
 	>
-		<div style={{height: props.verticalMargin}}/>
 		{props.renderFn(posts)}
-		<div style={{height: props.verticalMargin}}/>
 	</div>;
 }
 

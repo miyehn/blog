@@ -12,7 +12,9 @@ while not (len(files)==1 and len(files[0])>0):
     if len(files[0])==0:
         print('no post contains it.')
     else:
-        print('more than one post contains it')
+        print('more than one post contains it:')
+        for f in files:
+            print(f)
 
     s = raw_input('gimme some other text:\n> ')
     files = os.popen('grep -l "' + s + '" ' + content_dir + '/drafts/*.md').read().strip().split('\n')

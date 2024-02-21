@@ -123,3 +123,29 @@ html, body {
 .category-tag::before {
     content: "# "
 }
+
+.timeline-post {
+    position: relative;
+    margin: 40px 0;
+}
+
+.timeline-post:first-child {
+    margin-top: 20px;
+}
+
+.foldable {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-fold-handle {
+    flex: 0;
+    cursor: pointer;
+    flex-basis: 0.75em;
+    margin-left: 0.25em;
+    border-left: 1px solid var(--black);
+}
+
+.right-fold-content {
+    flex: 1;
+}
