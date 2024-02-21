@@ -91,7 +91,7 @@ function MainContentPage(props: {
 			 initialCount={contentManager.blogInfo.postsPerPage}
 			 increment={contentManager.blogInfo.postsPerPage}
 			 scrollMinIndex={0}
-			 scrollMaxIndex={40}
+			 scrollMaxIndex={Infinity}
 			 style={{ marginLeft: 60 }}
 			 renderFn={posts => posts.map(p =>
 				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>

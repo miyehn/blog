@@ -7,7 +7,7 @@ import os
 import shutil
 import time
 import datetime
-from parser import *
+from parser import mrblog_read
 
 rawData = []
 content_dir = os.environ['MRBLOG_CONTENT']

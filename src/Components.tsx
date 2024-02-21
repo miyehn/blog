@@ -148,6 +148,8 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 }) {
 	const [collapsed, setCollapsed] = useState(props.info.collapsed);
 
+	const postRef = useRef<HTMLDivElement>(null);
+
 	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
 	const expandIcon = <div
 		style={{marginBottom: 10, marginRight: 6}}
@@ -163,10 +165,15 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 		const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
 			return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
 		});
-		return <div className="timeline-post">
+		return <div className="timeline-post" ref={postRef}>
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 			<div className="foldable">
-				<div className="left-fold-handle" onClick={e=>{ setCollapsed(true); }}/>
+				<div className="left-fold-handle" onClick={e=>{
+					if (postRef !== null) {
+						console.log(postRef.current?.offsetTop);
+					}
+					setCollapsed(true);
+				}}/>
 				<div className="right-fold-content">
 					<Markdown content={props.content}/>
 					<div className={"category-tags-container"}>{categoryTags}</div>

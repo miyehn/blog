@@ -118,7 +118,7 @@ def mrblog_read(path, includeTags=False):
         'collapsed': collapsed,
         'date': datestr,
         'content': textOrig.strip(),
-        'contentRaw': contentRaw
+        'contentRaw': contentRaw.strip()
     }
     if includeTags:
         data['tags'] = tagarr
