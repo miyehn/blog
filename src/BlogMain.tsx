@@ -1,6 +1,6 @@
 import {HashRouter, Route, Switch, Link } from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import {
 	AboutPage,
 	ArchivePage,
@@ -81,6 +81,7 @@ function MainContentPage(props: {
 		pageName = props.page ?? "";
 	}
 
+	const streamRef = useRef<HTMLDivElement>(null);
 	return <div style={{
 		position: "relative",
 		height: "100%",
@@ -93,8 +94,9 @@ function MainContentPage(props: {
 			 scrollMinIndex={0}
 			 scrollMaxIndex={Infinity}
 			 style={{ marginLeft: 60 }}
+			 container={streamRef}
 			 renderFn={posts => posts.map(p =>
-				 <Post key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
+				 <Post container={streamRef} key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
 			 )}
 		 />
 		<Directory pageName={pageName} category={props.category}/>

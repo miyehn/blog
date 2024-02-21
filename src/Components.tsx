@@ -140,11 +140,12 @@ function DateString(props: {
 	else return visualContent;
 }
 
-type PostRenderer = (props: {info: PostInfo, content: string}) => any;
+type PostRenderer = (props: {info: PostInfo, content: string, container: React.RefObject<HTMLDivElement>}) => any;
 
 export const TimelinePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
+	container: React.RefObject<HTMLDivElement>
 }) {
 	const [collapsed, setCollapsed] = useState(props.info.collapsed);
 
@@ -169,8 +170,15 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 			<div className="foldable">
 				<div className="left-fold-handle" onClick={e=>{
-					if (postRef !== null) {
-						console.log(postRef.current?.offsetTop);
+					if (postRef.current !== null && props.container.current !== null) {
+						let postTop = postRef.current.offsetTop;
+						let visibleTop = props.container.current.scrollTop;
+						if (postTop < visibleTop) {
+							props.container.current.scrollTo({
+								top: postTop - 80,
+								behavior: "smooth"
+							});
+						}
 					}
 					setCollapsed(true);
 				}}/>
@@ -202,6 +210,7 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 export const PostExcerptRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
+	container: React.RefObject<HTMLDivElement>
 }) {
 	let renderContent = "";
 	if (props.info.title.length > 0) {
@@ -211,36 +220,46 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	const linkPath = "/post/" + props.info.path;
 
 	const [collapsed, setCollapsed] = useState(true);
+	const postRef = useRef<HTMLDivElement>(null);
 
-	if (collapsed) {
-		return <div style={{
-			marginBottom: 12,
-		}}>
-			<div >
-				<DateString date={props.info.date} linkPath={linkPath}/>
-				<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
-					<Markdown className={"cssTruncate"} inline content={renderContent}/>
-				</div>
+	let content = collapsed ?
+		<div >
+			<DateString date={props.info.date} linkPath={linkPath}/>
+			<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
+				<Markdown className={"cssTruncate"} inline content={renderContent}/>
 			</div>
-		</div>
-	} else {
-		return <div style={{
-			position: "relative",
-			marginBottom: 12,
-		}}>
-			<div>
-				<DateString date={props.info.date} linkPath={linkPath}/>
-				<div className="foldable">
-					<div className="left-fold-handle" onClick={e=>{ setCollapsed(true); }}/>
-					<Markdown content={renderContent} className="right-fold-content"/>
-				</div>
+		</div> :
+		<div>
+			<DateString date={props.info.date} linkPath={linkPath}/>
+			<div className="foldable">
+				<div className="left-fold-handle" onClick={e=>{
+					if (postRef.current !== null && props.container.current !== null) {
+						let postTop = postRef.current.offsetTop;
+						let visibleTop = props.container.current.scrollTop;
+						if (postTop < visibleTop) {
+							props.container.current.scrollTo({
+								top: postTop,
+								behavior: "smooth"
+							});
+						}
+					}
+					setCollapsed(true);
+				}}/>
+				<Markdown content={renderContent} className="right-fold-content"/>
 			</div>
-		</div>
-	}
+		</div>;
+
+	return <div ref={postRef} style={{
+		 position: "relative",
+		 marginBottom: 12,
+	}}>
+		{content}
+	</div>
 
 }
 
-export function Post(props: {permalink: string, info?: PostInfo, renderer: PostRenderer}) {
+// wrapper to make sure content is properly fetched
+export function Post(props: {permalink: string, info?: PostInfo, container:React.RefObject<HTMLDivElement>, renderer: PostRenderer}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
 		date: "",
 		title: "",
@@ -258,6 +277,7 @@ export function Post(props: {permalink: string, info?: PostInfo, renderer: PostR
 	return props.renderer({
 		info: info,
 		content: content,
+		container: props.container
 	});
 }
 
@@ -271,6 +291,7 @@ export function ContentStream(props: {
 	scrollMaxIndex: number,
 	verticalMargin: number,
 	renderFn: (posts: PostInfo[]) => React.ReactNode,
+	container: React.RefObject<HTMLDivElement>,
 	category?: string,
 	style?: CSSProperties
 }) {
@@ -282,8 +303,6 @@ export function ContentStream(props: {
 
 	const initialPosts: PostInfo[] = [];
 	const [posts, setPosts]: StateType<PostInfo[]> = useState(initialPosts);
-
-	const ref = useRef<HTMLDivElement | null>(null);
 
 	const asyncGetPosts = function(startIdx: number, count: number) {
 		setFetching(true);
@@ -309,8 +328,8 @@ export function ContentStream(props: {
 	}, []);
 
 	useEffect(()=>{
-		if (ref?.current) {
-			ref.current.scrollTop = 0;
+		if (props.container.current) {
+			props.container.current.scrollTop = 0;
 		}
 		let numInitialPosts = Math.min(props.scrollMaxIndex - props.startIndex, props.initialCount);
 		asyncGetPosts(props.startIndex, numInitialPosts);
@@ -326,16 +345,16 @@ export function ContentStream(props: {
 	}, ...props.style};
 
 	return <div
-		ref={ref}
+		ref={props.container}
 		className={"forceScrollable noScrollBar"}
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
 				console.log("skip..");
 			} else {
-				let clientHeight = ref?.current?.clientHeight ?? 0;
-				let scrollTop = ref?.current?.scrollTop ?? 0;
-				let scrollHeight = ref?.current?.scrollHeight ?? 0;
+				let clientHeight = props.container.current?.clientHeight ?? 0;
+				let scrollTop = props.container.current?.scrollTop ?? 0;
+				let scrollHeight = props.container.current?.scrollHeight ?? 0;
 				if (e.deltaY > 0
 					&& scrollTop + clientHeight >= scrollHeight - 5/* arbitrary */ // scroll reached bottom
 					&& posts.length < (scrollMaxIndex - startPostIndex) // there are more posts to fetch (after)
@@ -362,10 +381,11 @@ export function Error404() {
 }
 
 export function SinglePostPage(props: { permalink: string }) {
+	const containerRef = useRef<HTMLDivElement>(null);
 	if (props.permalink !== undefined) {
-		return <div style={{
+		return <div ref={containerRef} style={{
 			padding: "20px",
-		}}><Post permalink={props.permalink} renderer={SinglePostRenderer}/></div>
+		}}><Post container={containerRef} permalink={props.permalink} renderer={SinglePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -385,6 +405,7 @@ function CategoryEntry(props: {
 
 function TimelineWithEvents() {
 	const [events, setEvents] : StateType<{time: Date, event: string}[]> = useState([] as {time: Date, event: string}[]);
+	const streamRef = useRef<HTMLDivElement>(null);
 	useEffect(()=>{
 		contentManager.asyncGetTimelineEvents((evts: {time: Date, event: string}[]) => {
 			setEvents(evts);
@@ -395,7 +416,7 @@ function TimelineWithEvents() {
 		let postItr = 0;
 		let result: React.ReactNode[] = [];
 		const addPost = (i: number) => {
-			result.push(<Post key={i} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
+			result.push(<Post container={streamRef} key={i} info={posts[postItr]} permalink={posts[postItr].path} renderer={PostExcerptRenderer}/>);
 			postItr++;
 		}
 		const addEvt = (i: number) => {
@@ -435,6 +456,7 @@ function TimelineWithEvents() {
 		scrollMinIndex={0}
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
+		container={streamRef}
 		renderFn={renderFn}/>
 }
 
@@ -442,6 +464,8 @@ export function ArchivePage(props: {category: string}) {
 
 	const initialCategories: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []} as CategoryFolderNode;
 	const [categoryTree, setCategoryTree]: StateType<CategoryFolderNode> = useState(initialCategories);
+
+	const streamRef = useRef<HTMLDivElement>(null);
 
 	useEffect(()=>{
 		contentManager.asyncGetCategoryTree(tree => {
@@ -480,8 +504,9 @@ export function ArchivePage(props: {category: string}) {
 		scrollMinIndex={0}
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
+		container={streamRef}
 		renderFn={posts => posts.map(p=>
-			<Post key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
+			<Post container={streamRef} key={p.path} info={p} permalink={p.path} renderer={PostExcerptRenderer}/>
 		)}/> : <TimelineWithEvents/>
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
