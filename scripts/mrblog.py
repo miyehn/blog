@@ -27,9 +27,11 @@ elif sys.argv[1]=='find':
 elif sys.argv[1]=='publish':
     os.system('bash ' + scripts_dir + '/publish.py')
 elif sys.argv[1]=='pic':
-    os.system('python ' + scripts_dir + '/post_pic.py ')
+    os.system('python ' + scripts_dir + '/post_pic.py')
 elif sys.argv[1]=='content':
     if pc=='1':
         os.system('start ' + content_dir)
     else:
         os.system('open ' + content_dir)
+elif sys.argv[1]=='sketchdump':
+    os.system('python ' + scripts_dir + '/sketchdump.py')

@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
 import copy
-from parser import mrblog_read, mrblog_write, mrblog_process_all
+from mrparser import mrblog_read, mrblog_process_all
 
 def donothing(inObj):
     return inObj
@@ -13,11 +13,11 @@ def renameCategory(inObj):
     cats = outObj['categories']
 
     for i in range(len(cats)):
-        if cats[i] == 'Echoes（USC学生项目）':
-            cats[i] = 'Echoes'
+        if cats[i] == '绘画':
+            cats[i] = '绘画-（未分类）'
 
-    if '81天日记' in cats and len(cats)==1:
-        outObj['collapsed'] = True
+    #if '81天日记' in cats and len(cats)==1:
+        #outObj['collapsed'] = True
 
     return outObj
 

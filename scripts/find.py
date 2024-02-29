@@ -1,11 +1,17 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import os
 pc = os.environ.get('MRBLOG_PC', '0')
 
+def get_input(msg):
+    if pc=='1':
+        return input(msg)
+    else:
+        return raw_input(msg)
+
 content_dir = os.environ['MRBLOG_CONTENT']
 
-s = raw_input('gimme some text in the post you\'re trying to find:\n> ')
+s = get_input('gimme some text in the post you\'re trying to find:\n> ')
 files = os.popen('grep -l "' + s + '" ' + content_dir + '/drafts/*.md').read().strip().split('\n')
 
 while not (len(files)==1 and len(files[0])>0):
@@ -16,7 +22,7 @@ while not (len(files)==1 and len(files[0])>0):
         for f in files:
             print(f)
 
-    s = raw_input('gimme some other text:\n> ')
+    s = get_input('gimme some other text:\n> ')
     files = os.popen('grep -l "' + s + '" ' + content_dir + '/drafts/*.md').read().strip().split('\n')
 
 f = files[0]
@@ -25,7 +31,7 @@ print('cool. the post you\'re looking for is in file\n' + f)
 rec_action = False
 
 while not rec_action:
-    a = raw_input('what do you want to do with it?\nreply [e]dit, [r]ename, [d]elete, or [n]othing:\n> ').lower()
+    a = get_input('what do you want to do with it?\nreply [e]dit, [r]ename, [d]elete, or [n]othing:\n> ').lower()
     if a=='e' or a=='edit':
         if pc=='1':
             os.system('start '+f)
@@ -33,11 +39,11 @@ while not rec_action:
             os.system('open '+f)
         rec_action = True
     elif a=='r' or a=='rename':
-        new_name = raw_input('sure. gimme it\'s new name (not the whole path) (without extension):\n> ')
+        new_name = get_input('sure. gimme it\'s new name (not the whole path) (without extension):\n> ')
         while True:
             new_path = content_dir+'/drafts/'+new_name+'.md'
             if os.path.isfile(new_path):
-                new_name = raw_input('this name\'s taken. gimme another one:\n> ')
+                new_name = get_input('this name\'s taken. gimme another one:\n> ')
             else:
                 os.system('mv '+f+' '+new_path)
                 print('ok it\'s renamed.')

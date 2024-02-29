@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -130,7 +130,7 @@ def mrblog_write(obj, path):
     dirname = os.path.dirname(path)
     if len(dirname) > 0 and not os.path.exists(dirname):
         os.makedirs(dirname)
-    with open(path, 'w+') as outfile:
+    with open(path, 'w+', encoding='utf8') as outfile:
         outfile.write('---\n')
         # title
         outfile.write('title: {}\n'.format(obj['title']))

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import glob
@@ -7,7 +7,7 @@ import os
 import shutil
 import time
 import datetime
-from parser import mrblog_read
+from mrparser import mrblog_read
 
 rawData = []
 content_dir = os.environ['MRBLOG_CONTENT']

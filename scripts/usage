@@ -9,6 +9,7 @@ Commands (can be called anywhere):
     publish                 : publish posts
     pic                     : picture posting helper
     content                 : open content folder
+    sketchdump              : auto dump sketches to blog
 
 Blog actions (need to be at blog site's directory) 
              (run "cd $MRBLOG_PATH" first):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import glob
 import os
@@ -12,8 +12,8 @@ for path in paths:
     
     img = Image.open(path)
     w, h = img.size
-    if (w>800 or h>640):
-        ratio = min(800/w, 640/h)
+    if (w>1000 or h>800):
+        ratio = min(1000/w, 800/h)
         newsize = (int(w * ratio + 0.5), int(h * ratio + 0.5))
         # see: https://clouard.users.greyc.fr/Pantheon/experiments/rescaling/index-en.html
         img = img.resize(size=newsize, resample=Image.Resampling.LANCZOS)
@@ -28,4 +28,4 @@ for path in paths:
         #cmd='magick "'+path+'" -resize "800x640>" -quality 100 "'+path+'"'
         #os.system(cmd)
 
-print('resized large images to at most 800x640')
+print('resized large images to at most 1000x800')
