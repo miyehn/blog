@@ -153,7 +153,6 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 
 	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
 	const expandIcon = <div
-		style={{marginBottom: 10, marginRight: 6}}
 		className={"expand-post-icon"}
 		onClick={e=>{
 			setCollapsed(false);

@@ -1,6 +1,6 @@
 import {HashRouter, Route, Switch, Link } from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import React, {useEffect, useRef} from "react";
+import React, {CSSProperties, useEffect, useRef} from "react";
 import {
 	AboutPage,
 	ArchivePage,
@@ -12,7 +12,7 @@ import {
 	Post, TimelinePostRenderer,
 } from "./Components";
 import './style/tabs.css';
-import {contentManager} from "./ContentManager";
+import {contentManager, PostInfo} from "./ContentManager";
 
 function DirectoryTabs(props: {
 	pageName: string,
@@ -81,6 +81,30 @@ function MainContentPage(props: {
 		pageName = props.page ?? "";
 	}
 
+	const renderAllPostsFn = (posts: PostInfo[]) => {
+		let list: React.ReactNode[] = [];
+		let collapsedGroup: React.ReactNode[] = [];
+		for (let i = 0; i < posts.length; i++) {
+			let p = posts[i];
+			let elem = <Post
+				container={streamRef}
+				key={p.path}
+				info={p}
+				permalink={p.path}
+				renderer={TimelinePostRenderer}/>;
+			if (p.collapsed) {
+				collapsedGroup.push(elem);
+			} else {
+				if (collapsedGroup.length > 0) {
+					list.push(<div key={'collapsedGroup-' + i} className="timeline-collapsed-group">{collapsedGroup}</div>)
+					collapsedGroup = [];
+				}
+				list.push(elem)
+			}
+		}
+		return list;
+	}
+
 	const streamRef = useRef<HTMLDivElement>(null);
 	return <div style={{
 		position: "relative",
@@ -89,15 +113,13 @@ function MainContentPage(props: {
 		 <ContentStream
 			 startIndex={0}
 			 verticalMargin={20}
-			 initialCount={contentManager.blogInfo.postsPerPage}
+			 initialCount={contentManager.blogInfo.initialNumPosts}
 			 increment={contentManager.blogInfo.postsPerPage}
 			 scrollMinIndex={0}
 			 scrollMaxIndex={Infinity}
 			 style={{ marginLeft: 60 }}
 			 container={streamRef}
-			 renderFn={posts => posts.map(p =>
-				 <Post container={streamRef} key={p.path} info={p} permalink={p.path} renderer={TimelinePostRenderer}/>
-			 )}
+			 renderFn={renderAllPostsFn}
 		 />
 		<Directory pageName={pageName} category={props.category}/>
 	</div>

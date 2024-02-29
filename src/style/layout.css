@@ -83,6 +83,7 @@ html, body {
 
 .expand-post-icon {
     display: inline-block;
+    margin: 5px 6px 5px 0;
     cursor: pointer;
     padding: 0 calc(var(--base-line-height) * 0.5);
     border-radius: calc(var(--base-line-height) * 0.5);
@@ -131,6 +132,11 @@ html, body {
 
 .timeline-post:first-child {
     margin-top: 20px;
+}
+
+.timeline-collapsed-group {
+    vertical-align: middle;
+    margin: 20px 0;
 }
 
 .foldable {

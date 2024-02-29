@@ -78,7 +78,8 @@ class ContentManager {
 			}
 		],
 		title: "槽 - 新版施工中",
-		postsPerPage: 6
+		initialNumPosts: 20,
+		postsPerPage: 10,
 	}
 
 	constructor() {
