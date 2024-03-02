@@ -3,13 +3,13 @@
      or: <blog action>
 
 Commands (can be called anywhere):
-    new                     : create a new post using timestamp as filename
-    new <filename>          : create a new post using custom filename
+    new [filename]          : create a new post using optional custom filename
     find                    : find a specific post and edit / rename / delete it
     publish                 : publish posts
     pic                     : picture posting helper
     content                 : open content folder
-    sketchdump              : auto dump sketches to blog
+    sketchdump [msg] [collapsed]
+                            : auto dump sketches to blog[, with custom message, and whether to collapse by default]
 
 Blog actions (need to be at blog site's directory) 
              (run "cd $MRBLOG_PATH" first):

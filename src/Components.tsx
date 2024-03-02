@@ -527,18 +527,29 @@ export function ArchivePage(props: {category: string}) {
 export function FriendsPage() {
 	return <div className={"friends"}>
 		<p>也拜访下赛博邻居们吧！</p>
-		<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
-		<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
-		<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
-		<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>
-		<a className="clickable" href="https://blog.fivest.one/">fivestone</a>
-		<a className="clickable" href="https://mengru.space">mengru</a>
-		<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
-		<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
-		<a className="clickable" href="https://ayu.land/">甜鱼</a>
-		<a className="clickable" href="https://nikukikai.art/">肉機械</a>
+		<p>本人虽为技术从业者，博客却一点都不技术，不知道路过的看官感兴趣哪类，就大致这么分一下：</p>
 		<br/>
+		<h3>偏技术</h3>
+		<p>
+			<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
+			<a className="clickable" href="https://blog.gadore.top">千里之豪</a>
+		</p>
 		<br/>
-		<p>（此页面目前近乎毛坯，该继续施工了）</p>
+		<h3>偏个人</h3>
+		<p>
+			<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
+			<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
+			<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>
+			<a className="clickable" href="https://blog.fivest.one/">fivestone</a>
+			<a className="clickable" href="https://mengru.space">mengru</a>
+			<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
+			<a className="clickable" href="https://ayu.land/">甜鱼</a>
+			<a className="clickable" href="https://nikukikai.art/">肉機械</a>
+		</p>
+		<br/>
+		<h3>一年多没更新了！敲打！</h3>
+		<p>
+			<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
+		</p>
 	</div>
 }

@@ -10,18 +10,20 @@ content_dir = os.environ['MRBLOG_CONTENT']
 
 pc = os.environ.get('MRBLOG_PC', '0')
 
+def redirect_script(cmd):
+    args = sys.argv[2:]
+    for arg in args:
+        cmd += ' ' + arg
+    os.system(cmd)
+
 if argc==1:
     print('-------- Welcome to mrblog! --------')
     print('Currently configured for domain: '+os.environ['MRBLOG_DOMAIN'])
     with open(scripts_dir + '/usage', 'r') as f:
         shutil.copyfileobj(f, sys.stdout)
     print('')
-
 elif sys.argv[1]=='new':
-    if argc > 2:
-        os.system('bash ' + scripts_dir + '/new.sh ' + sys.argv[2])
-    else: 
-        os.system('bash ' + scripts_dir + '/new.sh')
+    redirect_script('bash ' + scripts_dir + '/new.sh')
 elif sys.argv[1]=='find':
     os.system('python ' + scripts_dir + '/find.py')
 elif sys.argv[1]=='publish':
@@ -34,4 +36,4 @@ elif sys.argv[1]=='content':
     else:
         os.system('open ' + content_dir)
 elif sys.argv[1]=='sketchdump':
-    os.system('python ' + scripts_dir + '/sketchdump.py')
+    redirect_script('python ' + scripts_dir + '/sketchdump.py')
