@@ -545,6 +545,7 @@ export function FriendsPage() {
 			<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
 			<a className="clickable" href="https://ayu.land/">甜鱼</a>
 			<a className="clickable" href="https://nikukikai.art/">肉機械</a>
+			<a className="clickable" href="https://tianxianzi.me/">天仙子</a>
 		</p>
 		<br/>
 		<h3>一年多没更新了！敲打！</h3>
