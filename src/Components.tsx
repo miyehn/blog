@@ -8,11 +8,15 @@ import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} 
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable} from "./Utils";
-import {useParams} from "react-router";
+import {useMediaQuery} from "react-responsive";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
-function Logo() {
+export const mediaQuerySettings = {
+	query: '(min-width: 960px)'
+};
+
+export function Logo() {
 	return  <img style={{
 		display: "block",
 		position: "relative",
@@ -23,11 +27,13 @@ function Logo() {
 }
 
 // using raw <a> tags here so that hovering over these elements show the url
-function Social() {
+export function Social() {
 	let mailto = "mailto" + contentManager.blogInfo.email;
 	let handles = contentManager.blogInfo.socialHandles.filter(s=>{
 		return s.url.trim().length > 0
 	});
+
+	const isDesktopOrLaptop = useMediaQuery(mediaQuerySettings);
 
 	let toIcon = function(s: string) {
 		if (s==="instagram") {
@@ -46,7 +52,7 @@ function Social() {
 	return(
 		<div style={{
 			marginTop: 30,
-			marginBottom: 50,
+			marginBottom: isDesktopOrLaptop ? 50 : 30,
 			textAlign: "center",
 			verticalAlign: "middle"
 		}}>
@@ -63,7 +69,7 @@ function Social() {
 	)
 }
 
-function AboutContent() {
+export function AboutContent() {
 	const [content, setContent] = useState("loading..");
 	useEffect(()=>{
 		contentManager.asyncGetAbout(newContent=>{setContent(newContent);});
@@ -292,7 +298,8 @@ export function ContentStream(props: {
 	renderFn: (posts: PostInfo[]) => React.ReactNode,
 	container: React.RefObject<HTMLDivElement>,
 	category?: string,
-	style?: CSSProperties
+	style?: CSSProperties,
+	prefix?: React.ReactNode
 }) {
 	console.assert(props.startIndex === props.scrollMinIndex);
 
@@ -371,6 +378,7 @@ export function ContentStream(props: {
 			}
 		}}
 	>
+		{props.prefix}
 		{props.renderFn(posts)}
 	</div>;
 }

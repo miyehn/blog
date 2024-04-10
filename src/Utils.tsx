@@ -1,4 +1,4 @@
-import React, {ReactNode, CSSProperties} from "react";
+import React, {ReactNode, CSSProperties, useLayoutEffect, useState} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -140,4 +140,18 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 			}}
 		/>
 	}
+}
+
+// from: https://stackoverflow.com/questions/19014250/rerender-view-on-browser-resize-with-react
+export function useWindowSize() {
+	const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
+	useLayoutEffect(() => {
+		function updateSize() {
+			setSize([window.innerWidth, window.innerHeight]);
+		}
+		window.addEventListener('resize', updateSize);
+		updateSize();
+		return () => window.removeEventListener('resize', updateSize);
+	}, []);
+	return size;
 }

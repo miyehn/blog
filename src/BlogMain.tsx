@@ -69,6 +69,21 @@ function Directory(props: {
 
 type MatchType = "page" | "category" | "wildcard";
 
+export const renderAllPostsFn = (posts: PostInfo[], streamRef: React.RefObject<HTMLDivElement>) => {
+	let list: React.ReactNode[] = [];
+	for (let i = 0; i < posts.length; i++) {
+		let p = posts[i];
+		let elem = <Post
+			container={streamRef}
+			key={p.path}
+			info={p}
+			permalink={p.path}
+			renderer={TimelinePostRenderer}/>;
+		list.push(elem);
+	}
+	return list;
+}
+
 function MainContentPage(props: {
 	matchType: MatchType,
 	page?: string,
@@ -79,30 +94,6 @@ function MainContentPage(props: {
 		pageName = "archive";
 	} else {
 		pageName = props.page ?? "";
-	}
-
-	const renderAllPostsFn = (posts: PostInfo[]) => {
-		let list: React.ReactNode[] = [];
-		let collapsedGroup: React.ReactNode[] = [];
-		for (let i = 0; i < posts.length; i++) {
-			let p = posts[i];
-			let elem = <Post
-				container={streamRef}
-				key={p.path}
-				info={p}
-				permalink={p.path}
-				renderer={TimelinePostRenderer}/>;
-			if (p.collapsed) {
-				collapsedGroup.push(elem);
-			} else {
-				if (collapsedGroup.length > 0) {
-					list.push(<div key={'collapsedGroup-' + i} className="timeline-collapsed-group">{collapsedGroup}</div>)
-					collapsedGroup = [];
-				}
-				list.push(elem)
-			}
-		}
-		return list;
 	}
 
 	const streamRef = useRef<HTMLDivElement>(null);
@@ -119,7 +110,7 @@ function MainContentPage(props: {
 			 scrollMaxIndex={Infinity}
 			 style={{ marginLeft: 60 }}
 			 container={streamRef}
-			 renderFn={renderAllPostsFn}
+			 renderFn={(posts: PostInfo[]) => renderAllPostsFn(posts, streamRef)}
 		 />
 		<Directory pageName={pageName} category={props.category}/>
 	</div>

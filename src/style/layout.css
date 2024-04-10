@@ -81,16 +81,6 @@ html, body {
     background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
 }
 
-.expand-post-icon {
-    display: inline-block;
-    margin: 5px 6px 5px 0;
-    cursor: pointer;
-    padding: 0 calc(var(--base-line-height) * 0.5);
-    border-radius: calc(var(--base-line-height) * 0.5);
-    background-color: var(--black);
-    color: var(--white);
-}
-
 .event-title-container {
     position: relative;
     font-family: "myCabin", sans-serif;
@@ -125,6 +115,16 @@ html, body {
     content: "# "
 }
 
+.expand-post-icon {
+    display: inline-block;
+    margin: 5px 6px 5px 0;
+    cursor: pointer;
+    padding: 0 calc(var(--base-line-height) * 0.5);
+    border-radius: calc(var(--base-line-height) * 0.5);
+    background-color: var(--black);
+    color: var(--white);
+}
+
 .timeline-post {
     position: relative;
     margin: 40px 0;
@@ -135,8 +135,11 @@ html, body {
 }
 
 .timeline-collapsed-group {
+    display: inline-block;
     vertical-align: middle;
-    margin: 20px 0;
+}
+
+.timeline-collapsed-group>.expand-post-icon {
 }
 
 .foldable {

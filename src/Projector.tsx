@@ -5,6 +5,7 @@ import './style/style.css';
 import './style/layout.css';
 import BlogMain from "./BlogMain";
 import {projectorController} from "./ProjectorController";
+import {useWindowSize} from "./Utils";
 
 //const red = "rgba(255, 0, 0, 1)";
 //const green = "rgba(0, 255, 0, 1)";
@@ -45,14 +46,13 @@ const distToProjector = 500;
 export default function Projector() {
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const [windowWidth, windowHeight] = useWindowSize();
 
 	const [rotateX, setRotateX] = useState(0);
 	const [rotateY, setRotateY] = useState(0);
 	const [cameraOffsetX, setCameraOffsetX] = useState(0);
 	const [cameraOffsetY, setCameraOffsetY] = useState(0);
 	const [cameraOffsetZ, setCameraOffsetZ] = useState(0);
-
-	const [renderWidth, setRenderWidth] = useState(0);
 
 	const getProjectionInfo = function(width: number, height: number) {
 
@@ -111,8 +111,8 @@ export default function Projector() {
 	}, []);
 
 	const aspectRatio = 1.25;
-	const w1 = window.innerWidth * 0.8;
-	const w2 = window.innerHeight * 0.8 * aspectRatio;
+	const w1 = windowWidth * 0.8;
+	const w2 = windowHeight * 0.8 * aspectRatio;
 	const wmax = 1280;
 	let outerSideLength = Math.min(wmax, w1, w2);
 
@@ -128,7 +128,7 @@ export default function Projector() {
 		width: width,
 		height: height,
 		margin: "0 auto",
-		marginTop: (window.innerHeight - height) / 2,
+		marginTop: (windowHeight - height) / 2,
 		transform: `scale(${scaleRatio})`,
 		//border: "1px solid red",
 		overflow: "visible"
@@ -155,7 +155,7 @@ export default function Projector() {
 		ref={containerRef}
 		style={{
 			width: "100%",
-			height: window.innerHeight - 20,
+			height: windowHeight - 20,
 			margin: 0,
 			padding: 0,
 			outline: "none",
