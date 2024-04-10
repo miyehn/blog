@@ -379,7 +379,9 @@ export function ContentStream(props: {
 		}}
 	>
 		{props.prefix}
-		{props.renderFn(posts)}
+		<div>
+			{props.renderFn(posts)}
+		</div>
 	</div>;
 }
 

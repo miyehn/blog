@@ -131,7 +131,7 @@ html, body {
 }
 
 .timeline-post:first-child {
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .timeline-collapsed-group {

@@ -111,6 +111,7 @@ function MainContentPage(props: {
 			 style={{ marginLeft: 60 }}
 			 container={streamRef}
 			 renderFn={(posts: PostInfo[]) => renderAllPostsFn(posts, streamRef)}
+			 prefix={<div style={{height: 20}}/>}
 		 />
 		<Directory pageName={pageName} category={props.category}/>
 	</div>
