@@ -556,9 +556,10 @@ export function FriendsPage() {
 			<a className="clickable" href="https://ayu.land/">甜鱼</a>
 			<a className="clickable" href="https://nikukikai.art/">肉機械</a>
 			<a className="clickable" href="https://tianxianzi.me/">天仙子</a>
+			<a className="clickable" href="https://varraro.github.io">Lenger的后花园</a>
 		</p>
 		<br/>
-		<h3>一年多没更新了！敲打！</h3>
+		<h3>怎么死链了！敲打！</h3>
 		<p>
 			<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
 		</p>
