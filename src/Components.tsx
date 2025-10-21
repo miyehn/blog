@@ -547,6 +547,7 @@ export function FriendsPage() {
 		<br/>
 		<h3>偏个人</h3>
 		<p>
+			<a className="clickable" href="https://handsomemango.vercel.app/">芒果！（的文）</a>
 			<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
 			<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
 			<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>

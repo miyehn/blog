@@ -13,6 +13,7 @@ import sys
 content_dir = os.environ['MRBLOG_CONTENT']
 sketches_dir = os.environ['MRBLOG_SKETCHES']
 paths = glob.glob(sketches_dir + '/*.png')
+paths.extend(glob.glob(sketches_dir + '/*.jpg'))
 
 if (len(paths) == 0):
     print('no sketches to dump')
