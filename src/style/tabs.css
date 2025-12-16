@@ -27,7 +27,7 @@
     margin: auto;
     text-align: center;
     writing-mode: vertical-rl;
-    border-left: 1px solid var(--black);
+    border-left: 1px solid var(--text);
     cursor: pointer;
 }
 
@@ -37,7 +37,7 @@ li.tabs-button:before {
 
 .tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
     color: var(--background-color);
-    background-color: var(--black);
+    background-color: var(--text);
 }
 
 .tabs-button::marker {

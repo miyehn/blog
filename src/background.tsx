@@ -58,9 +58,10 @@ function drawSquareWithErosion(p5: P5, X: number, Y: number, erosion: number) {
 				for (let y = subgridCenterY - radius; y < subgridCenterY + radius; y++) {
 					for (let x = subgridCenterX - radius; x < subgridCenterX + radius; x++) {
 						const px = loadPixel(p5, x, y);
+
 						let normalizedDist = 1 - Math.min(1, Math.sqrt((y - subgridCenterY) * (y - subgridCenterY) + (x - subgridCenterX) * (x - subgridCenterX)) / radius);
 						let color = {
-							r: 16,
+							r: 15,
 							g: px.g + normalizedDist * 255,
 							b: 112,
 							a: 255
@@ -94,11 +95,20 @@ function p5setup(p5: P5) {
 	const easeInGridEnd = contentStartGridIdx + gridY - 5;
 
 	p5.loadPixels();
+
+	/*
+	for (let y = 0; y < p5.height / 8; y += gridSize / 4) {
+		for (let x = 0; x < p5.width; x += gridSize / 2) {
+			writePixel(p5, x, y, {r: 255, g: 0, b: 127, a: 255});
+		}
+	}
+	 */
+
 	for (let Y = 0; Y < gridY; Y++) {
 		for (let X = 0; X < gridX; X++) {
 			const gridIdx = X * gridY + Y;
 			let strength = 1 - (gridIdx + easeInGridCount - easeInGridEnd) / easeInGridCount;
-			const jitter = gridIdx % 2 === 0 ? 0.031 : 0;//Math.random() * 0.12 - 0.06;
+			const jitter = gridIdx % 2 === 0 ? (1 / (easeInGridCount - 3)) : 0;//Math.random() * 0.12 - 0.06;
 			strength += jitter;
 			strength = Math.max(0, strength);
 			strength = Math.min(1, strength);

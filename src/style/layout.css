@@ -3,7 +3,7 @@ html{
     font-family: var(--base-font-family);
     font-size: var(--base-font-size);
     line-height: var(--base-line-height);
-    color: var(--black);
+    color: var(--text);
 }
 
 *::selection {
@@ -87,8 +87,8 @@ html, body {
 .event-title-container {
     position: relative;
     font-family: "myCabin", sans-serif;
-    background-color: var(--black);
-    color: var(--white);
+    background-color: var(--text);
+    color: #000000;
     margin-bottom: 12px;
     padding-left: 6px;
 }
@@ -110,7 +110,7 @@ html, body {
     font-size: var(--small-font-size);
     padding: 2px 6px;
     margin-right: 6px;
-    background-color: var(--black);
+    background-color: var(--text);
     border-radius: 3px;
 }
 
@@ -124,7 +124,7 @@ html, body {
     cursor: pointer;
     padding: 0 calc(var(--base-line-height) * 0.5);
     border-radius: calc(var(--base-line-height) * 0.5);
-    background-color: var(--black);
+    background-color: var(--text);
     color: var(--white);
 }
 

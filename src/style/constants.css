@@ -73,10 +73,10 @@ img{
 
 a{
     text-decoration: none;
-    color: var(--black);
+    color: var(--text);
 }
 
 a:visited{
-    color: var(--black);
+    color: var(--text);
     transition: color 100ms ease-in;
 }

@@ -2,25 +2,25 @@
 @import 'normalize.css';
 @import 'markdown.css';
 
-:root{
+:root {
 	/* Font families */
 	--base-font-family: "LXGW", Serif;
 	--bold-font-family: "LXGW-bold", Serif;
 	--code-font-family: "inconsolata", Consolas, monospace, sans-serif;
 
 	/* Font configuration */
-	--base-font-size:   12pt;
-	--small-font-size:  10pt;
-	--big-font-size: 	14pt;
+	--base-font-size:   13pt;
+	--small-font-size:  11pt;
+	--big-font-size: 	16pt;
 	--huge-font-size:	28pt;
 	--base-line-height: 1.5em;
 
 	/* Colors */
-	--black: #cacaca;
-	--white: 			#ffffff;
+	--text: #cacaca;
 	--background-color: #000000;
-	--accent-color:     var(--material-green);
-	--selection-color: #444e35;
+	--accent-color:     #0fc070;
+	/*--selection-color: #0f4070;*/
+	--selection-color: #c00060;
 	--grey-color: #737373;
 	--note-yellow: #FFFAE5;
 }
