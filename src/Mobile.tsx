@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import {AboutContent, ContentStream, FriendsPage, Logo, SinglePostPage, Social} from "./Components";
 import {Expandable, useWindowSize} from "./Utils";
 import {contentManager, type PostInfo} from "./ContentManager";
@@ -49,10 +49,13 @@ function MobileBlogContent() {
 }
 
 export default function MobileBlogMain() {
+	useEffect(() => {
+		document.title = contentManager.blogInfo.title;
+	}, []);
 	return <HashRouter>
 		<Routes>
 			<Route path={"/"} element={<MobileBlogContent/>}/>
-			<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
+			<Route path={"/post/:permalink"} element={<SinglePostPage type={"mobile"}/>}/>
 		</Routes>
 	</HashRouter>
 }

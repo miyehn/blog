@@ -10,6 +10,7 @@ import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable} from "./Utils";
 import {useMediaQuery} from "react-responsive";
 import logo from "./assets/logo.png"
+import {getContentLeft, getContentWidth} from "./background.tsx";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -109,7 +110,6 @@ export function ArrowButton(props: {
 		position: "relative",
 		width: 30,
 		height: 30,
-		left: -15,
 		textAlign: "center",
 		margin: "auto",
 		cursor: "pointer"
@@ -192,7 +192,7 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 					{props.info.title.length ? <div style={{
 						fontSize: 22,
 						fontWeight: "bold",
-						margin: "5px 0 15px 0"
+						margin: "5px 0 15px 0",
 					}}>{props.info.title}</div> : undefined}
 					<Markdown content={props.content}/>
 					<div className={"category-tags-container"}>{categoryTags}</div>
@@ -403,13 +403,22 @@ export function Error404() {
 	return <div>blah 404</div>;
 }
 
-export function SinglePostPage() {
+export function SinglePostPage(props: {
+	type: "desktop" | "mobile"
+}) {
 	const params = useParams();
 	const containerRef = useRef<HTMLDivElement>(null);
 	if (containerRef && params.permalink !== undefined) {
-		return <div ref={containerRef} style={{
+		const style: CSSProperties = {
 			padding: "20px",
-		}}><Post container={containerRef} permalink={params.permalink} renderer={SinglePostRenderer}/></div>
+		};
+		if (props.type === "desktop") {
+			style.position = "relative";
+			style.width = getContentWidth();
+			style.left = getContentLeft();
+			style.paddingLeft = 70;
+		}
+		return <div ref={containerRef} style={style}><Post container={containerRef} permalink={params.permalink} renderer={SinglePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}
@@ -556,28 +565,28 @@ export function FriendsPage() {
 		<br/>
 		<h3>偏技术</h3>
 		<p>
-			<a className="clickable" href="https://sumygg.com/">SumyBlog</a>
-			<a className="clickable" href="https://blog.gadore.top">千里之豪</a>
+			<a className="clickable hoverHighlight" href="https://sumygg.com/">SumyBlog</a>
+			<a className="clickable hoverHighlight" href="https://blog.gadore.top">千里之豪</a>
 		</p>
 		<br/>
 		<h3>偏个人</h3>
 		<p>
-			<a className="clickable" href="https://handsomemango.vercel.app/">芒果！（的文）</a>
-			<a className="clickable" href="https://mantyke.icu/">小球飞鱼</a>
-			<a className="clickable" href="https://nachtzug.xyz/">Nachtzug</a>
-			<a className="clickable" href="https://blog.dlzhang.com/">班班的碎碎念</a>
-			<a className="clickable" href="https://blog.fivest.one/">fivestone</a>
-			<a className="clickable" href="https://mengru.space">mengru</a>
-			<a className="clickable" href="https://www.sardinefish.com">SardineFish</a>
-			<a className="clickable" href="https://ayu.land/">甜鱼</a>
-			<a className="clickable" href="https://nikukikai.art/">肉機械</a>
-			<a className="clickable" href="https://tianxianzi.me/">天仙子</a>
-			<a className="clickable" href="https://varraro.github.io">Lenger的后花园</a>
+			<a className="clickable hoverHighlight" href="https://handsomemango.vercel.app/">芒果！（的文）</a>
+			<a className="clickable hoverHighlight" href="https://mantyke.icu/">小球飞鱼</a>
+			<a className="clickable hoverHighlight" href="https://nachtzug.xyz/">Nachtzug</a>
+			<a className="clickable hoverHighlight" href="https://blog.dlzhang.com/">班班的碎碎念</a>
+			<a className="clickable hoverHighlight" href="https://blog.fivest.one/">fivestone</a>
+			<a className="clickable hoverHighlight" href="https://mengru.space">mengru</a>
+			<a className="clickable hoverHighlight" href="https://www.sardinefish.com">SardineFish</a>
+			<a className="clickable hoverHighlight" href="https://ayu.land/">甜鱼</a>
+			<a className="clickable hoverHighlight" href="https://nikukikai.art/">肉機械</a>
+			<a className="clickable hoverHighlight" href="https://tianxianzi.me/">天仙子</a>
+			<a className="clickable hoverHighlight" href="https://varraro.github.io">Lenger的后花园</a>
 		</p>
 		<br/>
 		<h3>怎么死链了！敲打！</h3>
 		<p>
-			<a className="clickable" href="https://ablustrund.com/">Ablustrund</a>
+			<a className="clickable hoverHighlight" href="https://ablustrund.com/">Ablustrund</a>
 		</p>
 	</div>
 }

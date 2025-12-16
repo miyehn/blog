@@ -10,7 +10,7 @@
 .tabs-listContainer {
     position: absolute;
     top: 0;
-    right: 15px;
+    right: 0;
     padding-top: 80px;
 }
 
@@ -18,8 +18,8 @@
     position: absolute;
     top: 72px;
     bottom: 40px;
-    left: 50px;
-    right: 60px;
+    left: 72px;
+    right: 48px;
 }
 
 .tabs-button {

@@ -97,7 +97,7 @@ function MainFeedPage() {
 			 increment={contentManager.blogInfo.postsPerPage}
 			 scrollMinIndex={0}
 			 scrollMaxIndex={Infinity}
-			 style={{ marginLeft: 60 }}
+			 style={{ marginLeft: BackgroundProps.gridSize + 6 }}
 			 container={streamRef}
 			 renderFn={(posts: PostInfo[]) => renderAllPostsFn(posts, streamRef)}
 			 prefix={<div style={{height: 20}}/>}
@@ -129,7 +129,10 @@ function DirectoryPage(props: {
 	</div>
 }
 
-export function BlogMainFramed2() {
+export function BlogMain() {
+	useEffect(() => {
+		document.title = contentManager.blogInfo.title;
+	}, []);
 	return <div style={{
 		position: "relative",
 		width: window.innerWidth,
@@ -140,7 +143,7 @@ export function BlogMainFramed2() {
 			<Routes>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>
 				<Route path={"/:page"} element={<DirectoryPage matchType={"page"}/>}/>
-				<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
+				<Route path={"/post/:permalink"} element={<SinglePostPage type={"desktop"}/>}/>
 				<Route path={"/"} element={<MainFeedPage/>}/>
 			</Routes>
 		</HashRouter>

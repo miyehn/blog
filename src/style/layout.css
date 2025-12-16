@@ -124,8 +124,8 @@ html, body {
     cursor: pointer;
     padding: 0 calc(var(--base-line-height) * 0.5);
     border-radius: calc(var(--base-line-height) * 0.5);
+    color: #000000;
     background-color: var(--text);
-    color: var(--white);
 }
 
 .timeline-post {
