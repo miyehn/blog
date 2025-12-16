@@ -1,5 +1,3 @@
-import jQuery from "jquery";
-
 export type PostInfo = {
 	date: string,
 	title: string,
@@ -32,23 +30,24 @@ class NetworkManager {
 	asyncFetch(
 		url: string,
 		callback: (data: string) => void,
-		errorCallback?: (jqXHR:any, textStatus:any, errorThrown:any)=>void)
+		errorCallback?: (err: any)=>void)
 	{
-		let cachedContent = this.#fetchCache.get(url);
+		const cachedContent = this.#fetchCache.get(url);
 		if (cachedContent) {
 			callback(cachedContent);
 			return;
 		}
-		jQuery.ajax({
-			type: 'GET',
-			url: url,
-			success: (data: string)=>{
-				callback(data);
-				this.#fetchCache.set(url, data);
-			},
-			error: errorCallback,
-			async: true
-		});
+		fetch(url)
+			.then(async (resp) => {
+				if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+				const text = await resp.text();
+				callback(text);
+				this.#fetchCache.set(url, text);
+			})
+			.catch((err) => {
+				if (errorCallback) errorCallback(err);
+			});
+
 	}
 }
 
@@ -57,7 +56,7 @@ class ContentManager {
 	#magicword: string;
 	blogInfo = {
 		chunkSize: 100,
-		domainName: process.env.REACT_APP_DOMAIN,
+		domainName: import.meta.env.VITE_APP_DOMAIN,//process.env.REACT_APP_DOMAIN,
 		email: "rainduym@gmail.com",
 		socialHandles: [
 			{
@@ -219,11 +218,14 @@ class ContentManager {
 					// finished
 					cb(result, true, parsed.count);
 				}
-			}, (jqXHR, textStatus, errorThrown) => {
+			}, (err) => {
 				console.log("failed fetching from url: " + url);
+				console.log(err);
+				/*
 				if (jqXHR.status === 404) { // likely due to wrong magicword
 					cm.#magicword = "";
 				}
+				 */
 				cb(result, true, -1);
 			});
 		}

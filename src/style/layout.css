@@ -38,6 +38,9 @@ html, body {
     color: var(--grey-color);
 }
 
+#logo{
+}
+
 #mail{
     position: relative;
     top: 5px;
@@ -78,7 +81,7 @@ html, body {
     top: var(--base-line-height);
     width: 160px;
     height: var(--base-line-height);
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 75%);
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1) 75%);
 }
 
 .event-title-container {
@@ -103,7 +106,7 @@ html, body {
 
 .category-tag {
     display: inline-block;
-    color: var(--white);
+    color: #1c1c1c;
     font-size: var(--small-font-size);
     padding: 2px 6px;
     margin-right: 6px;
@@ -152,7 +155,8 @@ html, body {
     cursor: pointer;
     flex-basis: 0.75em;
     margin-left: 0.25em;
-    border-left: 1px solid var(--black);
+    /*border-left: 1px solid var(--black);*/
+    /*border-left: 1px solid red;*/
 }
 
 .right-fold-content {

@@ -5,7 +5,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--white);
 }
 
 .tabs-listContainer {
@@ -37,7 +36,7 @@ li.tabs-button:before {
 }
 
 .tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
-    color: var(--white);
+    color: var(--background-color);
     background-color: var(--black);
 }
 

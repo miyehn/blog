@@ -1,4 +1,4 @@
-import React, {ReactNode, CSSProperties, useLayoutEffect, useState} from "react";
+import React, {type ReactNode, type CSSProperties, useState, useLayoutEffect} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -9,6 +9,21 @@ type ClickableProps = {
 	style?: CSSProperties,
 	noHoverHighlight?: boolean
 };
+
+// from: https://stackoverflow.com/questions/19014250/rerender-view-on-browser-resize-with-react
+// eslint-disable-next-line react-refresh/only-export-components
+export function useWindowSize() {
+	const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
+	useLayoutEffect(() => {
+		function updateSize() {
+			setSize([window.innerWidth, window.innerHeight]);
+		}
+		window.addEventListener('resize', updateSize);
+		updateSize();
+		return () => window.removeEventListener('resize', updateSize);
+	}, []);
+	return size;
+}
 
 export function Clickable(props: ClickableProps) {
 	return <div
@@ -74,21 +89,17 @@ export class Expandable extends React.Component {
 export function Markdown(props: {content: string, inline?: boolean, className?: string}) {
 	const className = props.className ? "markdown " + props.className : "markdown";
 	if (!props.inline) {
-		return <ReactMarkdown
-			className={className}
+		return <div className={className}><ReactMarkdown
 			remarkPlugins={[
 				[remarkGfm, {singleTilde: false}],
 			]}
-			//@ts-expect-error
 			rehypePlugins={[rehypeRaw]}
-		>{props.content}</ReactMarkdown>
+		>{props.content}</ReactMarkdown></div>
 	} else {
-		return <ReactMarkdown
-			className={className}
+		return <div className={className}><ReactMarkdown
 			remarkPlugins={[
 				[remarkGfm, {singleTilde: false}],
 			]}
-			//@ts-expect-error
 			rehypePlugins={[rehypeRaw]}
 			children={props.content}
 			components={{
@@ -101,13 +112,13 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 				a({...props}) {
 					return <span{...props}/>
 				},
-				ul({ordered, ...props}) {
+				ul({...props}) {
 					return <span{...props}/>
 				},
-				ol({ordered, ...props}) {
+				ol({...props}) {
 					return <span{...props}/>
 				},
-				li({ordered, ...props}) {
+				li({...props}) {
 					return <span{...props}/>
 				},
 				blockquote({children, ...otherProps}) {
@@ -138,20 +149,6 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 					return <b{...otherProps}>{children}</b>
 				},
 			}}
-		/>
+		/></div>
 	}
-}
-
-// from: https://stackoverflow.com/questions/19014250/rerender-view-on-browser-resize-with-react
-export function useWindowSize() {
-	const [size, setSize] = useState([window.innerWidth, window.innerHeight]);
-	useLayoutEffect(() => {
-		function updateSize() {
-			setSize([window.innerWidth, window.innerHeight]);
-		}
-		window.addEventListener('resize', updateSize);
-		updateSize();
-		return () => window.removeEventListener('resize', updateSize);
-	}, []);
-	return size;
 }

@@ -1,6 +1,6 @@
-import React, {CSSProperties, useEffect, useRef, useState} from "react";
-import {CategoryFolderNode, CategoryInfo, CategoryTree, contentManager, PostInfo} from "./ContentManager";
-import {Route, Link, BrowserRouter} from "react-router-dom";
+import React, {type CSSProperties, useEffect, useRef, useState} from "react";
+import {type CategoryFolderNode, type CategoryInfo, type CategoryTree, contentManager, type PostInfo} from "./ContentManager";
+import {Route, Link, BrowserRouter, useParams} from "react-router-dom";
 import {Expandable, Markdown} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
@@ -9,6 +9,7 @@ import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable} from "./Utils";
 import {useMediaQuery} from "react-responsive";
+import logo from "./assets/logo.png"
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -17,25 +18,25 @@ export const mediaQuerySettings = {
 };
 
 export function Logo() {
-	return  <img style={{
+	return  <img id={"logo"} style={{
 		display: "block",
 		position: "relative",
 		margin: "auto",
 		marginTop: 20,
 		height: 72,
-	}} src={require("./avatar.png")} alt={"avatar"}/>
+	}} src={logo} alt={"avatar"}/>
 }
 
 // using raw <a> tags here so that hovering over these elements show the url
 export function Social() {
-	let mailto = "mailto" + contentManager.blogInfo.email;
-	let handles = contentManager.blogInfo.socialHandles.filter(s=>{
+	const mailto = "mailto" + contentManager.blogInfo.email;
+	const handles = contentManager.blogInfo.socialHandles.filter(s=>{
 		return s.url.trim().length > 0
 	});
 
 	const isDesktopOrLaptop = useMediaQuery(mediaQuerySettings);
 
-	let toIcon = function(s: string) {
+	const toIcon = function(s: string) {
 		if (s==="instagram") {
 			return <Ins id="instagram" className="socialIcon clickable hoverHighlight" size={26} />
 		} else if (s==="weibo") {
@@ -146,12 +147,12 @@ function DateString(props: {
 	else return visualContent;
 }
 
-type PostRenderer = (props: {info: PostInfo, content: string, container: React.RefObject<HTMLDivElement>}) => any;
+type PostRenderer = (props: {info: PostInfo, content: string, container: React.RefObject<HTMLDivElement | null>}) => React.JSX.Element;
 
 export const TimelinePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
-	container: React.RefObject<HTMLDivElement>
+	container: React.RefObject<HTMLDivElement | null>
 }) {
 	const [collapsed, setCollapsed] = useState(props.info.collapsed);
 
@@ -188,6 +189,11 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 					setCollapsed(true);
 				}}/>
 				<div className="right-fold-content">
+					{props.info.title.length ? <div style={{
+						fontSize: 22,
+						fontWeight: "bold",
+						margin: "5px 0 15px 0"
+					}}>{props.info.title}</div> : undefined}
 					<Markdown content={props.content}/>
 					<div className={"category-tags-container"}>{categoryTags}</div>
 				</div>
@@ -207,6 +213,11 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 		style={{position: "relative", marginBottom: 40}}
 	>
 		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		{props.info.title.length ? <div style={{
+			fontSize: 22,
+			fontWeight: "bold",
+			margin: "5px 0 15px 0"
+		}}>{props.info.title}</div> : undefined}
 		<Markdown content={props.content}/>
 		<div className={"category-tags-container"}>{categoryTags}</div>
 	</div>
@@ -215,7 +226,7 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 export const PostExcerptRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
-	container: React.RefObject<HTMLDivElement>
+	container: React.RefObject<HTMLDivElement | null>
 }) {
 	let renderContent = "";
 	if (props.info.title.length > 0) {
@@ -264,7 +275,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 }
 
 // wrapper to make sure content is properly fetched
-export function Post(props: {permalink: string, info?: PostInfo, container:React.RefObject<HTMLDivElement>, renderer: PostRenderer}) {
+export function Post(props: {permalink: string, info?: PostInfo, container:React.RefObject<HTMLDivElement | null>, renderer: PostRenderer}) {
 	const [info, setInfo]: StateType<PostInfo> = useState(props.info ?? {
 		date: "",
 		title: "",
@@ -296,7 +307,7 @@ export function ContentStream(props: {
 	scrollMaxIndex: number,
 	verticalMargin: number,
 	renderFn: (posts: PostInfo[]) => React.ReactNode,
-	container: React.RefObject<HTMLDivElement>,
+	container: React.RefObject<HTMLDivElement | null>,
 	category?: string,
 	style?: CSSProperties,
 	prefix?: React.ReactNode
@@ -344,15 +355,18 @@ export function ContentStream(props: {
 	//console.log(`min ${props.scrollMinIndex}, start ${startPostIndex}, max ${scrollMaxIndex}, total ${posts.length}`);
 
 	let style: CSSProperties = {...{
+		/*
 		position: "relative",
 		height: "100%",
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
+		 */
 	}, ...props.style};
 
 	return <div
 		ref={props.container}
-		className={"forceScrollable noScrollBar"}
+		className={"noScrollBar"}
+		//className={"forceScrollable noScrollBar"}
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
@@ -389,12 +403,13 @@ export function Error404() {
 	return <div>blah 404</div>;
 }
 
-export function SinglePostPage(props: { permalink: string }) {
+export function SinglePostPage() {
+	const params = useParams();
 	const containerRef = useRef<HTMLDivElement>(null);
-	if (props.permalink !== undefined) {
+	if (containerRef && params.permalink !== undefined) {
 		return <div ref={containerRef} style={{
 			padding: "20px",
-		}}><Post container={containerRef} permalink={props.permalink} renderer={SinglePostRenderer}/></div>
+		}}><Post container={containerRef} permalink={params.permalink} renderer={SinglePostRenderer}/></div>
 	} else {
 		return <Error404/>;
 	}

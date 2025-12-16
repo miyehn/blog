@@ -1,4 +1,6 @@
 @import 'constants.css';
+@import 'normalize.css';
+@import 'markdown.css';
 
 :root{
 	/* Font families */
@@ -14,15 +16,11 @@
 	--base-line-height: 1.5em;
 
 	/* Colors */
-	--black: 			#394134;
+	--black: #cacaca;
 	--white: 			#ffffff;
-	--background-color: #F8F7F4;
+	--background-color: #000000;
 	--accent-color:     var(--material-green);
-	--selection-color:  #DCF1C6;
-	--grey-color:       #b3b3b3;
+	--selection-color: #444e35;
+	--grey-color: #737373;
 	--note-yellow: #FFFAE5;
 }
-
-@import 'normalize.css';
-@import 'markdown.css';
-/*@import './layout.css';*/

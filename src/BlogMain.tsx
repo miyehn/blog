@@ -1,6 +1,6 @@
-import {HashRouter, Route, Switch, Link } from "react-router-dom";
+import {HashRouter, Routes, Route, Link, useParams} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import React, {CSSProperties, useEffect, useRef} from "react";
+import React, {type CSSProperties, useEffect, useRef} from "react";
 import {
 	AboutPage,
 	ArchivePage,
@@ -12,7 +12,8 @@ import {
 	Post, TimelinePostRenderer,
 } from "./Components";
 import './style/tabs.css';
-import {contentManager, PostInfo} from "./ContentManager";
+import {contentManager, type PostInfo} from "./ContentManager";
+import {BackgroundProps, getContentLeft, getContentWidth, TestCanvas} from "./background.tsx";
 
 function DirectoryTabs(props: {
 	pageName: string,
@@ -51,15 +52,11 @@ function DirectoryTabs(props: {
 }
 
 function Directory(props: {
-	pageName: string,
+	pageName: PageName,
 	category?: string
 }) {
-	const expanded = props.pageName.length > 0;
+	const expanded = props.pageName !== "feed";
 	return <div style={{
-		position: "absolute",
-		left: 0,
-		right: 0,
-		top: 0,
 		height: expanded ? "100%" : 0,
 	}}>
 		{expanded ? <DirectoryTabs pageName={props.pageName} category={props.category}/> : undefined}
@@ -69,7 +66,7 @@ function Directory(props: {
 
 type MatchType = "page" | "category" | "wildcard";
 
-export const renderAllPostsFn = (posts: PostInfo[], streamRef: React.RefObject<HTMLDivElement>) => {
+export const renderAllPostsFn = (posts: PostInfo[], streamRef: React.RefObject<HTMLDivElement | null>) => {
 	let list: React.ReactNode[] = [];
 	for (let i = 0; i < posts.length; i++) {
 		let p = posts[i];
@@ -84,24 +81,16 @@ export const renderAllPostsFn = (posts: PostInfo[], streamRef: React.RefObject<H
 	return list;
 }
 
-function MainContentPage(props: {
-	matchType: MatchType,
-	page?: string,
-	category?: string
-}) {
-	let pageName;
-	if (props.matchType === "category") {
-		pageName = "archive";
-	} else {
-		pageName = props.page ?? "";
-	}
+type PageName = "archive" | "about" | "friends" | "feed";
 
+function MainFeedPage() {
 	const streamRef = useRef<HTMLDivElement>(null);
 	return <div style={{
 		position: "relative",
-		height: "100%",
+		width: getContentWidth(),
+		left: getContentLeft(),
 	}}>
-		 <ContentStream
+		<ContentStream
 			 startIndex={0}
 			 verticalMargin={20}
 			 initialCount={contentManager.blogInfo.initialNumPosts}
@@ -113,28 +102,47 @@ function MainContentPage(props: {
 			 renderFn={(posts: PostInfo[]) => renderAllPostsFn(posts, streamRef)}
 			 prefix={<div style={{height: 20}}/>}
 		 />
-		<Directory pageName={pageName} category={props.category}/>
+		<Directory pageName={"feed"}/>
 	</div>
 }
 
-export default function BlogMain() {
-	useEffect(()=>{
-		document.title = contentManager.blogInfo.title;
-	}, []);
-	return <div tabIndex={0} style={{
-		width: "100%",
+function DirectoryPage(props: {
+	matchType: MatchType,
+}) {
+	const params = useParams();
+	let pageName: PageName;
+	if (props.matchType === "category") {
+		pageName = "archive";
+	} else if (params.page === "about" || params.page === "friends" || params.page === "archive") {
+		pageName = params.page;
+	} else {
+		pageName = "feed";
+	}
+
+	return <div style={{
+		position: "relative",
+		width: getContentWidth(),
+		left: getContentLeft(),
 		height: "100%",
-		borderTop: "1px solid lightgrey",
-		borderBottom: "1px solid lightgrey",
-		overflow: "scroll"
 	}}>
-		<HashRouter hashType={"noslash"}>
-			<Switch>
-				<Route exact path={"/archive/:category"} render={({match})=><MainContentPage matchType={"category"} category={match.params.category}/>}/>
-				<Route exact path={"/post/:permalink"} render={({match})=><SinglePostPage permalink={match.params.permalink}/>}/>
-				<Route exact path={"/:page"} render={({match})=><MainContentPage matchType={"page"} page={match.params.page}/>}/>
-				<Route exact path={"/"} render={()=><MainContentPage matchType={"wildcard"}/>}/>
-			</Switch>
+		<Directory pageName={pageName} category={params.category}/>
+	</div>
+}
+
+export function BlogMainFramed2() {
+	return <div style={{
+		position: "relative",
+		width: window.innerWidth,
+		height: window.innerHeight
+	}}>
+		<TestCanvas top={0} left={0} width={window.innerWidth} height={window.innerHeight}/>
+		<HashRouter>
+			<Routes>
+				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>
+				<Route path={"/:page"} element={<DirectoryPage matchType={"page"}/>}/>
+				<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
+				<Route path={"/"} element={<MainFeedPage/>}/>
+			</Routes>
 		</HashRouter>
 	</div>
 }

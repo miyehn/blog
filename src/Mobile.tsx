@@ -1,9 +1,13 @@
 import React, {useRef} from "react";
 import {AboutContent, ContentStream, FriendsPage, Logo, SinglePostPage, Social} from "./Components";
 import {Expandable, useWindowSize} from "./Utils";
-import {contentManager, PostInfo} from "./ContentManager";
+import {contentManager, type PostInfo} from "./ContentManager";
 import {renderAllPostsFn} from "./BlogMain";
-import {HashRouter, Route, Switch} from "react-router-dom";
+import {HashRouter, Routes, Route} from "react-router-dom";
+
+import "./style/style.css"
+import "./style/layout.css"
+import "./style/tabs.css"
 
 function MobileBlogContent() {
 	const streamRef = useRef<HTMLDivElement>(null);
@@ -45,10 +49,10 @@ function MobileBlogContent() {
 }
 
 export default function MobileBlogMain() {
-	return <HashRouter hashType={"noslash"}>
-		<Switch>
-			<Route exact path={"/post/:permalink"} render={({match})=><SinglePostPage permalink={match.params.permalink}/>}/>
-			<Route path={"/"} render={()=><MobileBlogContent/>}/>
-		</Switch>
+	return <HashRouter>
+		<Routes>
+			<Route path={"/"} element={<MobileBlogContent/>}/>
+			<Route path={"/post/:permalink"} element={<SinglePostPage/>}/>
+		</Routes>
 	</HashRouter>
 }
