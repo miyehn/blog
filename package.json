@@ -2,12 +2,14 @@
 	"name": "blog-vite",
 	"private": true,
 	"version": "0.0.0",
+	"homepage": "https://miyehn.me/blog/",
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc -b && vite build",
+		"build": "tsc -b && vite build --emptyOutDir --base=/blog/",
 		"lint": "eslint .",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"deploy": "gh-pages -d dist"
 	},
 	"dependencies": {
 		"p5": "^2.1.1",
@@ -31,6 +33,7 @@
 		"eslint": "^9.39.1",
 		"eslint-plugin-react-hooks": "^7.0.1",
 		"eslint-plugin-react-refresh": "^0.4.24",
+		"gh-pages": "^6.3.0",
 		"globals": "^16.5.0",
 		"typescript": "~5.9.3",
 		"typescript-eslint": "^8.46.4",
