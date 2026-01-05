@@ -87,8 +87,9 @@ function MainFeedPage() {
 	const streamRef = useRef<HTMLDivElement>(null);
 	return <div style={{
 		position: "relative",
-		width: getContentWidth(),
-		left: getContentLeft(),
+		width: getContentWidth() + 220,
+		left: getContentLeft() - 220,
+		height: window.innerHeight,
 	}}>
 		<ContentStream
 			 startIndex={0}

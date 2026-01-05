@@ -6,6 +6,10 @@ html{
     color: var(--text);
 }
 
+* {
+    overflow: visible;
+}
+
 *::selection {
     background: var(--selection-color); /* WebKit/Blink Browsers */
 }
@@ -36,6 +40,7 @@ html, body {
     font-size: var(--small-font-size);
     font-family: "myCabin", sans-serif;
     color: var(--grey-color);
+    margin-right: 1em;
 }
 
 #logo{
@@ -112,11 +117,8 @@ html, body {
 
 .timeline-post {
     position: relative;
-    margin: 40px 0;
-}
-
-.timeline-post:first-child {
-    margin-top: 0;
+    min-height: 32px;
+    margin-left: 140px;
 }
 
 .timeline-collapsed-group {
@@ -135,10 +137,8 @@ html, body {
 .left-fold-handle {
     flex: 0;
     cursor: pointer;
-    flex-basis: 0.75em;
-    margin-left: 0.25em;
-    /*border-left: 1px solid var(--black);*/
-    /*border-left: 1px solid red;*/
+    flex-basis: 96px;
+    /*outline: 1px solid red;*/
 }
 
 .right-fold-content {

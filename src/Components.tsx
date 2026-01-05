@@ -8,7 +8,9 @@ import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} 
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable} from "./Utils";
-import logo from "./assets/logo.png"
+import logo from "./assets/logo.png";
+import squareFilled from "./assets/square_filled.svg";
+import squareEmpty from "./assets/square_empty.svg";
 import {getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
@@ -77,7 +79,7 @@ export function AboutContent() {
 export function AboutPage() {
 	return <div className="noScrollBar" style={{
 		height: "100%",
-		overflow: "scroll",
+		overflowY: "scroll",
 		overscrollBehaviorY: "contain",
 	}}>
 		<Logo/>
@@ -142,6 +144,16 @@ function DateString(props: {
 	else return visualContent;
 }
 
+function InlineTitle(props: {
+	title: string
+}) {
+	return <span style={{
+		fontFamily: "myCabin",
+		fontSize: 14,
+		color: "#737373"
+	}}>{props.title}</span>
+}
+
 function InlineCategories(props: {
 	categories: string[],
 }) {
@@ -149,28 +161,73 @@ function InlineCategories(props: {
 	return <span style={{
 		fontFamily: "myCabin",
 		fontSize: 14,
-	}}><FaTags style={{
-		marginLeft: "1em",
-		marginRight: "0.25em",
-		position: "relative",
-		top: 2,
-		color: "#737373"
-	}}/>{props.categories.map((c, index) => {
-		const tag = <span style={{color: "#737373"}}>
-			<span style={{textDecoration: isMobile ? "none" : "underline"}}>{c}</span>
-			{index===props.categories.length - 1 ? undefined : ", "}
-		</span>
-		if (isMobile) {
-			return <span key={c + "-mobile"}>{tag}</span>;
-		} else {
-			return <Link key={c} to={"/archive/" + c}>{tag}</Link>;
-		}
-	})}</span>;
+	}}>
+		{props.categories.length > 0 ? <FaTags style={{
+			marginRight: "0.25em",
+			position: "relative",
+			top: 2,
+			color: "#737373"
+		}}/> : undefined}
+		{props.categories.map((c, index) => {
+			const tag = <span style={{color: "#737373"}}>
+				{c}
+				{index===props.categories.length - 1 ? undefined : ", "}
+			</span>
+			if (isMobile) {
+				return <span key={c + "-mobile"}>{tag}</span>;
+			} else {
+				return <Link key={c} to={"/archive/" + c}>{tag}</Link>;
+			}
+		})}
+	</span>;
 }
 
 type PostRenderer = (props: {info: PostInfo, content: string, container: React.RefObject<HTMLDivElement | null>}) => React.JSX.Element;
 
-export const TimelinePostRenderer: PostRenderer = function(props: {
+function LeftFoldToggle(props: {
+	filled: boolean,
+	horizontalLine: boolean,
+	onClick: () => void;
+}) {
+	const topOffset = 6;
+	const leftOffset = 4;
+	return <div className="left-fold-handle" onClick={e => {
+		props.onClick();
+	}}>
+		<img style={{
+			position: "relative",
+			top: topOffset,
+			left: leftOffset,
+		}} src={props.filled ? squareFilled : squareEmpty} alt={"square"}></img>
+		<div style={{
+			position: "absolute",
+			top: topOffset + 14,
+			height: "calc(100% - 12px)",
+			width: leftOffset + 8.5,
+			//outline: "1px solid yellow",
+			borderRight: "1px dashed #fff",
+		}}/>
+		{
+			props.horizontalLine && <>
+				<div style={{
+					position: "absolute",
+					top: topOffset + 8,
+					left: leftOffset + 15,
+					width: 96 - 15 - leftOffset,
+					borderTop: "1px dashed #737373",
+				}}/>
+				<div style={{
+				position: "absolute",
+				top: topOffset + 8,
+				left: -114,
+				width: 120,
+				borderTop: "1px dashed #fff",
+			}}/></>
+		}
+	</div>
+}
+
+export const TimelinePostRenderer: PostRenderer = function (props: {
 	info: PostInfo,
 	content: string,
 	container: React.RefObject<HTMLDivElement | null>
@@ -179,42 +236,43 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 
 	const postRef = useRef<HTMLDivElement>(null);
 
-	const expandIconText = props.info.categories.length > 0 ? props.info.categories[0] : "x";
-	const expandIcon = <div
-		className={"expand-post-icon"}
-		onClick={e=>{
-			setCollapsed(false);
-		}}
-	>{expandIconText}</div>
-
 	if (collapsed) {
-		return expandIcon;
+		return <div
+			className={"timeline-post foldable"}
+		>
+			<LeftFoldToggle
+				filled={true}
+				horizontalLine={props.info.title.length > 0 || props.info.categories.length > 0}
+				onClick={()=>setCollapsed(false)}/>
+			<div className="right-fold-content">
+				<InlineTitle title={props.info.title}/>
+				<InlineCategories categories={props.info.categories}/>
+			</div>
+		</div>;
 	} else {
-		return <div className="timeline-post" ref={postRef}>
-			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
-			<InlineCategories categories={props.info.categories}/>
-			<div className="foldable">
-				<div className="left-fold-handle" onClick={e=>{
-					if (postRef.current !== null && props.container.current !== null) {
-						let postTop = postRef.current.offsetTop;
-						let visibleTop = props.container.current.scrollTop;
-						if (postTop < visibleTop) {
-							props.container.current.scrollTo({
-								top: postTop - 80,
-								behavior: "smooth"
-							});
-						}
+		return <div className="timeline-post foldable" ref={postRef}>
+			<LeftFoldToggle filled={false} horizontalLine={true} onClick={()=>{
+				if (postRef.current !== null && props.container.current !== null) {
+					let postTop = postRef.current.offsetTop;
+					let visibleTop = props.container.current.scrollTop;
+					if (postTop < visibleTop) {
+						props.container.current.scrollTo({
+							top: postTop - 80,
+							behavior: "smooth"
+						});
 					}
-					setCollapsed(true);
-				}}/>
-				<div className="right-fold-content">
-					{props.info.title.length ? <div style={{
-						fontSize: 22,
-						fontWeight: "bold",
-						margin: "5px 0 15px 0",
-					}}>{props.info.title}</div> : undefined}
-					<Markdown content={props.content}/>
-				</div>
+				}
+				setCollapsed(true);
+			}}/>
+			<div className="right-fold-content" style={{paddingBottom: 24}}>
+				<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+				<InlineCategories categories={props.info.categories}/>
+				{props.info.title.length ? <div style={{
+					fontSize: 22,
+					fontWeight: "bold",
+					margin: "5px 0 15px 0",
+				}}>{props.info.title}</div> : undefined}
+				<Markdown content={props.content}/>
 			</div>
 		</div>
 	}
@@ -256,14 +314,20 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	let content = collapsed ?
 		<div >
 			<DateString date={props.info.date} linkPath={linkPath}/>
+			<InlineCategories categories={props.info.categories}/>
 			<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
 				<Markdown className={"cssTruncate"} inline content={renderContent}/>
 			</div>
 		</div> :
 		<div>
 			<DateString date={props.info.date} linkPath={linkPath}/>
+			<InlineCategories categories={props.info.categories}/>
 			<div className="foldable">
-				<div className="left-fold-handle" onClick={e=>{
+				<div style={{
+					flex: 0,
+					cursor: "pointer",
+					flexBasis: 18,
+				}} onClick={e=>{
 					if (postRef.current !== null && props.container.current !== null) {
 						let postTop = postRef.current.offsetTop;
 						let visibleTop = props.container.current.scrollTop;
@@ -275,7 +339,13 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 						}
 					}
 					setCollapsed(true);
-				}}/>
+				}}>
+					<div style={{
+						height: "100%",
+						width: 8,
+						borderRight: "1px dashed #737373",
+					}}/>
+				</div>
 				<Markdown content={renderContent} className="right-fold-content"/>
 			</div>
 		</div>;
@@ -367,21 +437,19 @@ export function ContentStream(props: {
 		asyncGetPosts(props.startIndex, numInitialPosts);
 	}, [props.category]);
 
-	//console.log(`min ${props.scrollMinIndex}, start ${startPostIndex}, max ${scrollMaxIndex}, total ${posts.length}`);
+	//console.log(props.container.current);
+	//console.log(`min ${props.scrollMinIndex}, startPostIndex ${startPostIndex}, scrollMaxIndex ${scrollMaxIndex}, total ${posts.length}`);
 
 	let style: CSSProperties = {...{
-		/*
 		position: "relative",
 		height: "100%",
 		overflow: "scroll",
 		overscrollBehaviorY: "contain",
-		 */
 	}, ...props.style};
 
 	return <div
 		ref={props.container}
 		className={"noScrollBar"}
-		//className={"forceScrollable noScrollBar"}
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
@@ -394,6 +462,7 @@ export function ContentStream(props: {
 					&& scrollTop + clientHeight >= scrollHeight - 5/* arbitrary */ // scroll reached bottom
 					&& posts.length < (scrollMaxIndex - startPostIndex) // there are more posts to fetch (after)
 				) {
+					//console.log(`get more: clientHeight=${clientHeight} scrollTop=${scrollTop} scrollHeight=${scrollHeight}`);
 					let numPostsAfter = Math.min(posts.length + props.increment, scrollMaxIndex) - posts.length;
 					asyncGetPosts(startPostIndex, posts.length + numPostsAfter);
 				}
