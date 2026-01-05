@@ -21,11 +21,11 @@
 }
 
 .markdown blockquote{
-	border: 1px solid var(--grey-color);
-	border-radius: 3px;
-	background-color: var(--note-yellow);
+	border: 1px solid #3a3a3a;
+	border-left: 8px solid #9c27b0;
 	font-family: Georgia, var(--base-font-family);
-	font-size: var(--big-font-size);
+	font-size: var(--base-font-size);
+	margin-left: 1em;
 	padding: 0.5em 0.75em;
 }
 

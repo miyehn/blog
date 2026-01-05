@@ -100,24 +100,6 @@ html, body {
     right: 6px;
 }
 
-.category-tags-container {
-    margin-top: 20px;
-}
-
-.category-tag {
-    display: inline-block;
-    color: #1c1c1c;
-    font-size: var(--small-font-size);
-    padding: 2px 6px;
-    margin-right: 6px;
-    background-color: var(--text);
-    border-radius: 3px;
-}
-
-.category-tag::before {
-    content: "# "
-}
-
 .expand-post-icon {
     display: inline-block;
     margin: 5px 6px 5px 0;

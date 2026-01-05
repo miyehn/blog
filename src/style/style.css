@@ -6,7 +6,7 @@
 	/* Font families */
 	--base-font-family: "LXGW", Serif;
 	--bold-font-family: "LXGW-bold", Serif;
-	--code-font-family: "inconsolata", Consolas, monospace, sans-serif;
+	--code-font-family: "inconsolata", Consolas, monospace;
 
 	/* Font configuration */
 	--base-font-size:   13pt;
@@ -22,5 +22,4 @@
 	--selection-color: #0f4070;
 	/*--selection-color: #c00060;*/
 	--grey-color: #737373;
-	--note-yellow: #FFFAE5;
 }

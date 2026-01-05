@@ -8,15 +8,12 @@ import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} 
 import {GrGithub as Github} from "react-icons/gr";
 import {IoMdMail as Mail} from "react-icons/io";
 import {Clickable} from "./Utils";
-import {useMediaQuery} from "react-responsive";
 import logo from "./assets/logo.png"
 import {getContentLeft, getContentWidth} from "./background.tsx";
+import {useBlogContext} from "./main.tsx";
+import {FaTags} from "react-icons/fa6";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
-
-export const mediaQuerySettings = {
-	query: '(min-width: 960px)'
-};
 
 export function Logo() {
 	return  <img id={"logo"} style={{
@@ -35,8 +32,6 @@ export function Social() {
 		return s.url.trim().length > 0
 	});
 
-	const isDesktopOrLaptop = useMediaQuery(mediaQuerySettings);
-
 	const toIcon = function(s: string) {
 		if (s==="instagram") {
 			return <Ins id="instagram" className="socialIcon clickable hoverHighlight" size={26} />
@@ -54,7 +49,7 @@ export function Social() {
 	return(
 		<div style={{
 			marginTop: 30,
-			marginBottom: isDesktopOrLaptop ? 50 : 30,
+			marginBottom: useBlogContext().isMobile ? 30 : 50,
 			textAlign: "center",
 			verticalAlign: "middle"
 		}}>
@@ -147,6 +142,32 @@ function DateString(props: {
 	else return visualContent;
 }
 
+function InlineCategories(props: {
+	categories: string[],
+}) {
+	const isMobile = useBlogContext().isMobile;
+	return <span style={{
+		fontFamily: "myCabin",
+		fontSize: 14,
+	}}><FaTags style={{
+		marginLeft: "1em",
+		marginRight: "0.25em",
+		position: "relative",
+		top: 2,
+		color: "#737373"
+	}}/>{props.categories.map((c, index) => {
+		const tag = <span style={{color: "#737373"}}>
+			<span style={{textDecoration: isMobile ? "none" : "underline"}}>{c}</span>
+			{index===props.categories.length - 1 ? undefined : ", "}
+		</span>
+		if (isMobile) {
+			return <span key={c + "-mobile"}>{tag}</span>;
+		} else {
+			return <Link key={c} to={"/archive/" + c}>{tag}</Link>;
+		}
+	})}</span>;
+}
+
 type PostRenderer = (props: {info: PostInfo, content: string, container: React.RefObject<HTMLDivElement | null>}) => React.JSX.Element;
 
 export const TimelinePostRenderer: PostRenderer = function(props: {
@@ -169,11 +190,9 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 	if (collapsed) {
 		return expandIcon;
 	} else {
-		const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
-			return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
-		});
 		return <div className="timeline-post" ref={postRef}>
 			<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+			<InlineCategories categories={props.info.categories}/>
 			<div className="foldable">
 				<div className="left-fold-handle" onClick={e=>{
 					if (postRef.current !== null && props.container.current !== null) {
@@ -195,7 +214,6 @@ export const TimelinePostRenderer: PostRenderer = function(props: {
 						margin: "5px 0 15px 0",
 					}}>{props.info.title}</div> : undefined}
 					<Markdown content={props.content}/>
-					<div className={"category-tags-container"}>{categoryTags}</div>
 				</div>
 			</div>
 		</div>
@@ -206,20 +224,17 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
 }) {
-	const categoryTags: React.ReactNode[] = props.info.categories.map(c => {
-		return <Link key={c} to={"/archive/" + c}><div className={"category-tag"}>{c}</div></Link>;
-	});
 	return <div
 		style={{position: "relative", marginBottom: 40}}
 	>
 		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		<InlineCategories categories={props.info.categories}/>
 		{props.info.title.length ? <div style={{
 			fontSize: 22,
 			fontWeight: "bold",
 			margin: "5px 0 15px 0"
 		}}>{props.info.title}</div> : undefined}
 		<Markdown content={props.content}/>
-		<div className={"category-tags-container"}>{categoryTags}</div>
 	</div>
 }
 
