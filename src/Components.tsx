@@ -143,7 +143,7 @@ function DateString(props: {
 	};
 	const dateStr = props.date==='pinned' ?
 		'Pinned' : (new Date(Date.parse(props.date))).toLocaleString('en-US', convertOptions);
-	const visualContent = <span className="date" style={{marginRight: "1em"}}>{dateStr}</span>;
+	const visualContent = <span className={"date" + (props.linkPath ? " hoverHighlight" : "")} style={{marginRight: "1em"}}>{dateStr}</span>;
 	if (props.linkPath) return <Link to={props.linkPath}>{visualContent}</Link>
 	else return visualContent;
 }
@@ -296,7 +296,7 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 	return <div
 		style={{position: "relative", marginBottom: 40}}
 	>
-		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
+		<DateString date={props.info.date}/>
 		<InlineCategories categories={props.info.categories}/>
 		{props.info.title.length ? <h1 className="post-title" style={{
 			margin: "5px 0 15px 0"
@@ -323,7 +323,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	let content = collapsed ?
 		<div>
 			<div style={{
-				lineHeight: "0.9em",
+				lineHeight: "0.92em",
 			}}>
 				<DateString date={props.info.date} linkPath={linkPath}/>
 				<InlineCategories categories={props.info.categories}/>
@@ -333,8 +333,12 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 			</div>
 		</div> :
 		<div>
-			<DateString date={props.info.date} linkPath={linkPath}/>
-			<InlineCategories categories={props.info.categories}/>
+			<div style={{
+				lineHeight: "0.92em",
+			}}>
+				<DateString date={props.info.date} linkPath={linkPath}/>
+				<InlineCategories categories={props.info.categories}/>
+			</div>
 			<div className="foldable">
 				<div style={{
 					flex: 0,
