@@ -34,16 +34,25 @@
 }
 
 .markdown hr{
-	height: 1px;
+	height: 16px;
 	margin: 1.25em 0;
-	background-color: var(--grey-color);
+	/*background-color: var(--grey-color);*/
+	background-image: url("../assets/six_dots_italic.svg");
+	background-size: 128px 16px;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .markdown img{
 	max-width: 100%;
 }
 .markdown a {
-    color: var(--accent-color);
+    /*color: var(--accent-color);*/
+	text-decoration: underline var(--accent-color);
+}
+
+.markdown h1, h2, h3, h4, h5, h6 {
+	color: #ffff3f;
 }
 
 .markdown h6{
@@ -53,14 +62,14 @@
 	font-size: var(--base-font-size);
 }
 .markdown h4{
-	font-size: calc(var(--base-font-size) + 1pt);
+	font-size: calc(var(--base-font-size) + 0.5pt);
 }
 .markdown h3{
-	font-size: calc(var(--base-font-size) + 2pt);
+	font-size: calc(var(--base-font-size) + 1pt);
 }
 .markdown h2{
-	font-size: calc(var(--base-font-size) + 4pt);
+	font-size: calc(var(--base-font-size) + 3pt);
 }
 .markdown h1{
-	font-size: calc(var(--base-font-size) + 8pt);
+	font-size: calc(var(--base-font-size) + 5pt);
 }

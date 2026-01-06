@@ -143,7 +143,7 @@ function DateString(props: {
 	};
 	const dateStr = props.date==='pinned' ?
 		'Pinned' : (new Date(Date.parse(props.date))).toLocaleString('en-US', convertOptions);
-	const visualContent = <span className="date">{dateStr}</span>;
+	const visualContent = <span className="date" style={{marginRight: "1em"}}>{dateStr}</span>;
 	if (props.linkPath) return <Link to={props.linkPath}>{visualContent}</Link>
 	else return visualContent;
 }
@@ -280,11 +280,9 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 			<div className="right-fold-content" style={{paddingBottom: 36}}>
 				<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 				<InlineCategories categories={props.info.categories}/>
-				{props.info.title.length ? <div style={{
-					fontSize: 22,
-					fontWeight: "bold",
+				{props.info.title.length ? <h1 className="post-title" style={{
 					margin: "5px 0 15px 0",
-				}}>{props.info.title}</div> : undefined}
+				}}>{props.info.title}</h1> : undefined}
 				<Markdown content={props.content}/>
 			</div>
 		</div>
@@ -300,11 +298,9 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 	>
 		<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 		<InlineCategories categories={props.info.categories}/>
-		{props.info.title.length ? <div style={{
-			fontSize: 22,
-			fontWeight: "bold",
+		{props.info.title.length ? <h1 className="post-title" style={{
 			margin: "5px 0 15px 0"
-		}}>{props.info.title}</div> : undefined}
+		}}>{props.info.title}</h1> : undefined}
 		<Markdown content={props.content}/>
 	</div>
 }
@@ -325,9 +321,13 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	const postRef = useRef<HTMLDivElement>(null);
 
 	let content = collapsed ?
-		<div >
-			<DateString date={props.info.date} linkPath={linkPath}/>
-			<InlineCategories categories={props.info.categories}/>
+		<div>
+			<div style={{
+				lineHeight: "0.9em",
+			}}>
+				<DateString date={props.info.date} linkPath={linkPath}/>
+				<InlineCategories categories={props.info.categories}/>
+			</div>
 			<div style={{cursor: "pointer"}} onClick={()=>{setCollapsed(false)}}>
 				<Markdown className={"cssTruncate"} inline content={renderContent}/>
 			</div>
@@ -642,10 +642,12 @@ export function ArchivePage(props: {category: string}) {
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 0, flexBasis: Math.min(180, window.innerWidth * 0.2), height: "100%", overflow: "scroll", paddingRight: 10}}>
 			<CategoryEntry title={"Timeline (All)"} category={""}/>
-			<hr style={{
+			<hr className={"directory-hr"} style={{
+				/*
 				height: 1,
 				margin: "1.25em 0",
 				backgroundColor: "grey"
+				 */
 			}}/>
 			{categoryTree.children.map(child => constructCategoryTree(child))}
 		</div>

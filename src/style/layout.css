@@ -6,10 +6,6 @@ html{
     color: var(--text);
 }
 
-* {
-    overflow: visible;
-}
-
 *::selection {
     background: var(--selection-color); /* WebKit/Blink Browsers */
 }
@@ -20,6 +16,19 @@ html{
 
 html, body {
     overscroll-behavior-y: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: myCabin, sans-serif;
+}
+
+hr.directory-hr {
+    height: 16px;
+    margin: 1em 0;
+    background-image: url("../assets/three_dots_italic.svg");
+    background-size: 64px 16px;
+    background-position: left;
+    background-repeat: no-repeat;
 }
 
 .forceScrollable:after {
@@ -36,11 +45,16 @@ html, body {
     display: none;
 }
 
+.post-title {
+    color: #ffff3f;
+    font-size: 18pt;
+    font-weight: bold;
+}
+
 .date{
     font-size: var(--small-font-size);
     font-family: "myCabin", sans-serif;
     color: var(--grey-color);
-    margin-right: 1em;
 }
 
 #logo{
