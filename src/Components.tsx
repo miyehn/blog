@@ -11,6 +11,8 @@ import {Clickable} from "./Utils";
 import logo from "./assets/logo.png";
 import squareFilled from "./assets/square_filled.svg";
 import squareEmpty from "./assets/square_empty.svg";
+import arrowRight from "./assets/arrow_right.svg";
+import arrowLeft from "./assets/arrow_left.svg";
 import {getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
@@ -112,12 +114,14 @@ export function ArrowButton(props: {
 		cursor: "pointer"
 	};
 
-	const btn = <Link to={linkPath}><Clickable style={style} content={props.expanded ? "<<" : ">>"}/></Link>
+	const arrowSrc = props.expanded ? arrowLeft : arrowRight;
+
+	const btn = <Link to={linkPath}><Clickable style={style} content={<img src={arrowSrc} alt={"arrow"}/>}/></Link>
 
 	return <div style={{
 		position: "absolute",
-		top: 20,
-		left: props.expanded ? undefined : 30,
+		top: 18,
+		left: props.expanded ? undefined : 80,
 		right: props.expanded ? 0 : undefined,
 	}}>{btn}</div>
 }
@@ -169,7 +173,7 @@ function InlineCategories(props: {
 			color: "#737373"
 		}}/> : undefined}
 		{props.categories.map((c, index) => {
-			const tag = <span style={{color: "#737373"}}>
+			const tag = <span className={isMobile ? "date" : "hoverHighlight date"}>
 				{c}
 				{index===props.categories.length - 1 ? undefined : ", "}
 			</span>
@@ -190,7 +194,7 @@ function LeftFoldToggle(props: {
 	onClick: () => void;
 }) {
 	const topOffset = 6;
-	const leftOffset = 4;
+	const leftOffset = 6;
 	return <div className="left-fold-handle" onClick={e => {
 		props.onClick();
 	}}>
@@ -199,27 +203,29 @@ function LeftFoldToggle(props: {
 			top: topOffset,
 			left: leftOffset,
 		}} src={props.filled ? squareFilled : squareEmpty} alt={"square"}></img>
-		<div style={{
-			position: "absolute",
-			top: topOffset + 14,
-			height: "calc(100% - 12px)",
-			width: leftOffset + 8.5,
-			//outline: "1px solid yellow",
-			borderRight: "1px dashed #fff",
-		}}/>
+		{
+			false && <div style={{
+				position: "absolute",
+				top: topOffset + 14,
+				height: "calc(100% - 12px)",
+				width: leftOffset + 8.5,
+				//outline: "1px solid yellow",
+				borderRight: "1px dashed #fff",
+			}}/>
+		}
 		{
 			props.horizontalLine && <>
 				<div style={{
 					position: "absolute",
 					top: topOffset + 8,
 					left: leftOffset + 15,
-					width: 96 - 15 - leftOffset,
+					width: 96 - 18 - leftOffset,
 					borderTop: "1px dashed #737373",
 				}}/>
 				<div style={{
 				position: "absolute",
 				top: topOffset + 8,
-				left: -114,
+				left: leftOffset - 118,
 				width: 120,
 				borderTop: "1px dashed #fff",
 			}}/></>
@@ -233,13 +239,16 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 	container: React.RefObject<HTMLDivElement | null>
 }) {
 	const [collapsed, setCollapsed] = useState(props.info.collapsed);
+	const mobile = useBlogContext().isMobile;
 
 	const postRef = useRef<HTMLDivElement>(null);
 
-	if (collapsed) {
-		return <div
-			className={"timeline-post foldable"}
-		>
+	if (collapsed && !mobile) {
+		return <div className={"foldable"} style={{
+			position: "relative",
+			minHeight: 32,
+			marginLeft: 140
+		}}>
 			<LeftFoldToggle
 				filled={true}
 				horizontalLine={props.info.title.length > 0 || props.info.categories.length > 0}
@@ -250,8 +259,12 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 			</div>
 		</div>;
 	} else {
-		return <div className="timeline-post foldable" ref={postRef}>
-			<LeftFoldToggle filled={false} horizontalLine={true} onClick={()=>{
+		return <div className="foldable" ref={postRef} style={{
+			position: "relative",
+			minHeight: 32,
+			marginLeft: mobile ? 0 : 140
+		}}>
+			{!mobile && <LeftFoldToggle filled={false} horizontalLine={true} onClick={()=>{
 				if (postRef.current !== null && props.container.current !== null) {
 					let postTop = postRef.current.offsetTop;
 					let visibleTop = props.container.current.scrollTop;
@@ -263,8 +276,8 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 					}
 				}
 				setCollapsed(true);
-			}}/>
-			<div className="right-fold-content" style={{paddingBottom: 24}}>
+			}}/>}
+			<div className="right-fold-content" style={{paddingBottom: 36}}>
 				<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 				<InlineCategories categories={props.info.categories}/>
 				{props.info.title.length ? <div style={{

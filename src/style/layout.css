@@ -115,12 +115,6 @@ html, body {
     background-color: var(--text);
 }
 
-.timeline-post {
-    position: relative;
-    min-height: 32px;
-    margin-left: 140px;
-}
-
 .timeline-collapsed-group {
     display: inline-block;
     vertical-align: middle;
