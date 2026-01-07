@@ -17,13 +17,16 @@
 
 .markdown ul,
 .markdown ol {
-	padding-left: 2em;
 	list-style: none;
+	list-style-position: outside;
+}
+
+.markdown li {
+	padding-left: 2em;
 	background-image: url(../assets/dot.svg);
 	background-repeat: no-repeat;
 	background-size: 16px 16px;
 	background-position: 8px 5px;
-
 }
 
 .markdown blockquote{
@@ -41,7 +44,7 @@
 
 .markdown hr{
 	height: 16px;
-	margin: 1.25em 0;
+	margin: 1em 0;
 	/*background-color: var(--grey-color);*/
 	background-image: url("../assets/six_dots_italic.svg");
 	background-size: 128px 16px;

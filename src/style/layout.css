@@ -152,7 +152,6 @@ hr.directory-hr {
     flex: 0;
     cursor: pointer;
     flex-basis: 96px;
-    /*outline: 1px solid red;*/
 }
 
 .right-fold-content {

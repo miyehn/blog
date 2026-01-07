@@ -278,7 +278,7 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 				}
 				setCollapsed(true);
 			}}/>}
-			<div className="right-fold-content" style={{paddingBottom: 36}}>
+			<div className="right-fold-content" style={{paddingBottom: 40}}>
 				<DateString date={props.info.date} linkPath={"/post/" + props.info.path}/>
 				<InlineCategories categories={props.info.categories}/>
 				{props.info.title.length ? <h1 className="post-title" style={{
