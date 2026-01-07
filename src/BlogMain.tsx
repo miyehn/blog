@@ -13,7 +13,7 @@ import {
 } from "./Components";
 import './style/tabs.css';
 import {contentManager, type PostInfo} from "./ContentManager";
-import {BackgroundProps, getContentLeft, getContentWidth, TestCanvas} from "./background.tsx";
+import {BackgroundProps, getContentLeft, getContentWidth, BackgroundCanvas} from "./background.tsx";
 
 function DirectoryTabs(props: {
 	pageName: string,
@@ -139,7 +139,7 @@ export function BlogMain() {
 		width: window.innerWidth,
 		height: window.innerHeight
 	}}>
-		<TestCanvas top={0} left={0} width={window.innerWidth} height={window.innerHeight}/>
+		<BackgroundCanvas width={window.innerWidth} height={window.innerHeight}/>
 		<HashRouter>
 			<Routes>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>

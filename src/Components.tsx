@@ -1,7 +1,7 @@
-import React, {type CSSProperties, useEffect, useRef, useState} from "react";
+import React, {type CSSProperties, type RefObject, useEffect, useRef, useState} from "react";
 import {type CategoryFolderNode, type CategoryInfo, type CategoryTree, contentManager, type PostInfo} from "./ContentManager";
 import {Route, Link, BrowserRouter, useParams} from "react-router-dom";
-import {Expandable, Markdown} from "./Utils"
+import {Expandable, Markdown, P5Canvas, useElementSize} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
 import {FaTumblrSquare as Tumblr, FaTwitterSquare as Twitter, FaWeibo as Weibo} from "react-icons/fa";
@@ -16,6 +16,7 @@ import arrowLeft from "./assets/arrow_left.svg";
 import {getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
+import {p5_ExponentialLines} from "./ExponentialLines.tsx";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -305,6 +306,71 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 	</div>
 }
 
+function VerticalDashedLine(props: {
+	style?: CSSProperties
+}) {
+	const width = 6;
+	const dash = 6;
+	const gap = 6;
+	return (
+		<svg style={props.style}
+			width={width}
+			height="100%"
+		>
+			<line
+				x1={width / 2}
+				y1={0}
+				x2={width / 2}
+				y2="100%"
+				stroke="#ff0000"
+				strokeWidth={width}
+				strokeLinecap="round"
+				vectorEffect="non-scaling-stroke"
+				strokeDasharray={`${dash} ${gap}`}
+			/>
+		</svg>
+	);
+}
+
+function ExpandedPostExcerpt(props: {
+	setCollapsed: (b: boolean) => void,
+	postRef: RefObject<HTMLDivElement | null>,
+	container: RefObject<HTMLDivElement | null>,
+	renderContent: string
+}) {
+	const [containerRef, size] = useElementSize<HTMLDivElement>();
+
+	return <div ref={containerRef} className="foldable" style={{
+		position: "relative",
+	}}>
+		<div style={{
+			flex: 0,
+			cursor: "pointer",
+			flexBasis: 18,
+		}} onClick={e=>{
+			if (props.postRef.current !== null && props.container.current !== null) {
+				let postTop = props.postRef.current.offsetTop;
+				let visibleTop = props.container.current.scrollTop;
+				if (postTop < visibleTop) {
+					props.container.current.scrollTo({
+						top: postTop,
+						behavior: "smooth"
+					});
+				}
+			}
+			props.setCollapsed(true);
+		}}/>
+		<P5Canvas style={{
+			position: "absolute",
+			top: 0,
+			left: 0,
+			zIndex: -99,
+			pointerEvents: "none"
+		}} width={size.width} height={size.height} trueDpr={true} p5setup={p5_ExponentialLines}/>
+		<Markdown content={props.renderContent} className="right-fold-content"/>
+	</div>
+}
+
 export const PostExcerptRenderer: PostRenderer = function(props: {
 	info: PostInfo,
 	content: string,
@@ -323,7 +389,7 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 	let content = collapsed ?
 		<div>
 			<div style={{
-				lineHeight: "0.92em",
+				lineHeight: "0.96em",
 			}}>
 				<DateString date={props.info.date} linkPath={linkPath}/>
 				<InlineCategories categories={props.info.categories}/>
@@ -334,37 +400,16 @@ export const PostExcerptRenderer: PostRenderer = function(props: {
 		</div> :
 		<div>
 			<div style={{
-				lineHeight: "0.92em",
+				lineHeight: "0.96em",
 			}}>
 				<DateString date={props.info.date} linkPath={linkPath}/>
 				<InlineCategories categories={props.info.categories}/>
 			</div>
-			<div className="foldable">
-				<div style={{
-					flex: 0,
-					cursor: "pointer",
-					flexBasis: 18,
-				}} onClick={e=>{
-					if (postRef.current !== null && props.container.current !== null) {
-						let postTop = postRef.current.offsetTop;
-						let visibleTop = props.container.current.scrollTop;
-						if (postTop < visibleTop) {
-							props.container.current.scrollTo({
-								top: postTop,
-								behavior: "smooth"
-							});
-						}
-					}
-					setCollapsed(true);
-				}}>
-					<div style={{
-						height: "100%",
-						width: 8,
-						borderRight: "1px dashed #737373",
-					}}/>
-				</div>
-				<Markdown content={renderContent} className="right-fold-content"/>
-			</div>
+			<ExpandedPostExcerpt
+				setCollapsed={setCollapsed}
+				postRef={postRef}
+				container={props.container}
+				renderContent={renderContent}/>
 		</div>;
 
 	return <div ref={postRef} style={{

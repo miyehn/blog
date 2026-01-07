@@ -1,7 +1,8 @@
-import React, {type ReactNode, type CSSProperties, useState, useLayoutEffect} from "react";
+import React, {type ReactNode, type CSSProperties, useState, useLayoutEffect, useId, useRef, useEffect} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import P5 from "p5";
 
 type ClickableProps = {
 	content?: ReactNode,
@@ -151,4 +152,63 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 			}}
 		/></div>
 	}
+}
+
+export function P5Canvas(props: {
+	style?: CSSProperties,
+	width: number,
+	height: number,
+	trueDpr: boolean,
+	p5setup: (p5: P5) => void,
+}) {
+	const id = useId();
+
+	const divRef = useRef<HTMLDivElement>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	const dpr = props.trueDpr ? window.devicePixelRatio : 1;
+
+	const sketch = (p5: P5) => {
+		p5.setup = () => {
+			p5.createCanvas(props.width, props.height, canvasRef.current ?? undefined);
+			p5.pixelDensity(dpr);
+			props.p5setup(p5);
+		}
+	};
+
+	useEffect(() => {
+		new P5(sketch, divRef.current ?? undefined);
+	}, [props.width, props.height]);
+
+	return <div ref={divRef} style={props.style} id={id}>
+		<canvas ref={canvasRef} width={props.width} height={props.height}></canvas>
+	</div>
+}
+
+type Size = { width: number; height: number };
+export function useElementSize<T extends HTMLElement>() {
+	const ref = useRef<T | null>(null);
+	const [size, setSize] = useState<Size>({ width: 0, height: 0 });
+
+	useLayoutEffect(() => {
+		const el = ref.current;
+		if (!el) return;
+
+		const update = () => {
+			const rect = el.getBoundingClientRect();
+			setSize({
+				width: Math.max(0, Math.round(rect.width)),
+				height: Math.max(0, Math.round(rect.height)),
+			});
+		};
+
+		update(); // initial
+
+		const ro = new ResizeObserver(() => update());
+		ro.observe(el);
+
+		return () => ro.disconnect();
+	}, []);
+
+	return [ref, size] as const;
 }

@@ -16,8 +16,14 @@
 }
 
 .markdown ul,
-.markdown ol{
+.markdown ol {
 	padding-left: 2em;
+	list-style: none;
+	background-image: url(../assets/dot.svg);
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+	background-position: 8px 5px;
+
 }
 
 .markdown blockquote{

@@ -1,5 +1,5 @@
 import P5 from "p5";
-import {useEffect, useId, useRef} from "react";
+import {P5Canvas} from "./Utils.tsx";
 
 export const BackgroundProps = {
 	gridSize: 64
@@ -118,32 +118,15 @@ function p5setup(p5: P5) {
 	p5.updatePixels();
 }
 
-export function TestCanvas(props: {
-	top: number,
-	left: number,
+export function BackgroundCanvas(props: {
 	width: number,
 	height: number
 }) {
-	const id = useId();
-
-	const divRef = useRef<HTMLDivElement>(null);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-
-	const sketch = (p5: P5) => {
-		p5.setup = () => {
-			p5.createCanvas(props.width, props.height, canvasRef.current ?? undefined);
-			p5.pixelDensity(1);
-			p5setup(p5);
-		}
-	};
-
-	useEffect(() => {
-		new P5(sketch, divRef.current ?? undefined);
-	}, []);
-
-	return <div ref={divRef} style={{
+	return <P5Canvas style={{
 		position: "fixed",
-		top: props.top,
-		left: props.left
-	}} id={id}><canvas ref={canvasRef} width={props.width} height={props.height}></canvas></div>
+		top: 0,
+		left: 0,
+		zIndex: -100,
+		pointerEvents: "none",
+	}} width={props.width} height={props.height} trueDpr={false} p5setup={p5setup}/>
 }
