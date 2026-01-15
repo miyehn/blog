@@ -150,12 +150,15 @@ function DateString(props: {
 }
 
 function InlineTitle(props: {
-	title: string
+	title: string,
+	onClick: () => void
 }) {
-	return <span style={{
+	return <span onClick={props.onClick} style={{
 		fontFamily: "myCabin",
 		fontSize: 14,
-		color: "#737373"
+		marginRight: 15,
+		color: "#737373",
+		cursor: "pointer"
 	}}>{props.title}</span>
 }
 
@@ -255,7 +258,7 @@ export const TimelinePostRenderer: PostRenderer = function (props: {
 				horizontalLine={props.info.title.length > 0 || props.info.categories.length > 0}
 				onClick={()=>setCollapsed(false)}/>
 			<div className="right-fold-content">
-				<InlineTitle title={props.info.title}/>
+				{props.info.title.length > 0 && <InlineTitle onClick={()=>setCollapsed(false)} title={props.info.title}/>}
 				<InlineCategories categories={props.info.categories}/>
 			</div>
 		</div>;

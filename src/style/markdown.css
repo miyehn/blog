@@ -25,8 +25,8 @@
 	padding-left: 2em;
 	background-image: url(../assets/dot.svg);
 	background-repeat: no-repeat;
-	background-size: 16px 16px;
-	background-position: 8px 5px;
+	background-size: 14px 14px;
+	background-position: 9px 6px;
 }
 
 .markdown blockquote{
