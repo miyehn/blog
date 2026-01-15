@@ -1,6 +1,6 @@
 import React, {type CSSProperties, type RefObject, useEffect, useRef, useState} from "react";
-import {type CategoryFolderNode, type CategoryInfo, type CategoryTree, contentManager, type PostInfo} from "./ContentManager";
-import {Route, Link, BrowserRouter, useParams} from "react-router-dom";
+import {type CategoryFolderNode, type CategoryTree, contentManager, type PostInfo} from "./ContentManager";
+import {Link, useParams} from "react-router-dom";
 import {Expandable, Markdown, P5Canvas, useElementSize} from "./Utils"
 
 import {TiSocialInstagram as Ins} from "react-icons/ti";
@@ -16,7 +16,7 @@ import arrowLeft from "./assets/arrow_left.svg";
 import {getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
-import {p5_ExponentialLines} from "./ExponentialLines.tsx";
+import {p5_ExcerptCollapseHandle} from "./ExcerptCollapseHandle.tsx";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
@@ -369,7 +369,7 @@ function ExpandedPostExcerpt(props: {
 			left: 0,
 			zIndex: -99,
 			pointerEvents: "none"
-		}} width={size.width} height={size.height} trueDpr={true} p5setup={p5_ExponentialLines}/>
+		}} width={8} height={size.height} trueDpr={true} p5setup={p5_ExcerptCollapseHandle}/>
 		<Markdown content={props.renderContent} className="right-fold-content"/>
 	</div>
 }
