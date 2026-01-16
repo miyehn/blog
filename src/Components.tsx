@@ -1,5 +1,11 @@
 import React, {type CSSProperties, type RefObject, useEffect, useRef, useState} from "react";
-import {type CategoryFolderNode, type CategoryTree, contentManager, type PostInfo} from "./ContentManager";
+import {
+	type CategoryFolderNode,
+	type CategoryNode,
+	type CategoryTree,
+	contentManager,
+	type PostInfo
+} from "./ContentManager";
 import {Link, useParams} from "react-router-dom";
 import {Expandable, Markdown, P5Canvas, useElementSize} from "./Utils"
 
@@ -574,15 +580,13 @@ export function SinglePostPage(props: {
 }
 
 function CategoryEntry(props: {
+	style?: CSSProperties
 	title: React.ReactNode,
-	category: string
+	category: string,
 }) {
-	return <Link to={"/archive/" + props.category}><Clickable content={<div style={{position: "relative"}}>
-		<div style={{
-		}}>
-			{props.title}
-		</div>
-	</div>}/></Link>
+	return <div style={props.style}><Link to={"/archive/" + props.category}>
+		{props.title}
+	</Link></div>
 }
 
 function TimelineWithEvents() {
@@ -644,8 +648,8 @@ function TimelineWithEvents() {
 
 export function ArchivePage(props: {category: string}) {
 
-	const initialCategories: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []} as CategoryFolderNode;
-	const [categoryTree, setCategoryTree]: StateType<CategoryFolderNode> = useState(initialCategories);
+	const initialCategories: CategoryNode = {name: "", path: "", count: 0, children: []} as CategoryNode;
+	const [categoryTree, setCategoryTree]: StateType<CategoryNode> = useState(initialCategories);
 
 	const streamRef = useRef<HTMLDivElement>(null);
 
@@ -657,23 +661,36 @@ export function ArchivePage(props: {category: string}) {
 
 	localStorage.setItem("lastRenderedCategory", props.category);
 
-	const constructCategoryTree: (tree: CategoryTree) => React.ReactNode = (tree: CategoryTree) => {
-		const children: React.ReactNode = tree.isFolder ? tree.children.map(child => {
+	const constructCategoryTree: (tree: CategoryNode) => React.ReactNode = (tree: CategoryNode) => {
+		const hasChildren = tree.children.length > 0;
+		const children: React.ReactNode = hasChildren ? tree.children
+		.map(child => {
 			return constructCategoryTree(child);
 		}) : undefined;
 
-		if (tree.isFolder) {
+		const isCurrentCategory = tree.path === props.category;
+		const categoryEntryStyle: CSSProperties = {
+			fontWeight: isCurrentCategory ? "bold" : "normal",
+		};
+
+		if (hasChildren) {
+			categoryEntryStyle.display = "inline-block";
 			return <Expandable
 				key={tree.path + " (folder)"}
 				title={"category: " + tree.path}
-				titleNode={tree.name}
+				titleNode={<CategoryEntry
+					style={categoryEntryStyle}
+					title={tree.name + " [" + tree.count + "]"}
+					category={tree.path}
+					/>}
 				content={children}
 			/>
 		} else {
 			return <CategoryEntry
-				key={tree.node.categoryPath}
-				title={tree.node.categoryName + " (" + tree.node.count + ")"}
-				category={tree.node.categoryPath}
+				key={tree.path}
+				style={categoryEntryStyle}
+				title={tree.name + " [" + tree.count + "]"}
+				category={tree.path}
 			/>;
 		}
 	};
@@ -693,14 +710,10 @@ export function ArchivePage(props: {category: string}) {
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
 		<div style={{flex: 0, flexBasis: Math.min(180, window.innerWidth * 0.2), height: "100%", overflow: "scroll", paddingRight: 10}}>
-			<CategoryEntry title={"Timeline (All)"} category={""}/>
-			<hr className={"directory-hr"} style={{
-				/*
-				height: 1,
-				margin: "1.25em 0",
-				backgroundColor: "grey"
-				 */
-			}}/>
+			<CategoryEntry title={"全部"} category={""} style={{
+				fontWeight: props.category === "" ? "bold" : "normal",
+			}} />
+			<hr className={"directory-hr"}/>
 			{categoryTree.children.map(child => constructCategoryTree(child))}
 		</div>
 		<div style={{flex: 1, height: "100%", overflow: "scroll"}}>

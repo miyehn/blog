@@ -25,6 +25,13 @@ type CategoryContentNode = {
 
 export type CategoryTree = CategoryFolderNode | CategoryContentNode;
 
+export type CategoryNode = {
+	name: string,
+	path: string,
+	count: number,
+	children: CategoryNode[]
+};
+
 class NetworkManager {
 	#fetchCache = new Map<string, string>();
 	asyncFetch(
@@ -109,48 +116,48 @@ class ContentManager {
 		});
 	}
 
-	asyncGetCategoryTree(cb: (T: CategoryFolderNode)=>void) {
+	asyncGetCategoryTree(cb: (T: CategoryNode)=>void) {
 		const url = this.blogInfo.domainName + "/mrblog-content/index/categories";
 		this.#networkManager.asyncFetch(url, data =>{
 			const parsed: {category: string, num: number}[] = JSON.parse(data);
 
-			// construct tree here
-			const tree: CategoryFolderNode = {isFolder: true, name: "", path: "", children: []};
-			parsed.forEach(cat => { // root level category (with full path)
-				const nodes = cat.category.split('-').map(n => n.trim()).filter(n => n.length > 0);
-				let currentParent: CategoryFolderNode = tree;
-				for (let i = 0; i < nodes.length; i++) {// go down the tree from tree root (depth=0)
-					const c = nodes[i];
+			const findCategoryNum = function(name: string) {
+				for (let i = 0; i < parsed.length; i++) {
+					if (parsed[i].category === name) return parsed[i].num;
+				}
+				return 0;
+			}
 
-					let found = false;
+			// construct tree here
+			const tree: CategoryNode = {name: "", path: "", count: 0, children: []};
+			parsed.forEach(cat => { // root level category (with full path)
+
+				// this post's non-empty category nodes, from root to leaf:
+				const nodes = cat.category.split('-').map(n => n.trim()).filter(n => n.length > 0);
+				let currentParent: CategoryNode = tree;
+				for (let i = 0; i < nodes.length; i++) {// go down the tree from tree root (depth=0)
+					const cnode = nodes[i];
+
+					let foundChild: CategoryNode | undefined = undefined;
 					currentParent.children.forEach(child => {
-						if (child.isFolder && child.name === c) {
-							// found existing category -> no need to create anything unless it's leaf content node
-							// also, since it's traversing down, all leaf content should go here
-							if (i===nodes.length - 1) {
-								currentParent.children.push({
-									isFolder: false,
-									node: {categoryName: c, categoryPath: cat.category, count: cat.num},
-								});
-							}
-							currentParent = child;
-							found = true;
+						if (child.name === cnode) {
+							foundChild = child;
 						}
 					});
 
-					if (!found) {
-						const newTreeNode: CategoryTree = (i===nodes.length-1) ? {
-							isFolder: false,
-							node: {categoryName: c, categoryPath: cat.category, count: cat.num},
-						} : {
-							isFolder: true,
-							name: c,
-							path: nodes.slice(0, i+1).join('-'),
+					if (foundChild) {
+						currentParent = foundChild;
+					} else {
+						const categoryName = nodes.slice(0, i+1).join('-');
+						const newTreeNode: CategoryNode = {
+							name: cnode,
+							path: categoryName,
+							count: findCategoryNum(categoryName),
 							children: []
 						};
 						currentParent.children.push(newTreeNode);
 						// next iter, if need to keep going
-						if (newTreeNode.isFolder) currentParent = newTreeNode;
+						if (i !== nodes.length - 1) currentParent = newTreeNode;
 					}
 				}
 			});

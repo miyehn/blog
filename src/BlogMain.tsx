@@ -44,9 +44,9 @@ function DirectoryTabs(props: {
 			<FriendsPage/>
 		</TabPanel>
 		<TabList className="tabs-listContainer">
-			<Tab className="tabs-button"><Link to={"/about"}>About</Link></Tab>
-			<Tab className="tabs-button"><Link to={"/archive"}>Archive</Link></Tab>
-			<Tab className="tabs-button"><Link to={"/friends"}>Friends</Link></Tab>
+			<Tab className="tabs-button"><Link to={"/about"}>关于</Link></Tab>
+			<Tab className="tabs-button"><Link to={"/archive"}>归档</Link></Tab>
+			<Tab className="tabs-button"><Link to={"/friends"}>友情链接</Link></Tab>
 		</TabList>
 	</Tabs>
 }
