@@ -1,25 +1,7 @@
 // ShaderCanvas.tsx
 import React, { useEffect, useRef } from "react";
-import GlslCanvas from "glslCanvas";
-
-// Minimal fragment shader (Shadertoy-ish uniforms: u_time, u_resolution)
-const FRAG = `
-#ifdef GL_ES
-precision highp float;
-#endif
-
-uniform vec2 u_resolution;
-//uniform float u_time;
-
-void main() {
-  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-  float t = 0.0;
-
-  // simple animated gradient
-  vec3 col = vec3(0.1, 0.1, 0.1);
-  gl_FragColor = vec4(col, 1.0);
-}
-`;
+import Canvas, {type ICanvasOptions} from "glsl-canvas-js/dist/esm/canvas/canvas";
+import FRAG_SHADER from "./shaders/background.frag?raw"
 
 function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
 	const dpr = window.devicePixelRatio || 1;
@@ -54,17 +36,23 @@ export default function ShaderCanvas() {
 		if (!canvas) return;
 
 		// Create shader sandbox once
-		const sandbox = new GlslCanvas(canvas);
-		sandboxRef.current = sandbox;
+		const options: ICanvasOptions = {
+			depth: false,
+			alpha: false,
+		};
+		const sandbox = new Canvas(canvas, options);
+		sandbox.load(FRAG_SHADER).then(success => {
+			console.assert(success, "fragment shader load failed");
+			sandbox.pause();
+		});
 
-		// Load shader
-		sandbox.load(FRAG);
+		sandboxRef.current = sandbox;
 
 		// Handle resize
 		const handleResize = () => {
-			const { w, h } = resizeCanvasToDisplaySize(canvas);
+			//const { w, h } = resizeCanvasToDisplaySize(canvas);
 			// u_resolution in pixels (match gl_FragCoord)
-			sandbox.setUniform("u_resolution", [w, h]);
+			//sandbox.setUniform("u_resolution", [w, h]);
 		};
 		handleResize();
 		window.addEventListener("resize", handleResize);

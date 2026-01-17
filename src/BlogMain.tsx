@@ -142,8 +142,8 @@ export function BlogMain() {
 		width: windowWidth,
 		height: windowHeight
 	}}>
-		{<BackgroundCanvas width={windowWidth} height={windowHeight}/>}
-		{/*<ShaderCanvas/>*/}
+		{/*<BackgroundCanvas width={windowWidth} height={windowHeight}/>*/}
+		{<ShaderCanvas/>}
 		<HashRouter>
 			<Routes>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>
