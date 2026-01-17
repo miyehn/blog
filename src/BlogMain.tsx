@@ -14,6 +14,7 @@ import {
 import './style/tabs.css';
 import {contentManager, type PostInfo} from "./ContentManager";
 import {BackgroundProps, getContentLeft, getContentWidth, BackgroundCanvas} from "./background.tsx";
+import {useElementSize, useWindowSize} from "./Utils.tsx";
 
 function DirectoryTabs(props: {
 	pageName: string,
@@ -134,12 +135,13 @@ export function BlogMain() {
 	useEffect(() => {
 		document.title = contentManager.blogInfo.title;
 	}, []);
+	const [windowWidth, windowHeight] = useWindowSize();
 	return <div style={{
 		position: "relative",
-		width: window.innerWidth,
-		height: window.innerHeight
+		width: windowWidth,
+		height: windowHeight
 	}}>
-		<BackgroundCanvas width={window.innerWidth} height={window.innerHeight}/>
+		<BackgroundCanvas width={windowWidth} height={windowHeight}/>
 		<HashRouter>
 			<Routes>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>

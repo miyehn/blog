@@ -315,32 +315,6 @@ export const SinglePostRenderer: PostRenderer = function(props: {
 	</div>
 }
 
-function VerticalDashedLine(props: {
-	style?: CSSProperties
-}) {
-	const width = 6;
-	const dash = 6;
-	const gap = 6;
-	return (
-		<svg style={props.style}
-			width={width}
-			height="100%"
-		>
-			<line
-				x1={width / 2}
-				y1={0}
-				x2={width / 2}
-				y2="100%"
-				stroke="#ff0000"
-				strokeWidth={width}
-				strokeLinecap="round"
-				vectorEffect="non-scaling-stroke"
-				strokeDasharray={`${dash} ${gap}`}
-			/>
-		</svg>
-	);
-}
-
 function ExpandedPostExcerpt(props: {
 	setCollapsed: (b: boolean) => void,
 	postRef: RefObject<HTMLDivElement | null>,

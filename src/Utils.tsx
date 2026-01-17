@@ -202,6 +202,8 @@ export function P5Canvas(props: {
 	</div>
 }
 
+///////////////////////// CHATGPT //////////////////////////////
+
 type Size = { width: number; height: number };
 export function useElementSize<T extends HTMLElement>() {
 	const ref = useRef<T | null>(null);
