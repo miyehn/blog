@@ -38,10 +38,33 @@ function writePixel(p5: P5, x: number, y: number, color: PixelColor) {
 		return;
 	}
 	const pixelIdx = (y * p5.width + x) * 4;
-	p5.pixels[pixelIdx + 0] = Math.floor(color.r);
+	p5.pixels[pixelIdx] = Math.floor(color.r);
 	p5.pixels[pixelIdx + 1] = Math.floor(color.g);
 	p5.pixels[pixelIdx + 2] = Math.floor(color.b);
 	p5.pixels[pixelIdx + 3] = Math.floor(color.a);
+}
+
+// from gpt:
+function clamp255(v: number) {
+	return v < 0 ? 0 : v > 255 ? 255 : v;
+}
+
+function blendPixelAdditive(p5: P5, x: number, y: number, src: PixelColor) {
+	if (x < 0 || x >= p5.width || y < 0 || y >= p5.height) return;
+
+	const pixelIdx = (y * p5.width + x) * 4;
+
+	const dr = p5.pixels[pixelIdx];
+	const dg = p5.pixels[pixelIdx + 1];
+	const db = p5.pixels[pixelIdx + 2];
+	const da = p5.pixels[pixelIdx + 3];
+
+	const sa = clamp255(src.a) / 255;
+
+	p5.pixels[pixelIdx]     = clamp255(dr + src.r * sa);
+	p5.pixels[pixelIdx + 1] = clamp255(dg + src.g * sa);
+	p5.pixels[pixelIdx + 2] = clamp255(db + src.b * sa);
+	p5.pixels[pixelIdx + 3] = clamp255(da + src.a);
 }
 
 function drawSquareWithErosion(p5: P5, X: number, Y: number, erosion: number) {
@@ -81,6 +104,11 @@ function drawSquareWithErosion(p5: P5, X: number, Y: number, erosion: number) {
 	}
 }
 
+function gaussian(x: number, mu: number, sigma: number): number {
+	const z = (x - mu) / sigma;
+	return Math.exp(-0.5 * z * z);
+}
+
 function p5setup(p5: P5) {
 	p5.background(0);
 	p5.noStroke();
@@ -90,19 +118,10 @@ function p5setup(p5: P5) {
 	const gridY = Math.ceil(p5.height / gridSize);
 
 	const contentStartGridIdx = getContentLeft() / gridSize * gridY;
-	//const contentEndGridIdx = contentStartGridIdx + getContentWidth() / gridSize * gridY;
 	const easeInGridCount = Math.floor(gridY * 2.7);
 	const easeInGridEnd = contentStartGridIdx + gridY - 5;
 
 	p5.loadPixels();
-
-	/*
-	for (let y = 0; y < p5.height / 8; y += gridSize / 4) {
-		for (let x = 0; x < p5.width; x += gridSize / 2) {
-			writePixel(p5, x, y, {r: 255, g: 0, b: 127, a: 255});
-		}
-	}
-	 */
 
 	for (let Y = 0; Y < gridY; Y++) {
 		for (let X = 0; X < gridX; X++) {
@@ -115,7 +134,35 @@ function p5setup(p5: P5) {
 			drawSquareWithErosion(p5, X * gridSize, p5.height - (Y + 1) * gridSize, strength);
 		}
 	}
+
+	// bloom ?
+	const center = {x: -p5.width * 0.54, y: p5.height * 0.8};
+	const sigma = p5.width * 0.36;
+	for (let x = 0; x < p5.width; x++) {
+		for (let y = 0; y < p5.height; y++) {
+			let dx = x - center.x;
+			let dy = y - center.y;
+			let distToCenter = Math.sqrt(dx * dx + dy * dy);
+			let distributed = gaussian(distToCenter, 0, sigma);
+
+			const multiplier = 1000;
+			const bloomColor = {
+				r: 0.7,
+				g: 0.5,
+				b: 1.1
+			};
+			blendPixelAdditive(p5, x, y, {
+				r: bloomColor.r * multiplier,
+				g: bloomColor.g * multiplier,
+				b: bloomColor.b * multiplier,
+				a: 255 * distributed
+			});
+		}
+	}
+
+
 	p5.updatePixels();
+
 }
 
 export function BackgroundCanvas(props: {

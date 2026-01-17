@@ -15,6 +15,7 @@ import './style/tabs.css';
 import {contentManager, type PostInfo} from "./ContentManager";
 import {BackgroundProps, getContentLeft, getContentWidth, BackgroundCanvas} from "./background.tsx";
 import {useElementSize, useWindowSize} from "./Utils.tsx";
+import ShaderCanvas from "./GlslBackground.tsx";
 
 function DirectoryTabs(props: {
 	pageName: string,
@@ -141,7 +142,8 @@ export function BlogMain() {
 		width: windowWidth,
 		height: windowHeight
 	}}>
-		<BackgroundCanvas width={windowWidth} height={windowHeight}/>
+		{<BackgroundCanvas width={windowWidth} height={windowHeight}/>}
+		{/*<ShaderCanvas/>*/}
 		<HashRouter>
 			<Routes>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>
