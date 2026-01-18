@@ -4,7 +4,7 @@ import Canvas, {type ICanvasOptions} from "glsl-canvas-js/dist/esm/canvas/canvas
 import FRAG_SHADER from "./shaders/background.frag?raw"
 
 function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
-	const dpr = window.devicePixelRatio || 1;
+	const dpr = 1;//window.devicePixelRatio;
 
 	// If you want it to cover the whole screen:
 	const cssW = window.innerWidth;
@@ -24,7 +24,7 @@ function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
 		canvas.height = h;
 	}
 
-	return { w, h };
+	return { w, h, dpr };
 }
 
 export default function ShaderCanvas() {
@@ -41,6 +41,7 @@ export default function ShaderCanvas() {
 			alpha: false,
 		};
 		const sandbox = new Canvas(canvas, options);
+		sandbox.devicePixelRatio = 1;
 		sandbox.load(FRAG_SHADER).then(success => {
 			console.assert(success, "fragment shader load failed");
 			sandbox.pause();
@@ -50,9 +51,9 @@ export default function ShaderCanvas() {
 
 		// Handle resize
 		const handleResize = () => {
-			//const { w, h } = resizeCanvasToDisplaySize(canvas);
+			// const { w, h } = resizeCanvasToDisplaySize(canvas);
 			// u_resolution in pixels (match gl_FragCoord)
-			//sandbox.setUniform("u_resolution", [w, h]);
+			// sandbox.setUniform("u_resolution", [w, h]);
 		};
 		handleResize();
 		window.addEventListener("resize", handleResize);
