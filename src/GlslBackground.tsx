@@ -82,6 +82,7 @@ export default function ShaderCanvas() {
 			style={{
 				position: "fixed",
 				inset: 0,
+				zIndex: -100,
 				width: "100vw",
 				height: "100vh",
 			}}
