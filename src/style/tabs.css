@@ -27,17 +27,33 @@
     margin: auto;
     text-align: center;
     writing-mode: vertical-rl;
-    border-left: 1px solid var(--text);
+    /*border-left: 1px solid var(--text);*/
     cursor: pointer;
+
+    /*
+    font-family: "myCabin", sans-serif;
+
+    box-sizing: border-box;
+    border: 5px solid transparent;
+    border-left: none;
+    border-radius: 0 12px 12px 0;
+    */
+    background: #1e3048;
+}
+
+/* style for visited tab */
+.tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
+    background: #3d85e0;
+    /*
+    border: 5px solid yellow;
+    border-left: none;
+    color: var(--background-color);
+    background-color: var(--text);
+     */
 }
 
 li.tabs-button:before {
     content: none;
-}
-
-.tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
-    color: var(--background-color);
-    background-color: var(--text);
 }
 
 .tabs-button::marker {
