@@ -1,6 +1,13 @@
 import {HashRouter, Routes, Route, Link, useParams} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
-import React, {type CSSProperties, useEffect, useRef} from "react";
+import React, {
+	type BaseSyntheticEvent,
+	type CSSProperties,
+	type ReactEventHandler,
+	useEffect,
+	useRef,
+	useState
+} from "react";
 import {
 	AboutPage,
 	ArchivePage,
@@ -28,29 +35,73 @@ function DirectoryTabs(props: {
 		//"gallery"
 	];
 	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
-	return <Tabs
-		className="tabs-outerContainer"
-		selectedIndex={currentIndex}
-		selectedTabClassName="tabs-selectedButton"
-		selectedTabPanelClassName="tabs-selectedPanel"
-		onSelect={(idx, lastIdx, e)=>{
-			localStorage.setItem("directoryPageName", pageNames[idx]);
+
+	const tabsPaddingTop = 80;
+	const tabsWidth = 28;
+	const tabsHeight = 276;
+	const handleHeight = 24;
+	const handleBorder = 4;
+
+	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? `${tabsPaddingTop}`);
+	//console.log(savedClickY);
+
+	return <div style={{
+		position: "relative",
+		width: "100%",
+		height: "100%",
+	}}>
+		{/*
+		one way is to put a p5 canvas here
+		or a regular div, with a subdiv
+		but need to know each exact click position
+		*/}
+		<div style={{
+			position: "absolute",
+			marginTop: tabsPaddingTop,
+			right: 0,
+			width: tabsWidth,
+			height: tabsHeight,
+			background: "#1e3048"
 		}}>
-		<TabPanel>
-			<AboutPage/>
-		</TabPanel>
-		<TabPanel>
-			<ArchivePage category={props.category ?? ""}/>
-		</TabPanel>
-		<TabPanel>
-			<FriendsPage/>
-		</TabPanel>
-		<TabList className="tabs-listContainer">
-			<Tab className="tabs-button"><Link to={"/about"}>关于</Link></Tab>
-			<Tab className="tabs-button"><Link to={"/archive"}>归档</Link></Tab>
-			<Tab className="tabs-button"><Link to={"/friends"}>友情链接</Link></Tab>
-		</TabList>
-	</Tabs>
+			 <div style={{
+				 position: "absolute",
+				 top: savedClickY - handleHeight/2,
+				 left: handleBorder,
+				 width: tabsWidth - handleBorder * 2,
+				 height: handleHeight,
+				 background: "#3d85e0"
+			 }}/>
+		</div>
+		<Tabs
+			className="tabs-outerContainer"
+			selectedIndex={currentIndex}
+			selectedTabClassName="tabs-selectedButton"
+			selectedTabPanelClassName="tabs-selectedPanel"
+			onSelect={(idx, lastIdx, e)=>{
+				localStorage.setItem("directoryPageName", pageNames[idx]);
+				const clickedY: number = e.clientY ?? 0;
+				let relativeY = clickedY - tabsPaddingTop;
+				relativeY = Math.max(handleBorder + handleHeight / 2, relativeY);
+				relativeY = Math.min(tabsHeight - handleBorder - handleHeight / 2, relativeY);
+				localStorage.setItem("tabsClickY", relativeY.toString());
+			}}
+		>
+			<TabPanel>
+				<AboutPage/>
+			</TabPanel>
+			<TabPanel>
+				<ArchivePage category={props.category ?? ""}/>
+			</TabPanel>
+			<TabPanel>
+				<FriendsPage/>
+			</TabPanel>
+			<TabList className="tabs-listContainer">
+				<Tab className="tabs-button"><Link to={"/about"}>关于</Link></Tab>
+				<Tab className="tabs-button"><Link to={"/archive"}>归档</Link></Tab>
+				<Tab className="tabs-button"><Link to={"/friends"}>友情链接</Link></Tab>
+			</TabList>
+		</Tabs>
+	</div>
 }
 
 function Directory(props: {
