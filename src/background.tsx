@@ -97,6 +97,7 @@ function drawSquareWithErosion(p5: P5, X: number, Y: number, erosion: number) {
 							color.b = 255;
 						}
 						writePixel(p5, x, y, color);
+						//blendPixelAdditive(p5, x, y, color);
 					}
 				}
 			}
