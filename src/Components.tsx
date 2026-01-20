@@ -1,8 +1,6 @@
 import React, {type CSSProperties, type RefObject, useEffect, useRef, useState} from "react";
 import {
-	type CategoryFolderNode,
 	type CategoryNode,
-	type CategoryTree,
 	contentManager,
 	type PostInfo
 } from "./ContentManager";

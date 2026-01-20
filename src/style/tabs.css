@@ -11,7 +11,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 28px;
+    width: 26px;
     height: 276px;
     margin-top: 80px;
 }
@@ -32,26 +32,10 @@
     /*border-left: 1px solid var(--text);*/
     cursor: pointer;
 
-    font-family: "myCabin", sans-serif;
-    /*
-    border-left: none;
-    border-radius: 0 12px 12px 0;
-    box-sizing: border-box;
-    border: 4px solid #1e3048;
-
-    background: #1e3048;
-    */
 }
 
 /* style for visited tab */
 .tabs-button.tabs-selectedButton, .tabs-button.tabs-selectedButton a:visited {
-    /*
-    background: #3d85e0;
-    border: 5px solid yellow;
-    border-left: none;
-    color: var(--background-color);
-    background-color: var(--text);
-     */
 }
 
 li.tabs-button:before {

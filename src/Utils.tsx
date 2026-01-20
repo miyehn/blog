@@ -3,7 +3,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import P5 from "p5";
-import {RxTriangleRight, RxTriangleDown} from "react-icons/rx";
+import expandedIcon from "./assets/square_empty.svg";
+import collapsedIcon from "./assets/square_filled.svg";
 
 type ClickableProps = {
 	content?: ReactNode,
@@ -75,23 +76,20 @@ export class Expandable extends React.Component {
 	render() {
 		const indentSize = "1em";
 		let indentDivStyle = this.autoIndent ? {paddingLeft: indentSize}: {};
+		let iconsrc = this.state.show ? expandedIcon : collapsedIcon;
 		return <div style={{}}>
 			{/* title */}
-			{(this.props.titleNode ? this.props.titleNode : this.props.title)}
+			{this.props.titleNode ? this.props.titleNode : this.props.title}
 
 			{/* clickable triangle */}
 			<Clickable style={{display: "inline-block"}} content={
 				<div style={{
-					display: "inline-block",
-					width: 24,
 					position: "relative",
-					top: 3,
-					textAlign: "right",
-					color: "#ff0000"
-					//outline: "1px solid red"
-				}}>{this.state.show ?
-					<RxTriangleDown/> : <RxTriangleRight/>
-				}</div>
+					top: 2,
+					paddingLeft: 6,
+				}}>
+					<img src={iconsrc} alt={"expand/collapse icon"}/>
+				</div>
 			} onClickFn={this.onClick}/>
 
 			{/* expanded children (might be hidden) */}

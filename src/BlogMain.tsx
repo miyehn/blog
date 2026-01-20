@@ -1,18 +1,13 @@
 import {HashRouter, Routes, Route, Link, useParams} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React, {
-	type BaseSyntheticEvent,
-	type CSSProperties,
-	type ReactEventHandler,
 	useEffect,
 	useRef,
-	useState
 } from "react";
 import {
 	AboutPage,
 	ArchivePage,
 	ArrowButton,
-	Error404,
 	FriendsPage,
 	ContentStream,
 	SinglePostPage,
@@ -21,7 +16,7 @@ import {
 import './style/tabs.css';
 import {contentManager, type PostInfo} from "./ContentManager";
 import {BackgroundProps, getContentLeft, getContentWidth, BackgroundCanvas} from "./background.tsx";
-import {useElementSize, useWindowSize} from "./Utils.tsx";
+import {useWindowSize} from "./Utils.tsx";
 import ShaderCanvas from "./GlslBackground.tsx";
 
 function DirectoryTabs(props: {
@@ -37,10 +32,10 @@ function DirectoryTabs(props: {
 	const currentIndex = Math.max(0, pageNames.indexOf(props.pageName));
 
 	const tabsPaddingTop = 80;
-	const tabsWidth = 28;
+	const tabsWidth = 26;
 	const tabsHeight = 276;
 	const handleHeight = 24;
-	const handleBorder = 4;
+	const handleBorder = 3;
 
 	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? `${tabsPaddingTop}`);
 	//console.log(savedClickY);
@@ -50,18 +45,13 @@ function DirectoryTabs(props: {
 		width: "100%",
 		height: "100%",
 	}}>
-		{/*
-		one way is to put a p5 canvas here
-		or a regular div, with a subdiv
-		but need to know each exact click position
-		*/}
 		<div style={{
 			position: "absolute",
 			marginTop: tabsPaddingTop,
 			right: 0,
 			width: tabsWidth,
 			height: tabsHeight,
-			background: "#1e3048"
+			background: "#1b2b40"
 		}}>
 			 <div style={{
 				 position: "absolute",
