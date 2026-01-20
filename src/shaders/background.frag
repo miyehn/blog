@@ -108,9 +108,9 @@ void main() {
     #if 1
     // Base color from TS:
     // r=15, g=prev_g + contribs, b=112
-    float r = hasContribution ? 15.0 : 0.0;
+    float r = hasContribution ? 31.0 : 0.0;
     float g = gAccum;
-    float b = hasContribution ? 112.0 : 0.0;
+    float b = hasContribution ? 96.0 : 0.0;
     #else
     float r = 0.0;
     float g = 0.0;
@@ -125,6 +125,33 @@ void main() {
         r = 255.0;
         g = 255.0;
         b = 255.0;
+    }
+    #endif
+
+    #if 1 // right edge
+    vec2 dp = u_resolution - p;
+    ivec2 idp = ivec2(i(dp.x), i(dp.y)) - ivec2(1, 1);
+    if (idp.x < 16) {
+        if (idp.x < 12) {
+            r = 0.0;
+            g = 192.0;
+            b = 127.0;
+        }
+        ivec2 idp4 = ivec2(idp.x / 4, idp.y / 4);
+        int idx = idp4.x + idp4.y;
+        if (idp.x >= 12) {
+            if (idx - idx / 5 * 5 > 1) {
+                r = 192.0;
+                g = 0.0;
+                b = 127.0;
+            }
+        } else if (idp.x >= 8) {
+            if (idx - idx / 2 * 2 > 0) {
+                r = 192.0;
+                g = 0.0;
+                b = 127.0;
+            }
+        }
     }
     #endif
 
@@ -143,7 +170,7 @@ void main() {
     vec3 rgb255 = vec3(r, g, b);
 
     #if 1 // bloom?
-    rgb255 += bloomColor * (1000.0 * distributed);
+    rgb255 += bloomColor * (1400.0 * distributed);
     #endif
 
     #if 0 // overflow here?

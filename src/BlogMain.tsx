@@ -15,7 +15,7 @@ import {
 } from "./Components";
 import './style/tabs.css';
 import {contentManager, type PostInfo} from "./ContentManager";
-import {BackgroundProps, getContentLeft, getContentWidth, BackgroundCanvas} from "./background.tsx";
+import {BackgroundProps, getContentLeft, getContentWidth, ForegroundCanvas} from "./background.tsx";
 import {useWindowSize} from "./Utils.tsx";
 import ShaderCanvas from "./GlslBackground.tsx";
 
@@ -37,7 +37,7 @@ function DirectoryTabs(props: {
 	const handleHeight = 24;
 	const handleBorder = 3;
 
-	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? `${tabsPaddingTop}`);
+	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? "0");
 	//console.log(savedClickY);
 
 	return <div style={{
@@ -69,7 +69,7 @@ function DirectoryTabs(props: {
 			selectedTabPanelClassName="tabs-selectedPanel"
 			onSelect={(idx, lastIdx, e)=>{
 				localStorage.setItem("directoryPageName", pageNames[idx]);
-				const clickedY: number = e.clientY ?? 0;
+				const clickedY: number = (e as any).clientY ?? 0;
 				let relativeY = clickedY - tabsPaddingTop;
 				relativeY = Math.max(handleBorder + handleHeight / 2, relativeY);
 				relativeY = Math.min(tabsHeight - handleBorder - handleHeight / 2, relativeY);

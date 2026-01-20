@@ -24,13 +24,14 @@
     right: 48px;
 }
 
-.tabs-button {
+.tabs-button, .tabs-button a:visited {
     height: 92px;
     margin: auto;
     text-align: center;
     writing-mode: vertical-rl;
     /*border-left: 1px solid var(--text);*/
     cursor: pointer;
+    color: #efefef;
 
 }
 

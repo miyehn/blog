@@ -110,11 +110,11 @@ function gaussian(x: number, mu: number, sigma: number): number {
 	return Math.exp(-0.5 * z * z);
 }
 
-function p5setup(p5: P5) {
+function p5background(p5: P5) {
 	p5.background(0);
 	p5.noStroke();
 
-	const gridSize = 64;
+	const gridSize = BackgroundProps.gridSize;
 	const gridX = Math.ceil(p5.width / gridSize);
 	const gridY = Math.ceil(p5.height / gridSize);
 
@@ -165,7 +165,52 @@ function p5setup(p5: P5) {
 
 }
 
-export function BackgroundCanvas(props: {
+function drawHatchedGrid(p5: P5, x: number, y: number) {
+	const gridSize = BackgroundProps.gridSize;
+	const subGridCount = 4;
+	const subGridSize = gridSize / subGridCount;
+	for (let xi = 0; xi < subGridCount; xi++) {
+		for (let yi = 0; yi < subGridCount; yi++) {
+			if ((xi + yi) % 3 === 0) {
+				p5.fill(0);
+				p5.rect(x + xi * subGridSize, y + yi * subGridSize, subGridSize, subGridSize);
+				if ((xi + yi) % 2 === 0) {
+					p5.fill(0, 255, 192);
+				} else {
+					p5.fill(64, 0, 192);
+				}
+				p5.rect(x + xi * subGridSize, y + yi * subGridSize, subGridSize / 8, subGridSize / 2);
+			}
+		}
+	}
+}
+
+function p5foreground(p5: P5) {
+	p5.noStroke();
+
+	/*
+
+	const gridSize = BackgroundProps.gridSize;
+	const gridCountX = Math.ceil(p5.width / gridSize);
+	const gridCountY = Math.ceil(p5.height / gridSize);
+
+	const cornerSize = 10;
+	for (let gridX = gridCountX - (cornerSize + 1); gridX < gridCountX; gridX++) {
+		for (let gridY = gridCountY - 1; gridY >= gridCountY - ((cornerSize + 1) - (gridCountX - gridX)); gridY--) {
+			if (gridY >= gridCountY - 2) {
+				drawHatchedGrid(p5, gridX * gridSize, gridY * gridSize);
+			}
+			//p5.rect(gridX * gridSize, gridY * gridSize, gridSize, gridSize);
+		}
+	}
+
+	const lastRowStart1 = {x: getContentLeft() + BackgroundProps.gridSize, y: p5.height - BackgroundProps.gridSize};
+	p5.fill(127, 0, 0);
+	p5.rect(lastRowStart1.x, lastRowStart1.y, gridSize, gridSize);
+	 */
+}
+
+export function ForegroundCanvas(props: {
 	width: number,
 	height: number
 }) {
@@ -173,7 +218,7 @@ export function BackgroundCanvas(props: {
 		position: "fixed",
 		top: 0,
 		left: 0,
-		zIndex: -100,
+		zIndex: +100,
 		pointerEvents: "none",
-	}} width={props.width} height={props.height} trueDpr={false} p5setup={p5setup}/>
+	}} width={props.width} height={props.height} trueDpr={false} p5setup={p5foreground}/>
 }
