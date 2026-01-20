@@ -41,6 +41,7 @@ export default function ShaderCanvas() {
 			alpha: false,
 		};
 		const sandbox = new Canvas(canvas, options);
+		sandbox.animated = false;
 		sandbox.devicePixelRatio = 1;
 		sandbox.load(FRAG_SHADER).then(success => {
 			console.assert(success, "fragment shader load failed");

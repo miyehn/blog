@@ -10,6 +10,9 @@ float gaussian(float x, float sigma) {
     return exp(-0.5 * z * z);
 }
 
+const float GRID_SIZE = 64.0;
+const float LEFT_PORTION = 0.36;
+
 float f(int x) { return float(x); }
 int i(float x) { return int(x); }
 
@@ -18,7 +21,7 @@ float strengthForCell(int cellX, int cellY_fromBottom, int gridCountY) {
     // contentStartGridIdx = floor(width*0.36/64)*gridY
     // easeInGridCount = floor(gridY * 2.7)
     // easeInGridEnd = contentStartGridIdx + gridY - 5
-    int contentStartGridIdx = i((u_resolution.x * 0.36) / 64.0) * gridCountY;
+    int contentStartGridIdx = i((u_resolution.x * LEFT_PORTION) / GRID_SIZE) * gridCountY;
     int easeInGridCount = i(f(gridCountY) * 2.7);
     int easeInGridEnd = contentStartGridIdx + gridCountY - 5;
 
@@ -130,27 +133,24 @@ void main() {
 
     #if 1 // right edge
     vec2 dp = u_resolution - p;
-    ivec2 idp = ivec2(i(dp.x), i(dp.y)) - ivec2(1, 1);
+    ivec2 idp = ivec2(int(dp.x), int(dp.y)) - ivec2(1);
+
     if (idp.x < 16) {
-        if (idp.x < 12) {
-            r = 0.0;
-            g = 192.0;
-            b = 127.0;
+        // base color for <12
+        bool base = idp.x < 12;
+        if (base) {
+            r = 0.0; g = 224.0; b = 127.0;
         }
-        ivec2 idp4 = ivec2(idp.x / 4, idp.y / 4);
+
+        ivec2 idp4 = idp / 4;
         int idx = idp4.x + idp4.y;
-        if (idp.x >= 12) {
-            if (idx - idx / 5 * 5 > 1) {
-                r = 192.0;
-                g = 0.0;
-                b = 127.0;
-            }
-        } else if (idp.x >= 8) {
-            if (idx - idx / 2 * 2 > 0) {
-                r = 192.0;
-                g = 0.0;
-                b = 127.0;
-            }
+
+        bool magenta =
+            (idp.x >= 12 && (idx % 5) > 1) ||
+            (idp.x >= 8  && idp.x < 12 && (idx & 1) == 1);
+
+        if (magenta) {
+            r = 192.0; g = 0.0; b = 127.0;
         }
     }
     #endif
@@ -164,13 +164,13 @@ void main() {
     float distToCenter = length(p - bloomCenter);
     float distributed = gaussian(distToCenter, sigma);
 
-    vec3 bloomColor = vec3(0.7, 0.5, 1.1);
+    vec3 bloomColor = vec3(0.6, 0.5, 1.2);
     #if 1
 
     vec3 rgb255 = vec3(r, g, b);
 
     #if 1 // bloom?
-    rgb255 += bloomColor * (1400.0 * distributed);
+    rgb255 += bloomColor * (1300.0 * distributed);
     #endif
 
     #if 0 // overflow here?

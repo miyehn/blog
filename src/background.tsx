@@ -10,7 +10,7 @@ export function getContentLeft() {
 }
 
 export function getContentWidth() {
-	return Math.floor(window.innerWidth * 0.62 / BackgroundProps.gridSize) * BackgroundProps.gridSize;
+	return window.innerWidth - getContentLeft() - BackgroundProps.gridSize;
 }
 
 type PixelColor = {

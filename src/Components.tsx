@@ -17,7 +17,7 @@ import squareFilled from "./assets/square_filled.svg";
 import squareEmpty from "./assets/square_empty.svg";
 import arrowRight from "./assets/arrow_right.svg";
 import arrowLeft from "./assets/arrow_left.svg";
-import {getContentLeft, getContentWidth} from "./background.tsx";
+import {BackgroundProps, getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
 import {p5_ExcerptCollapseHandle} from "./ExcerptCollapseHandle.tsx";
@@ -543,7 +543,9 @@ export function SinglePostPage(props: {
 			style.position = "relative";
 			style.width = getContentWidth();
 			style.left = getContentLeft();
-			style.paddingLeft = 70;
+			style.paddingLeft = 86;
+			style.paddingRight = 0;
+			style.boxSizing = "border-box";
 		}
 		return <div ref={containerRef} style={style}><Post container={containerRef} permalink={params.permalink} renderer={SinglePostRenderer}/></div>
 	} else {
