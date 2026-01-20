@@ -83,7 +83,7 @@ class ContentManager {
 				"url": "https://github.com/miyehn"
 			}
 		],
-		title: "槽 - 新版施工中",
+		title: "槽",
 		initialNumPosts: 20,
 		postsPerPage: 10,
 	}

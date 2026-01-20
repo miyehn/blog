@@ -17,10 +17,10 @@ import squareFilled from "./assets/square_filled.svg";
 import squareEmpty from "./assets/square_empty.svg";
 import arrowRight from "./assets/arrow_right.svg";
 import arrowLeft from "./assets/arrow_left.svg";
-import {BackgroundProps, getContentLeft, getContentWidth} from "./background.tsx";
+import {getContentLeft, getContentWidth} from "./background.tsx";
 import {useBlogContext} from "./main.tsx";
 import {FaTags} from "react-icons/fa6";
-import {p5_ExcerptCollapseHandle} from "./ExcerptCollapseHandle.tsx";
+import {p5_ExcerptCollapseHandle} from "./P5Functions.tsx";
 
 type StateType<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 

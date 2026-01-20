@@ -27,3 +27,13 @@ export function p5_ExcerptCollapseHandle(p5: P5) {
 	}
 
 }
+
+export function p5_BlockquoteLine(p5: P5) {
+	p5.noStroke();
+	p5.fill(31, 56, 96);
+	p5.rect(0, 0, 4, p5.height);
+	p5.fill(192, 112, 255);
+	for (let y = 4; y < p5.height - 4; y += 12) {
+		p5.rect(3, y, 4, 4);
+	}
+}

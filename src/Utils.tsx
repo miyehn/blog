@@ -1,10 +1,20 @@
-import React, {type ReactNode, type CSSProperties, useState, useLayoutEffect, useId, useRef, useEffect} from "react";
+import React, {
+	type ReactNode,
+	type CSSProperties,
+	useState,
+	useLayoutEffect,
+	useId,
+	useRef,
+	useEffect,
+	type ClassAttributes, type BlockquoteHTMLAttributes
+} from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import P5 from "p5";
 import expandedIcon from "./assets/square_empty.svg";
 import collapsedIcon from "./assets/square_filled.svg";
+import {p5_BlockquoteLine} from "./P5Functions.tsx";
 
 type ClickableProps = {
 	content?: ReactNode,
@@ -102,6 +112,20 @@ export class Expandable extends React.Component {
 	}
 }
 
+function Blockquote({children, ...otherProps}: ClassAttributes<HTMLQuoteElement> & BlockquoteHTMLAttributes<any>) {
+	const [containerRef, size] = useElementSize<HTMLQuoteElement>();
+	return <blockquote ref={containerRef} style={{ position: "relative", padding: "0.5em 0 0.5em 1.5em" }} {...otherProps}>
+		<P5Canvas style={{
+			position: "absolute",
+			top: 0,
+			left: 0,
+			zIndex: -99,
+			pointerEvents: "none"
+		}} width={8} height={size.height} trueDpr={true} p5setup={p5_BlockquoteLine}/>
+		{children}
+	</blockquote>;
+}
+
 export function Markdown(props: {content: string, inline?: boolean, className?: string}) {
 	const className = props.className ? "markdown " + props.className : "markdown";
 	if (!props.inline) {
@@ -110,6 +134,11 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 				[remarkGfm, {singleTilde: false}],
 			]}
 			rehypePlugins={[rehypeRaw]}
+			components={{
+				blockquote({children, ...otherProps}) {
+					return <Blockquote {...otherProps}>{children}</Blockquote>;
+				},
+			}}
 		>{props.content}</ReactMarkdown></div>
 	} else {
 		return <div className={className}><ReactMarkdown
