@@ -18,8 +18,8 @@
 
 .tabs-selectedPanel {
     position: absolute;
-    top: 72px;
-    bottom: 32px;
+    top: 0;
+    bottom: 0;
     left: 72px;
     right: 48px;
 }

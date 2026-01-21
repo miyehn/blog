@@ -84,7 +84,7 @@ export function AboutContent() {
 }
 
 export function AboutPage() {
-	return <div className="noScrollBar" style={{
+	return <div className="noScrollBar altViewContent" style={{
 		height: "100%",
 		overflowY: "scroll",
 		overscrollBehaviorY: "contain",
@@ -437,6 +437,7 @@ export function ContentStream(props: {
 	renderFn: (posts: PostInfo[]) => React.ReactNode,
 	container: React.RefObject<HTMLDivElement | null>,
 	category?: string,
+	className?: string,
 	style?: CSSProperties,
 	prefix?: React.ReactNode
 }) {
@@ -492,7 +493,7 @@ export function ContentStream(props: {
 
 	return <div
 		ref={props.container}
-		className={"noScrollBar"}
+		className={"noScrollBar " + (props.className ?? "")}
 		style={style}
 		onWheel={e=>{
 			if (fetching) {
@@ -617,6 +618,7 @@ function TimelineWithEvents() {
 		scrollMaxIndex={Infinity}
 		verticalMargin={0}
 		container={streamRef}
+		className={"altViewContent"}
 		renderFn={renderFn}/>
 }
 
@@ -670,6 +672,7 @@ export function ArchivePage(props: {category: string}) {
 	};
 
 	const contentColumn = (props.category.length > 0) ? <ContentStream
+		className={"altViewContent"}
 		category={props.category}
 		startIndex={0}
 		initialCount={20}
@@ -683,7 +686,13 @@ export function ArchivePage(props: {category: string}) {
 		)}/> : <TimelineWithEvents/>
 
 	return <div style={{display: "flex", flexDirection: "row", height: "100%"}}>
-		<div style={{flex: 0, flexBasis: Math.min(180, window.innerWidth * 0.2), height: "100%", overflow: "scroll", paddingRight: 10}}>
+		<div style={{
+			flex: 0,
+			flexBasis: Math.min(180, window.innerWidth * 0.2),
+			overflow: "scroll",
+			paddingTop: 72,
+			paddingRight: 10
+		}}>
 			<CategoryEntry title={"全部"} category={""} style={{
 				fontWeight: props.category === "" ? "bold" : "normal",
 			}} />
@@ -697,7 +706,7 @@ export function ArchivePage(props: {category: string}) {
 }
 
 export function FriendsPage() {
-	return <div className={"friends"}>
+	return <div className={"friends altViewContent"}>
 		<p>也拜访下赛博邻居们吧！</p>
 		<p>本人虽为技术从业者，博客却一点都不技术，不知道路过的看官感兴趣哪类，就大致这么分一下：</p>
 		<br/>

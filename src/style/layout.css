@@ -41,6 +41,12 @@ hr.directory-hr {
     pointer-events: none;
 }
 
+.altViewContent {
+    box-sizing: border-box;
+    padding-top: 72px;
+    padding-bottom: 40px;
+}
+
 .noScrollBar::-webkit-scrollbar {
     display: none;
 }
