@@ -16,6 +16,22 @@ const float LEFT_PORTION = 0.36;
 float f(int x) { return float(x); }
 int i(float x) { return int(x); }
 
+// Check if x is a perfect square (for non-negative ints)
+bool isPerfectSquare(int x) {
+    if (x < 0) return false;
+    float s = sqrt(float(x));
+    int si = int(floor(s + 0.5)); // round to nearest int
+    return si * si == x;
+}
+
+// Check if n is a Fibonacci number
+bool isFibonacci(int n) {
+    if (n < 0) return false;
+    int a = 5 * n * n + 4;
+    int b = 5 * n * n - 4;
+    return isPerfectSquare(a) || isPerfectSquare(b);
+}
+
 float strengthForCell(int cellX, int cellY_fromBottom, int gridCountY) {
     // Mirrors:
     // contentStartGridIdx = floor(width*0.36/64)*gridY
@@ -135,22 +151,25 @@ void main() {
     vec2 dp = u_resolution - p;
     ivec2 idp = ivec2(int(dp.x), int(dp.y)) - ivec2(1);
 
-    if (idp.x < 16) {
+    if (idp.x < 24) {
         // base color for <12
-        bool base = idp.x < 12;
-        if (base) {
-            r = 0.0; g = 224.0; b = 127.0;
+        if (idp.x < 16) {
+            r = 0.0; g = 224.0; b = 168.0;
+        } else if (idp.x < 20) {
+            r = 255.0; g = 224.0; b = 127.0;
         }
 
         ivec2 idp4 = idp / 4;
         int idx = idp4.x + idp4.y;
 
         bool magenta =
-            (idp.x >= 12 && (idx % 5) > 1) ||
-            (idp.x >= 8  && idp.x < 12 && (idx & 1) == 1);
+            (idp.x >= 12 && (isFibonacci(idp4.y / 2) || isFibonacci(idp4.y) || isFibonacci(idx / 3))) ||
+            (idp.x >= 16 && (idx % 4 > 1) ) ||
+            //(idp.x >= 12 && idp.x < 16 && (idx & 1) == 1) ||
+            false;
 
         if (magenta) {
-            r = 192.0; g = 0.0; b = 127.0;
+            r = 192.0; g = 0.0; b = 192.0;
         }
     }
     #endif

@@ -37,7 +37,7 @@ function DirectoryTabs(props: {
 	const handleHeight = 24;
 	const handleBorder = 3;
 
-	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? "0");
+	const savedClickY = parseFloat(localStorage.getItem("tabsClickY") ?? `${handleHeight / 2 + handleBorder}`);
 	//console.log(savedClickY);
 
 	return <div style={{
