@@ -1,3 +1,5 @@
+magicword
+
 # Logs
 logs
 *.log
@@ -17,6 +19,7 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+.github/task.md
 *.suo
 *.ntvs*
 *.njsproj

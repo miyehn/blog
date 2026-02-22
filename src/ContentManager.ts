@@ -3,7 +3,8 @@ export type PostInfo = {
 	title: string,
 	path: string,
 	categories: string[],
-	collapsed: boolean
+	collapsed: boolean,
+	public: boolean,
 };
 
 export type CategoryInfo = {
@@ -90,7 +91,17 @@ class ContentManager {
 
 	constructor() {
 		this.#networkManager = new NetworkManager();
+		this.#magicword = localStorage.getItem("magicword") ?? "";
+	}
+
+	setMagicword(word: string) {
+		this.#magicword = word;
+		localStorage.setItem("magicword", word);
+	}
+
+	clearMagicword() {
 		this.#magicword = "";
+		localStorage.removeItem("magicword");
 	}
 
 	asyncGetAbout(cb: (content: string)=>void) {
@@ -117,7 +128,7 @@ class ContentManager {
 	}
 
 	asyncGetCategoryTree(cb: (T: CategoryNode)=>void) {
-		const url = this.blogInfo.domainName + "/mrblog-content/index/categories";
+		const url = this.blogInfo.domainName + `/mrblog-content/index/${this.#magicword}categories`;
 		this.#networkManager.asyncFetch(url, data =>{
 			const parsed: {category: string, num: number}[] = JSON.parse(data);
 
@@ -174,7 +185,8 @@ class ContentManager {
 				categories: parsed.categories,
 				date: parsed.date,
 				path: permalink,
-				collapsed: false
+				collapsed: false,
+				public: parseInt(parsed.publicity) === 2
 			}, parsed.content);
 		});
 	}
@@ -185,9 +197,7 @@ class ContentManager {
 		numPosts: number,
 		category?: string,
 		cb: (data: PostInfo[], finished: boolean, totalNumPosts: number)=>void
-	})
-	{
-
+	}) {
 		if (props.numPosts <= 0) {
 			console.log("there's nothing to fetch.");
 			props.cb([], true, -1);

@@ -409,7 +409,8 @@ export function Post(props: {permalink: string, info?: PostInfo, container:React
 		title: "",
 		path: props.permalink,
 		categories: [],
-		collapsed: false
+		collapsed: false,
+		public: true
 	});
 	const [content, setContent]: StateType<string> = useState("loading...");
 	useEffect(()=>{
@@ -457,12 +458,12 @@ export function ContentStream(props: {
 			numPosts: count,
 			category: props.category,
 			cb: (arr, finished, totalNumPosts)=>{
-				 if (finished) {
-					 setStartPostIndex(startIdx);
-					 setPosts(arr);
-					 if (totalNumPosts >= 0) setScrollMaxIndex(i => Math.min(i, totalNumPosts));
-					 setFetching(false);
-				 }
+				if (finished) {
+					setStartPostIndex(startIdx);
+					setPosts(arr);
+					if (totalNumPosts >= 0) setScrollMaxIndex(i => Math.min(i, totalNumPosts));
+					setFetching(false);
+				}
 			}
 		});
 	};

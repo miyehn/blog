@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from "react";
 import {AboutContent, ContentStream, FriendsPageContent, Logo, SinglePostPage, Social} from "./Components";
 import {Expandable, useWindowSize} from "./Utils";
 import {contentManager, type PostInfo} from "./ContentManager";
-import {renderAllPostsFn} from "./BlogMain";
+import {renderAllPostsFn, CmdHandler} from "./BlogMain";
 import {HashRouter, Routes, Route} from "react-router-dom";
 
 import "./style/style.css"
@@ -54,6 +54,7 @@ export default function MobileBlogMain() {
 	}, []);
 	return <HashRouter>
 		<Routes>
+			<Route path={"/cmd/:word"} element={<CmdHandler/>}/>
 			<Route path={"/"} element={<MobileBlogContent/>}/>
 			<Route path={"/post/:permalink"} element={<SinglePostPage type={"mobile"}/>}/>
 		</Routes>

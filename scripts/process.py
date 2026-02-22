@@ -60,6 +60,7 @@ for path in paths:
         'categories': data['categories'],
         'collapsed': data['collapsed'],
         'date': data['date'],
+        'publicity': data['publicity'],
         'content': data['content']
     }
 
@@ -112,7 +113,7 @@ def writeLists(data, outPrefix):
     chunkSize = 100
     numChunks = int((len(data) + chunkSize - 1) / chunkSize)
     data.sort(reverse=True, key=getTimeKey)
-    stripPublicity(data)
+    # stripPublicity(data)
     for chunkIndex in range(0, numChunks):
         # get sublist
         lo = chunkIndex * chunkSize

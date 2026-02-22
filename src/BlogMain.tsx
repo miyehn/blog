@@ -1,4 +1,4 @@
-import {HashRouter, Routes, Route, Link, useParams} from "react-router-dom";
+import {HashRouter, Routes, Route, Link, useParams, Navigate} from "react-router-dom";
 import {Tab, TabList, TabPanel, Tabs} from "react-tabs";
 import React, {
 	useEffect,
@@ -109,6 +109,16 @@ function Directory(props: {
 
 type MatchType = "page" | "category" | "wildcard";
 
+export function CmdHandler() {
+	const { word } = useParams();
+	if (word === "resetmagic") {
+		contentManager.clearMagicword();
+	} else {
+		contentManager.setMagicword(word ?? "");
+	}
+	return <Navigate to="/" replace />;
+}
+
 export const renderAllPostsFn = (posts: PostInfo[], streamRef: React.RefObject<HTMLDivElement | null>) => {
 	let list: React.ReactNode[] = [];
 	for (let i = 0; i < posts.length; i++) {
@@ -187,6 +197,7 @@ export function BlogMain() {
 		{<ShaderCanvas/>}
 		<HashRouter>
 			<Routes>
+				<Route path={"/cmd/:word"} element={<CmdHandler/>}/>
 				<Route path={"/archive/:category"} element={<DirectoryPage matchType={"category"}/>}/>
 				<Route path={"/:page"} element={<DirectoryPage matchType={"page"}/>}/>
 				<Route path={"/post/:permalink"} element={<SinglePostPage type={"desktop"}/>}/>
