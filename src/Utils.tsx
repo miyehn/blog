@@ -72,7 +72,7 @@ export class Expandable extends React.Component {
 			if (this.props.onExpand && newShow) this.props.onExpand();
 			if (this.props.onCollapse && !newShow) this.props.onCollapse();
 			localStorage.setItem("exp: " + inProps.title, (newShow ? 1 : 0).toString());
-		}).bind(this);
+		});
 
 		let expanded = localStorage.getItem("exp: " + inProps.title);
 		let show: boolean = inProps.defaultShow ?? false;
@@ -91,16 +91,16 @@ export class Expandable extends React.Component {
 			{/* title */}
 			{this.props.titleNode ? this.props.titleNode : this.props.title}
 
-			{/* clickable triangle */}
-			<Clickable style={{display: "inline-block"}} content={
-				<div style={{
-					position: "relative",
-					top: 2,
-					paddingLeft: 6,
-				}}>
-					<img src={iconsrc} alt={"expand/collapse icon"}/>
-				</div>
-			} onClickFn={this.onClick}/>
+			{/* clickable icon */}
+			<div style={{
+				position: "relative",
+				display: "inline-block",
+				top: 2,
+				paddingLeft: 6,
+				cursor: "pointer",
+			}} onClick={this.onClick}>
+				<img src={iconsrc} alt={"expand/collapse icon"}/>
+			</div>
 
 			{/* expanded children (might be hidden) */}
 			<div style={{position: "relative", display: this.state.show ? "block" : "none"}}>

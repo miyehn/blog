@@ -705,8 +705,8 @@ export function ArchivePage(props: {category: string}) {
 	</div>
 }
 
-export function FriendsPage() {
-	return <div className={"friends altViewContent"}>
+export function FriendsPageContent() {
+	return <div className={"friends"}>
 		<p>也拜访下赛博邻居们吧！</p>
 		<p>本人虽为技术从业者，博客却一点都不技术，不知道路过的看官感兴趣哪类，就大致这么分一下：</p>
 		<br/>
@@ -735,5 +735,11 @@ export function FriendsPage() {
 		<p>
 			<a className="clickable hoverHighlight" href="https://ablustrund.com/">Ablustrund</a>
 		</p>
+	</div>
+}
+
+export function FriendsPage() {
+	return <div className={"altViewContent"}>
+		<FriendsPageContent/>
 	</div>
 }

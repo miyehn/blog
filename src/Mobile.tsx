@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "react";
-import {AboutContent, ContentStream, FriendsPage, Logo, SinglePostPage, Social} from "./Components";
+import {AboutContent, ContentStream, FriendsPageContent, Logo, SinglePostPage, Social} from "./Components";
 import {Expandable, useWindowSize} from "./Utils";
 import {contentManager, type PostInfo} from "./ContentManager";
 import {renderAllPostsFn} from "./BlogMain";
@@ -16,7 +16,7 @@ function MobileBlogContent() {
 		<Logo/>
 		<Social/>
 		<div style={{marginBottom: 10}}>
-			此站在移动端只有最基础的阅览功能，部分设计只在足够大的屏幕上呈现，建议用电脑打开。<s>很多东西在电脑端也还没实现就是了orz</s>
+			此站在移动端只有最基础的阅览功能，部分设计只在足够大的屏幕上呈现，建议用电脑打开。
 		</div>
 		<Expandable title={"关于此地"} content={
 			<div style={{marginTop: 10, marginBottom: 20}}>
@@ -25,7 +25,7 @@ function MobileBlogContent() {
 		}/>
 		<Expandable title={"友情链接"} content={
 			<div style={{marginTop: 10, marginBottom: 20}}>
-				<FriendsPage/>
+				<FriendsPageContent/>
 			</div>
 		}/>
 	</div>
