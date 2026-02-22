@@ -30,6 +30,7 @@ export type CategoryNode = {
 	name: string,
 	path: string,
 	count: number,
+	allHidden: boolean,
 	children: CategoryNode[]
 };
 
@@ -129,8 +130,8 @@ class ContentManager {
 
 	asyncGetCategoryTree(cb: (T: CategoryNode)=>void) {
 		const url = this.blogInfo.domainName + `/mrblog-content/index/${this.#magicword}categories`;
-		this.#networkManager.asyncFetch(url, data =>{
-			const parsed: {category: string, num: number}[] = JSON.parse(data);
+		this.#networkManager.asyncFetch(url, data => {
+			const parsed: {category: string, num: number, allHidden: boolean}[] = JSON.parse(data);
 
 			const findCategoryNum = function(name: string) {
 				for (let i = 0; i < parsed.length; i++) {
@@ -140,12 +141,14 @@ class ContentManager {
 			}
 
 			// construct tree here
-			const tree: CategoryNode = {name: "", path: "", count: 0, children: []};
+			const tree: CategoryNode = {name: "", path: "", count: 0, children: [], allHidden: true};
 			parsed.forEach(cat => { // root level category (with full path)
 
 				// this post's non-empty category nodes, from root to leaf:
 				const nodes = cat.category.split('-').map(n => n.trim()).filter(n => n.length > 0);
 				let currentParent: CategoryNode = tree;
+				const ancestors: CategoryNode[] = [tree];
+
 				for (let i = 0; i < nodes.length; i++) {// go down the tree from tree root (depth=0)
 					const cnode = nodes[i];
 
@@ -158,18 +161,25 @@ class ContentManager {
 
 					if (foundChild) {
 						currentParent = foundChild;
+						ancestors.push(foundChild);
 					} else {
 						const categoryName = nodes.slice(0, i+1).join('-');
 						const newTreeNode: CategoryNode = {
 							name: cnode,
 							path: categoryName,
 							count: findCategoryNum(categoryName),
+							allHidden: true,
 							children: []
 						};
+						ancestors.push(newTreeNode);
 						currentParent.children.push(newTreeNode);
 						// next iter, if need to keep going
 						if (i !== nodes.length - 1) currentParent = newTreeNode;
 					}
+				}
+
+				if (!cat.allHidden) {
+					ancestors.forEach(ancestor => {ancestor.allHidden = false;});
 				}
 			});
 			cb(tree);

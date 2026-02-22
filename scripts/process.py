@@ -85,16 +85,16 @@ publicData = list(filter(lambda obj: obj['publicity'] == 2, rawData))
 # categories
 categoriesList = []
 for category in listsPerCategoryPublic:
-    categoriesList.append({'category':category, 'num':len(listsPerCategoryPublic[category])})
-categoriesList.sort(reverse=True, key=lambda e:e['num'])
+    categoriesList.append({'category':category, 'num':len(listsPerCategoryPublic[category]), 'allHidden':False})
+categoriesList.sort(key=lambda e:(e['allHidden'], -e['num']))
 with open (content_dir + '/docs/index/categories', mode='w+', encoding='utf8') as outfile:
     json.dump(categoriesList, outfile, separators=(',', ':'), ensure_ascii=False)
 
 # and with hidden ones
 categoriesList = []
 for category in listsPerCategory:
-    categoriesList.append({'category':category, 'num':len(listsPerCategory[category])})
-categoriesList.sort(reverse=True, key=lambda e:e['num'])
+    categoriesList.append({'category':category, 'num':len(listsPerCategory[category]), 'allHidden':category not in listsPerCategoryPublic})
+categoriesList.sort(key=lambda e:(e['allHidden'], -e['num']))
 with open (content_dir + '/docs/index/'+magicword+'categories', mode='w+', encoding='utf8') as outfile:
     json.dump(categoriesList, outfile, separators=(',', ':'), ensure_ascii=False)
 
