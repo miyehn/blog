@@ -625,7 +625,7 @@ function TimelineWithEvents() {
 
 export function ArchivePage(props: {category: string}) {
 
-	const initialCategories: CategoryNode = {name: "", path: "", count: 0, children: []} as CategoryNode;
+	const initialCategories: CategoryNode = {name: "", path: "", count: 0, allHidden: false, children: []} as CategoryNode;
 	const [categoryTree, setCategoryTree]: StateType<CategoryNode> = useState(initialCategories);
 
 	const streamRef = useRef<HTMLDivElement>(null);
