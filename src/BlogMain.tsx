@@ -194,7 +194,7 @@ export function BlogMain() {
 		height: windowHeight
 	}}>
 		{/*<BackgroundCanvas width={windowWidth} height={windowHeight}/>*/}
-		{<ShaderCanvas/>}
+		<ShaderCanvas/>
 		<HashRouter>
 			<Routes>
 				<Route path={"/cmd/:word"} element={<CmdHandler/>}/>
