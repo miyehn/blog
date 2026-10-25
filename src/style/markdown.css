@@ -12,7 +12,8 @@
 .markdown h5,
 .markdown h6,
 .markdown blockquote,
-.markdown details>summary{
+.markdown details>summary,
+.markdown iframe.vn{
 	margin-bottom: calc(var(--base-line-height) - 0.75em);
 }
 
@@ -88,4 +89,10 @@
 .markdown details>summary{
 	font-weight: bold;
 	cursor: pointer;
+}
+
+.markdown iframe.vn {
+	display: block;
+	max-width: 800px;
+	aspect-ratio: 1.333;
 }
