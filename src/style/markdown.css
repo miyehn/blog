@@ -93,6 +93,7 @@
 
 .markdown iframe.vn {
 	display: block;
-	max-width: 800px;
+	width: 100%;
+	max-width: 600px;
 	aspect-ratio: 1.333;
 }

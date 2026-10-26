@@ -193,6 +193,12 @@ export function Markdown(props: {content: string, inline?: boolean, className?: 
 				h6({children, ...otherProps}) {
 					return <b{...otherProps}>{children}</b>
 				},
+				iframe({...props}) {
+					if (props.className === "vn") {
+						return <span>[ellyn]</span>;
+					}
+					return <span>[embedded]</span>
+				}
 			}}
 		/></div>
 	}
